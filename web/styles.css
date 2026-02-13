@@ -1,0 +1,473 @@
+* { box-sizing: border-box; }
+body {
+    background: linear-gradient(180deg, #e0f7ff 0%, #ffffff 100%);
+    font-family: "Segoe UI", sans-serif;
+    color: #003b4d;
+  }
+
+
+  header {
+    padding: 16px 16px 8px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(90deg, #00b4d8, #0077b6);
+    color: white;
+    border-bottom: none;
+  }
+  
+  
+h1 {
+    font-size: 28px;
+    color: #0077b6;
+    margin-bottom: 8px;
+  }
+  
+.stats { opacity: 0.85; font-size: 13px; }
+
+.panel {
+    padding: 12px 16px;
+    border-bottom: none;
+  }
+  
+.row { display: grid; grid-template-columns: 72px 1fr auto; gap: 8px; align-items: center; margin: 8px 0; }
+.row input {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #caf0f8;
+    background: white;
+    color: #003b4d;
+  }
+.row button { padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.10); color: #e7eefc; }
+
+.chip { padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: #e7eefc; margin-right: 6px; }
+.chip.active { background: rgba(255,255,255,0.18); }
+
+main { padding: 0; display: grid; gap: 12px; }
+.card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 25px rgba(0, 119, 182, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0, 119, 182, 0.15);
+  }
+  
+.title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.meta { opacity: 0.8; font-size: 12px; margin-bottom: 10px; }
+.row2 { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.btn {
+    background: #00b4d8;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .btn:hover {
+    background: #0096c7;
+  }
+  
+  .btn.visited {
+    background: #90e0ef;
+    color: #003b4d;
+  }
+  
+  .link {
+    color: #0077b6;
+    font-weight: 600;
+  }
+  
+.note {
+    width: 100%;
+    min-height: 56px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #caf0f8;
+    background: white;
+    color: #003b4d;
+  }
+/* 訪問済みカードをスタンプ風に */
+.card {
+    position: relative;
+    border-radius: 14px;
+    padding: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #f0fbff 100%)
+  }
+  
+  .card.is-visited {
+    border: 2px solid #4cc9f0;
+    background: linear-gradient(135deg, #ffffff 0%, #e0f7ff 100%);
+  }
+  
+  
+  .stamp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    transform: rotate(10deg);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: white;
+    background: #00b4d8;
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.4);
+  }
+  
+  
+  /* 訪問ボタンも強調 */
+  .btn.visited {
+    font-weight: 700;
+  }
+  
+  /* 都道府県セレクトを少し見栄えよく */
+  #pref-filter {
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+
+  select,
+input {
+  border-radius: 12px;
+  padding: 8px 12px;
+  border: 1px solid #caf0f8;
+  background: white;
+}
+/* === Tabs（全部 / 行った / 未訪問）を見えるように === */
+.tabs {
+    opacity: 1 !important;
+  }
+.tabs button,
+.tabs .tab,
+#filter-all,
+#filter-visited,
+#filter-unvisited {
+  background: #ffffff;
+  color: #003b4d;
+  border: 1px solid #90e0ef;
+  opacity: 1;
+}
+
+/* hover */
+.tabs button:hover,
+.tabs .tab:hover {
+  background: #e6faff;
+}
+
+/* 選択中（active） */
+.tabs button.active,
+.tabs .tab.active,
+.tabs button[aria-pressed="true"],
+.tabs .tab[aria-pressed="true"] {
+  background: #00b4d8;
+  color: #ffffff;
+  border-color: #00b4d8;
+  font-weight: 700;
+}
+/* === Filter chips（全部 / 行った / 未訪問 / ★のみ）を明るい背景でも見えるように === */
+.panel .chip{
+    background: #ffffff;
+    color: #003b4d;
+    border: 1px solid #90e0ef;
+    opacity: 1;
+  }
+  
+  .panel .chip:hover{
+    background: #e6faff;
+  }
+  
+  .panel .chip.active{
+    background: #00b4d8;
+    color: #ffffff;
+    border-color: #00b4d8;
+    font-weight: 700;
+  }
+
+  
+  
+  /* 前面のUIが泡より上に来るように */
+  header, .panel, main{
+    position: relative;
+    z-index: 1;
+  }
+  
+  @keyframes bubblesUp{
+    0%{
+      transform: translateY(0);
+      filter: blur(0px);
+    }
+    100%{
+      transform: translateY(-110vh);
+      filter: blur(0.3px);
+    }
+  }
+  
+  
+/* ===== header wave ===== */
+header{
+    position: sticky;
+    overflow: hidden;
+  }
+  
+  header h1{
+    color: #ffffff; /* ヘッダー内だけ白に */
+  }
+  
+
+/* ===== progress bar ===== */
+.stats-row{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 13px;
+    opacity: 0.95;
+  }
+  
+  .progress{
+    margin-top: 8px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 90, 120, 0.22); /* 土台を青寄りに */
+    border: 1px solid rgba(255,255,255,0.55);
+    overflow: hidden;
+  }
+  
+  .progress .bar{
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: rgba(0, 180, 216, 0.95); /* バーを水色に */
+    box-shadow: 0 0 10px rgba(0,180,216,0.45);
+    transition: width 0.35s ease;
+  }
+
+
+/* ===== BACKGROUND LAYERS RESET ===== */
+body{
+    position: relative;
+  }
+  
+  header, .panel, main{
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* 背景の魚 */
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.12;   /* ← まずは控えめ */
+    background-repeat: no-repeat;
+    background-size: 260px 260px, 220px 220px;
+    background-position: 15% 40%, 85% 60%;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill='%23ffffff' d='M150 120c0 22-26 40-58 40-12 0-24-3-34-8l-20 14 6-24c-8-8-12-16-12-22s4-14 12-22l-6-24 20 14c10-5 22-8 34-8 32 0 58 18 58 40z'/%3E%3Ccircle cx='130' cy='110' r='4' fill='%23ffffff'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill='%23ffffff' d='M155 120c0 18-22 32-49 32-10 0-20-2-29-6l-18 12 5-20c-7-6-10-12-10-18s3-12 10-18l-5-20 18 12c9-4 19-6 29-6 27 0 49 14 49 32z'/%3E%3C/svg%3E");
+    animation: fishDrift 18s ease-in-out infinite alternate;
+  }
+  
+  @keyframes fishDrift{
+    0%   { transform: translateX(-40px); }
+    100% { transform: translateX(40px); }
+  }
+  
+  /* 泡（repeat方式で確実表示） */
+  body::after{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,.7) 0 2px, transparent 3px),
+      radial-gradient(circle, rgba(255,255,255,.5) 0 3px, transparent 4px);
+    background-size: 160px 160px, 280px 280px;
+    background-repeat: repeat;
+    animation: bubblesMove 12s linear infinite;
+  }
+  
+  @keyframes bubblesMove{
+    from { transform: translateY(0); }
+    to   { transform: translateY(-200px); }
+  }
+  
+  
+  /* ===== progress: white but stands out ===== */
+  .progress{
+    margin-top: 8px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 80, 110, 0.25);/* 土台を暗めに */
+    border: 1px solid rgba(0, 80, 110, 0.18);
+    overflow: hidden;
+  }
+  
+  .progress .bar{
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow:
+      0 0 6px rgba(255,255,255,0.8),
+      0 0 14px rgba(255,255,255,0.6),
+      inset 0 0 4px rgba(0,0,0,0.15);
+    transition: width 0.35s ease;
+  }
+  /* ===== FORCE background visible (overlay) ===== */
+header, .panel, main, .card{
+    position: relative;
+    z-index: 4;          /* コンテンツを最前面に */
+  }
+  
+  body::before,
+  body::after{
+    z-index: 3 !important; /* 背景レイヤーを“薄く重ねる” */
+  }
+  
+  /* 魚：少し濃く */
+  body::before{
+    opacity: 0.16 !important;
+  }
+  
+  /* 泡：少し濃く＆ゆっくり */
+  body::after{
+    opacity: 0.22 !important;
+    animation-duration: 16s !important;
+  }
+  .mapwrap{
+    margin: 14px 16px 0;
+  }
+  
+  #map{
+    height: 320px;              /* 好みで */
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .marker {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  .marker.visited {
+    background: #2ecc71;
+  }
+  
+  .marker.unvisited {
+    background: #3498db;
+  }
+  
+  /* Leaflet divIconのデフォ背景/枠を消す */
+.leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
+  }
+  
+  /* マーカー本体（丸） */
+  .marker {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  
+  .marker.visited { background: #2ecc71; }   /* 緑 */
+  .marker.unvisited { background: #3498db; } /* 青 */
+  
+
+  .chips-row{
+    display:flex;
+    gap:8px;
+    margin: 10px 0;
+  }
+  
+  .chips-row .chip{
+    flex:1;
+    margin-right:0;      /* 既存chipのmarginを無効化 */
+    text-align:center;
+    padding: 10px 0;     /* 高さも揃う */
+  }
+
+  .regionHeading{
+    margin: 14px 0 8px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    background: rgba(255,255,255,.75);
+    border: 1px solid rgba(0,0,0,.06);
+    backdrop-filter: blur(6px);
+  }
+
+  .sortBar{
+    display:flex;
+    justify-content:flex-end;
+    margin: 10px 0 6px;
+  }
+  
+  .row-compact{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  
+  .row-compact span{
+    font-size: 12px;
+    opacity: .8;
+  }
+  
+  #sort{
+    width:auto;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+
+  
+  .regionHeadingBtn{
+    width: 100%;
+    text-align: left;
+    margin: 14px 0 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    background: rgba(255,255,255,.85);
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    cursor: pointer;
+  }
+  
+  .regionBody{
+    padding-left: 0;
+  }
+  
+  /* カードが全部閉じても“白い面”が残るように下地を敷く */
+
+  #list{
+    background: rgba(255,255,255,.9); /* 少し濃く */
+    border-radius: 18px;
+    padding: 18px;
+    margin: 16px 16px 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  
+    min-height: 120px;      /* ← これが効く */
+    transition: min-height .2s ease;
+  }
+  

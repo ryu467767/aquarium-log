@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: aquarium-log
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: API_KEY
+        sync: false
+      - key: DB_DIR
+        value: /data
+      # 初回自動インポートしたいなら、RenderにCSVを同梱してCSV_PATHを指定（後述）
+      # - key: CSV_PATH
+      #   value: /data/aquariums.csv
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

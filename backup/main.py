@@ -1,0 +1,128 @@
+import os
+import asyncio
+import httpx
+
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+from sqlmodel import select
+from .db import init_db, session
+from .models import Aquarium, Visit
+from .crud import list_aquariums, set_visited, set_note
+from .import_csv import import_csv
+
+API_KEY = os.getenv("API_KEY", "")
+
+def require_key(request: Request):
+    # 静的ファイルは保護しない（でもAPIが守られてれば実害は小さい）
+    # もし静的も守りたいなら app.mount より前でミドルウェアに入れる形に変更
+    if request.url.path.startswith("/api/"):
+        if not API_KEY:
+            raise HTTPException(500, "API_KEY is not set on server")
+        k = request.headers.get("X-API-Key", "")
+        if k != API_KEY:
+            raise HTTPException(401, "Unauthorized")
+
+app = FastAPI()
+
+async def geocode(query: str):
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {"q": query, "format": "jsonv2", "limit": 1}
+    headers = {"User-Agent": "aquarium-stamp-app/1.0"}
+    async with httpx.AsyncClient(timeout=20) as client:
+        r = await client.get(url, params=params, headers=headers)
+        r.raise_for_status()
+        data = r.json()
+        if not data:
+            return None
+        return float(data[0]["lat"]), float(data[0]["lon"])
+
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    try:
+        require_key(request)
+        return await call_next(request)
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+    # 初回だけ自動インポートしたい場合：CSV_PATH をRenderの環境変数にセットしておく
+    csv_path = os.getenv("CSV_PATH", "")
+    if csv_path:
+        with session() as db:
+            count = db.exec(select(Aquarium)).first()
+        if not count:
+            try:
+                import_csv(csv_path)
+            except Exception:
+                # 失敗してもサーバは起動させる（ログはRender側で見える）
+                pass
+
+class VisitToggleIn(BaseModel):
+    visited: bool
+
+class NoteIn(BaseModel):
+    note: str
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
+
+@app.get("/api/stats")
+def stats():
+    with session() as db:
+        total = db.exec(select(Aquarium)).all()
+        total_n = len(total)
+        visited_n = db.exec(select(Visit).where(Visit.visited == True)).all()
+        return {"total": total_n, "visited": len(visited_n)}
+
+@app.get("/api/aquariums")
+def aquariums():
+    with session() as db:
+        aq = list_aquariums(db)
+        visits = {v.aquarium_id: v for v in db.exec(select(Visit)).all()}
+        out = []
+        for a in aq:
+            v = visits.get(a.id)
+            out.append({
+                "id": a.id,
+                "name": a.name,
+                "prefecture": a.prefecture,
+                "city": a.city,
+                "location_raw": a.location_raw,
+                "url": a.url,
+                "mola_star": a.mola_star,
+                "visited": bool(v.visited) if v else False,
+                "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
+                "note": v.note if v else "",
+                "updated_at": v.updated_at.isoformat() if v else None,
+                    "lat": a.lat,   # ★追加
+                    "lng": a.lng,   # ★追加
+            })
+        return out
+
+@app.put("/api/aquariums/{aquarium_id}/visited")
+def toggle_visited(aquarium_id: int, body: VisitToggleIn):
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        v = set_visited(db, aquarium_id, body.visited)
+        return {"aquarium_id": aquarium_id, "visited": v.visited, "visited_at": v.visited_at}
+
+@app.put("/api/aquariums/{aquarium_id}/note")
+def update_note(aquarium_id: int, body: NoteIn):
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        v = set_note(db, aquarium_id, body.note)
+        return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
+
+# 静的フロント
+app.mount("/", StaticFiles(directory="web", html=True), name="web")
+

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aquarium Log</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+</head>
+<body>
+  <header>
+    <h1>全国水族館スタンプラリー</h1>
+    <div class="stats" id="stats">
+      <div class="stats-row">
+        <span id="statsText">loading...</span>
+        <span id="statsPct"></span>
+      </div>
+      <div class="progress">
+        <div class="bar" id="progressBar"></div>
+      </div>
+    </div>    
+    <!-- <svg class="wave" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,64 C150,120 350,0 600,64 C850,128 1050,20 1200,64 L1200,120 L0,120 Z"></path> -->
+    </svg>
+
+  </header>
+
+  <section class="panel">
+    <label class="row">
+      <span>APIキー</span>
+      <input id="apiKey" type="password" placeholder="ryu46aquarium" />
+      <button id="saveKey">保存</button>
+    </label>
+
+    <label class="row">
+      <span>検索</span>
+      <input id="q" type="text" placeholder="施設名/都道府県/市区町村" />
+      <button id="searchBtn">検索</button>
+    </label>
+    
+    
+    <select id="pref-filter">
+      <option value="">都道府県（すべて）</option>
+    </select>
+    
+
+    <div class="chips-row">
+      <button class="chip" data-filter="all">全部</button>
+      <button class="chip" data-filter="visited">行った</button>
+      <button class="chip" data-filter="unvisited">未訪問</button>
+    </div>
+    
+  </section>
+  <section class="mapwrap">
+    <div id="map"></div>
+  </section>
+
+  <div class="sortBar">
+    <label class="row row-compact">
+      <span>並び替え</span>
+      <select id="sort">
+        <option value="pref">都道府県順</option>
+        <option value="name">五十音順</option>
+      </select>      
+    </label>
+  </div>
+  
+  
+  <main id="list"></main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
