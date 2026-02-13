@@ -3,3 +3,7 @@ __pycache__/
 .env
 /data/
 app.db
+
+*.csv
+*.json
+backup/
