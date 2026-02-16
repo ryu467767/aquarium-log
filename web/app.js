@@ -44,20 +44,6 @@ let map;
 let markersLayer;
 
 
-function getKey() {
-  return localStorage.getItem("API_KEY") || "";
-}
-function setKey(v) {
-  localStorage.setItem("API_KEY", v);
-}
-
-function headers() {
-  return {
-    "X-API-Key": getKey(),
-    "Content-Type": "application/json",
-  };  
-}
-
 
 
 async function apiGet(path) {
@@ -84,8 +70,8 @@ function match(item, q) {
 
 function passesFilter(item) {
   // ★追加：都道府県
-  if (state.pref && item.prefecture !== state.pref) return false;
-
+// 都道府県順のときだけ都道府県フィルタを効かせる
+  if (state.sort === "pref" && state.pref && item.prefecture !== state.pref) return false;
   if (state.filter === "all") return true;
   if (state.filter === "visited") return item.visited;
   if (state.filter === "unvisited") return !item.visited;
@@ -228,7 +214,8 @@ function render() {
       const header = document.createElement("button");
       header.className = "regionHeadingBtn";
       header.type = "button";
-      header.textContent = `${state.regionOpen[r] ? "▼" : "▶"} ${r}（${arr.length}）`;
+      const done = arr.filter((x) => x.visited).length;
+      header.textContent = `${state.regionOpen[r] ? "▼" : "▶"} ${r}（${done}/${arr.length}）`;      
       header.onclick = () => {
         state.regionOpen[r] = !state.regionOpen[r];
         render();
@@ -262,7 +249,6 @@ function render() {
 
 async function load() {
   const key = getKey();
-  $("apiKey").value = key;
 
   const [items, stats] = await Promise.all([
     apiGet("/api/aquariums"),
@@ -326,10 +312,6 @@ function setLoginStatus(me) {
 
 
 function wireUI() {
-  $("saveKey").onclick = () => {
-    setKey($("apiKey").value.trim());
-    load().catch((e) => alert("APIエラー: " + e.message));
-  };
 
   const qEl = $("q");
 const searchBtn = $("searchBtn");
@@ -391,7 +373,7 @@ wireUI();
   if (!me.logged_in) return;
 
   // APIキーが必要な設計ならここでチェック（不要なら消してOK）
-  if (typeof getKey === "function" && !getKey()) return;
+  // if (typeof getKey === "function" && !getKey()) return;
 
   load().catch((e) => alert("APIエラー: " + e.message));
 })();
@@ -448,7 +430,19 @@ function updateMap(items, opts = { fit: true }) {
 }
 
 const sortSel = $("sort");
-if (sortSel) sortSel.value = state.sort;
+if (sortSel) {
+  sortSel.onchange = () => {
+    state.sort = sortSel.value;
+
+    if (state.sort === "name") {
+      state.pref = "";
+      const prefSel = $("pref-filter");
+      if (prefSel) prefSel.value = "";
+    }
+    render();
+  };
+}
+
 
 
 
