@@ -24,8 +24,10 @@ SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
 
 
 def require_key(request: Request):
-    # 静的ファイルは保護しない（でもAPIが守られてれば実害は小さい）
-    # もし静的も守りたいなら app.mount より前でミドルウェアに入れる形に変更
+    # ✅ この2つはブラウザ直アクセスでも見れるようにする
+    if request.url.path in ("/api/health", "/api/me"):
+        return
+
     if request.url.path.startswith("/api/"):
         if not API_KEY:
             raise HTTPException(500, "API_KEY is not set on server")
