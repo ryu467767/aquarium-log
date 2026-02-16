@@ -50,6 +50,22 @@ def get_user_id(request: Request) -> str:
         raise HTTPException(401, "Not logged in")
     return uid
 
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        try:
+            require_key(request)
+            return await call_next(request)
+        except HTTPException as e:
+            return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+        except Exception as e:
+            traceback.print_exc()
+            if DEBUG_ERRORS:
+                return JSONResponse(
+                    status_code=500,
+                    content={"detail": "Internal Server Error", "type": type(e).__name__, "msg": str(e)},
+                )
+            return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+
 
 from starlette.middleware import Middleware
 
@@ -89,21 +105,7 @@ async def geocode(query: str):
         return float(data[0]["lat"]), float(data[0]["lon"])
 
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        try:
-            require_key(request)
-            return await call_next(request)
-        except HTTPException as e:
-            return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
-        except Exception as e:
-            traceback.print_exc()
-            if DEBUG_ERRORS:
-                return JSONResponse(
-                    status_code=500,
-                    content={"detail": "Internal Server Error", "type": type(e).__name__, "msg": str(e)},
-                )
-            return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+
 
 
 @app.on_event("startup")
