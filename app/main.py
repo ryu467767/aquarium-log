@@ -8,6 +8,7 @@ import traceback
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from authlib.integrations.starlette_client import OAuth
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -58,8 +59,10 @@ middleware = [
         secret_key=SESSION_SECRET,
         same_site="lax",
         https_only=BASE_URL.startswith("https://"),
-    )
+    ),
+    Middleware(AuthMiddleware),
 ]
+
 
 app = FastAPI(middleware=middleware)
 
@@ -86,23 +89,22 @@ async def geocode(query: str):
         return float(data[0]["lat"]), float(data[0]["lon"])
 
 
-@app.middleware("http")
-async def auth_middleware(request: Request, call_next):
-    try:
-        require_key(request)
-        return await call_next(request)
-    except HTTPException as e:
-        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
-    except Exception as e:
-       # Renderのログにも出す
-        traceback.print_exc()
-        # デバッグ時だけ、画面にもエラー原因を返す
-        if DEBUG_ERRORS:
-            return JSONResponse(
-                status_code=500,
-                content={"detail": "Internal Server Error", "type": type(e).__name__, "msg": str(e)},
-            )
-        return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        try:
+            require_key(request)
+            return await call_next(request)
+        except HTTPException as e:
+            return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+        except Exception as e:
+            traceback.print_exc()
+            if DEBUG_ERRORS:
+                return JSONResponse(
+                    status_code=500,
+                    content={"detail": "Internal Server Error", "type": type(e).__name__, "msg": str(e)},
+                )
+            return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+
 
 @app.on_event("startup")
 def on_startup():
