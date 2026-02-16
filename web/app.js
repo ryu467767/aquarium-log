@@ -318,6 +318,36 @@ if (statsTextEl && barEl) {
   render();
 }
 
+async function apiMe() {
+  try {
+    const res = await fetch("/api/me", { credentials: "same-origin" });
+    if (!res.ok) return { logged_in: false };
+    return await res.json();
+  } catch {
+    return { logged_in: false };
+  }
+}
+
+function setLoginStatus(me) {
+  const statusEl = document.getElementById("loginStatus");
+  const loginBtn = document.getElementById("googleLogin");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (!statusEl || !loginBtn || !logoutBtn) return;
+
+  if (!me || !me.logged_in) {
+    statusEl.textContent = "";
+    loginBtn.style.display = "";
+    logoutBtn.style.display = "none";
+    return;
+  }
+
+  statusEl.textContent = `${me.name || me.email || me.user_id} でログイン中`;
+  loginBtn.style.display = "none";
+  logoutBtn.style.display = "";
+}
+
+
 function wireUI() {
   $("saveKey").onclick = () => {
     setKey($("apiKey").value.trim());
@@ -369,6 +399,22 @@ if (logoutBtn) logoutBtn.onclick = async () => {
 
   // 初期フィルタ
   document.querySelector('.chip[data-filter="all"]').classList.add("active");
+
+    // 右上ログイン/ログアウト
+    const loginBtn = document.getElementById("googleLogin");
+    if (loginBtn) loginBtn.onclick = () => (location.href = "/login");
+  
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.onclick = async () => {
+        try {
+          await fetch("/logout", { credentials: "same-origin" });
+        } finally {
+          location.reload();
+        }
+      };
+    }
+  
 }
 
 wireUI();
@@ -377,15 +423,15 @@ wireUI();
   const me = await apiMe();
   setLoginStatus(me);
 
-  // APIキー未入力なら何もしない
-  if (!getKey()) return;
-
-  // 未ログインなら load() しない（ログインボタンから /login へ）
+  // 未ログインならロードしない（右上ログインから /login へ）
   if (!me.logged_in) return;
 
+  // APIキーが必要な設計ならここでチェック（不要なら消してOK）
+  if (typeof getKey === "function" && !getKey()) return;
 
   load().catch((e) => alert("APIエラー: " + e.message));
 })();
+
 
 function initMap() {
   if (map) return;

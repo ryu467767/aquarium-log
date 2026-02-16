@@ -471,3 +471,40 @@ header, .panel, main, .card{
     transition: min-height .2s ease;
   }
   
+  /* ヘッダー右上：ログイン表示（小さく/目立たせない） */
+header {
+    position: relative; /* 右上配置の基準 */
+  }
+  
+  .userbox {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    opacity: 0.95;
+  }
+  
+  .userbox .usertext {
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* ボタンをリンクっぽく（目立たない） */
+  .linklike {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.9;
+  }
+  
+  .linklike:hover {
+    opacity: 1;
+  }
