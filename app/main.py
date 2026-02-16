@@ -50,14 +50,19 @@ def get_user_id(request: Request) -> str:
     return uid
 
 
-app = FastAPI()
+from starlette.middleware import Middleware
 
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=SESSION_SECRET,
-    same_site="lax",
-    https_only=BASE_URL.startswith("https://"),
-)
+middleware = [
+    Middleware(
+        SessionMiddleware,
+        secret_key=SESSION_SECRET,
+        same_site="lax",
+        https_only=BASE_URL.startswith("https://"),
+    )
+]
+
+app = FastAPI(middleware=middleware)
+
 
 oauth = OAuth()
 oauth.register(
