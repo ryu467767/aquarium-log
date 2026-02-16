@@ -18,7 +18,6 @@ from .import_csv import import_csv
 
 
 
-API_KEY = os.getenv("API_KEY", "")
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
 
@@ -28,21 +27,18 @@ def require_key(request: Request):
     if not request.url.path.startswith("/api/"):
         return
 
-    # 認証不要API（ヘルス/ログイン状態）
+    # 認証不要API
     if request.url.path in ("/api/health", "/api/me"):
         return
 
-    # ✅ Googleログイン済みならAPIキー不要
+    # Googleログイン済みならOK
     uid = (request.session.get("user_id") or "").strip()
     if uid:
         return
 
-    # 未ログイン時だけAPIキー要求（必要なら残す）
-    if not API_KEY:
-        raise HTTPException(500, "API_KEY is not set on server")
-    k = request.headers.get("X-API-Key", "")
-    if k != API_KEY:
-        raise HTTPException(401, "Unauthorized")
+    # 未ログインは401（500にしない）
+    raise HTTPException(401, "Not logged in")
+
 
 def get_user_id(request: Request) -> str:
     uid = (request.session.get("user_id") or "").strip()
