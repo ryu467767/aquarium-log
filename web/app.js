@@ -382,10 +382,7 @@ wireUI();
 
   // 未ログインなら load() しない（ログインボタンから /login へ）
   if (!me.logged_in) return;
-  if (!me.logged_in) {
-    // ここで画面に案内を出すなども可
-    return;
-  }
+
 
   load().catch((e) => alert("APIエラー: " + e.message));
 })();

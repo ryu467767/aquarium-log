@@ -185,7 +185,7 @@ def aquariums(request: Request):
 
 
 @app.put("/api/aquariums/{aquarium_id}/visited")
-def toggle_visited(request: Request):
+def toggle_visited(aquarium_id: int, body: VisitToggleIn, request: Request):
     uid = get_user_id(request)
     with session() as db:
         a = db.get(Aquarium, aquarium_id)
@@ -196,7 +196,7 @@ def toggle_visited(request: Request):
 
 
 @app.put("/api/aquariums/{aquarium_id}/note")
-def update_note(request: Request):
+def update_note(aquarium_id: int, body: NoteIn, request: Request):
     uid = get_user_id(request)
     with session() as db:
         a = db.get(Aquarium, aquarium_id)
