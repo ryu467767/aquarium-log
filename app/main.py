@@ -4,7 +4,7 @@ import httpx
 import sqlite3
 
 
-from fastapi import FastAPI, Request, HTTPException, Header
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
@@ -24,16 +24,25 @@ SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
 
 
 def require_key(request: Request):
-    # ✅ この2つはブラウザ直アクセスでも見れるようにする
+    # API以外（静的）は触らない
+    if not request.url.path.startswith("/api/"):
+        return
+
+    # 認証不要API（ヘルス/ログイン状態）
     if request.url.path in ("/api/health", "/api/me"):
         return
 
-    if request.url.path.startswith("/api/"):
-        if not API_KEY:
-            raise HTTPException(500, "API_KEY is not set on server")
-        k = request.headers.get("X-API-Key", "")
-        if k != API_KEY:
-            raise HTTPException(401, "Unauthorized")
+    # ✅ Googleログイン済みならAPIキー不要
+    uid = (request.session.get("user_id") or "").strip()
+    if uid:
+        return
+
+    # 未ログイン時だけAPIキー要求（必要なら残す）
+    if not API_KEY:
+        raise HTTPException(500, "API_KEY is not set on server")
+    k = request.headers.get("X-API-Key", "")
+    if k != API_KEY:
+        raise HTTPException(401, "Unauthorized")
 
 def get_user_id(request: Request) -> str:
     uid = (request.session.get("user_id") or "").strip()
