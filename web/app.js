@@ -58,29 +58,6 @@ function headers() {
   };  
 }
 
-async function apiMe() {
-  try {
-    const res = await fetch("/api/me", { headers: headers(), credentials: "same-origin" });
-    if (!res.ok) return { logged_in: false };
-    return res.json();
-  } catch {
-    return { logged_in: false };
-  }
-}
-
-function setLoginStatus(me) {
-  const el = document.getElementById("loginStatus");
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (!el) return;
-
-  if (!me || !me.logged_in) {
-    el.textContent = "未ログイン";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    return;
-  }
-  el.textContent = `${me.name || me.email || me.user_id} でログイン中`;
-  if (logoutBtn) logoutBtn.style.display = "";
-}
 
 
 async function apiGet(path) {
@@ -400,20 +377,7 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   // 初期フィルタ
   document.querySelector('.chip[data-filter="all"]').classList.add("active");
 
-    // 右上ログイン/ログアウト
-    const loginBtn = document.getElementById("googleLogin");
-    if (loginBtn) loginBtn.onclick = () => (location.href = "/login");
-  
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.onclick = async () => {
-        try {
-          await fetch("/logout", { credentials: "same-origin" });
-        } finally {
-          location.reload();
-        }
-      };
-    }
+ 
   
 }
 
