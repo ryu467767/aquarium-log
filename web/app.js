@@ -388,12 +388,7 @@ function initMap() {
   }).addTo(map);
 
   // ★ここを差し替え
-  markersLayer = L.markerClusterGroup({
-    showCoverageOnHover: false,
-    spiderfyOnMaxZoom: true,
-    // 好みで：このズーム以上はクラスタしない
-    disableClusteringAtZoom: 12,
-  }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
 }
 
 
