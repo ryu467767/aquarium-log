@@ -106,6 +106,18 @@ class NoteIn(BaseModel):
 def health():
     return {"ok": True}
 
+@app.get("/debug/oauth")
+def debug_oauth():
+    cid = os.getenv("GOOGLE_CLIENT_ID")
+    csec = os.getenv("GOOGLE_CLIENT_SECRET")
+    return {
+        "BASE_URL": BASE_URL,
+        "has_client_id": bool(cid),
+        "client_id_tail": (cid[-12:] if cid else None),  # 末尾だけ（安全）
+        "has_client_secret": bool(csec),
+        "redirect_uri": f"{BASE_URL}/auth/callback",
+    }
+
 @app.get("/login")
 async def login(request: Request):
     redirect_uri = f"{BASE_URL}/auth/callback"
