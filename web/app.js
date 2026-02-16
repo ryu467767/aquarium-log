@@ -47,20 +47,22 @@ let markersLayer;
 
 
 async function apiGet(path) {
-  const res = await fetch(path, { headers: headers(), credentials: "same-origin" });
+  const res = await fetch(path, { credentials: "same-origin" });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
 async function apiPut(path, body) {
   const res = await fetch(path, {
     method: "PUT",
-    headers: headers(),
     credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-  });  
+  });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
 
 function match(item, q) {
   if (!q) return true;
@@ -248,7 +250,6 @@ function render() {
 
 
 async function load() {
-  const key = getKey();
 
   const [items, stats] = await Promise.all([
     apiGet("/api/aquariums"),
