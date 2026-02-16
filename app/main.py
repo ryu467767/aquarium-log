@@ -4,8 +4,10 @@ import httpx
 import sqlite3
 
 
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request, HTTPException, Header
+from fastapi.responses import JSONResponse, RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
+from authlib.integrations.starlette_client import OAuth
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlmodel import select
@@ -14,7 +16,12 @@ from .models import Aquarium, Visit
 from .crud import list_aquariums, set_visited, set_note
 from .import_csv import import_csv
 
+
+
 API_KEY = os.getenv("API_KEY", "")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
+
 
 def require_key(request: Request):
     # 静的ファイルは保護しない（でもAPIが守られてれば実害は小さい）
@@ -26,7 +33,30 @@ def require_key(request: Request):
         if k != API_KEY:
             raise HTTPException(401, "Unauthorized")
 
+def get_user_id(request: Request) -> str:
+    uid = (request.session.get("user_id") or "").strip()
+    if not uid:
+        raise HTTPException(401, "Not logged in")
+    return uid
+
+
 app = FastAPI()
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    same_site="lax",
+    https_only=BASE_URL.startswith("https://"),
+)
+
+oauth = OAuth()
+oauth.register(
+    name="google",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    client_kwargs={"scope": "openid email profile"},
+)
 
 async def geocode(query: str):
     url = "https://nominatim.openstreetmap.org/search"
@@ -74,19 +104,65 @@ class NoteIn(BaseModel):
 def health():
     return {"ok": True}
 
+@app.get("/login")
+async def login(request: Request):
+    redirect_uri = f"{BASE_URL}/auth/callback"
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@app.get("/auth/callback")
+async def auth_callback(request: Request):
+    token = await oauth.google.authorize_access_token(request)
+    userinfo = token.get("userinfo")
+    if not userinfo:
+        userinfo = await oauth.google.userinfo(token=token)
+
+    sub = userinfo["sub"]
+    request.session["user_id"] = f"google:{sub}"
+    request.session["email"] = userinfo.get("email")
+    request.session["name"] = userinfo.get("name")
+    request.session["picture"] = userinfo.get("picture")
+
+    return RedirectResponse(url="/")
+
+@app.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/")
+
+@app.get("/api/me")
+def me(request: Request):
+    uid = (request.session.get("user_id") or "").strip()
+    if not uid:
+        return {"logged_in": False}
+    return {
+        "logged_in": True,
+        "user_id": uid,
+        "email": request.session.get("email"),
+        "name": request.session.get("name"),
+        "picture": request.session.get("picture"),
+    }
+
 @app.get("/api/stats")
-def stats():
+def stats(request: Request):
+    uid = get_user_id(request)
     with session() as db:
         total = db.exec(select(Aquarium)).all()
         total_n = len(total)
-        visited_n = db.exec(select(Visit).where(Visit.visited == True)).all()
+        visited_n = db.exec(
+            select(Visit).where(Visit.user_id == uid, Visit.visited == True)
+        ).all()
         return {"total": total_n, "visited": len(visited_n)}
 
+
 @app.get("/api/aquariums")
-def aquariums():
+def aquariums(request: Request):
+    uid = get_user_id(request)
     with session() as db:
         aq = list_aquariums(db)
-        visits = {v.aquarium_id: v for v in db.exec(select(Visit)).all()}
+        visits = {
+            v.aquarium_id: v
+            for v in db.exec(select(Visit).where(Visit.user_id == uid)).all()
+        }
         out = []
         for a in aq:
             v = visits.get(a.id)
@@ -102,28 +178,33 @@ def aquariums():
                 "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
                 "note": v.note if v else "",
                 "updated_at": v.updated_at.isoformat() if v else None,
-                    "lat": a.lat,   # ★追加
-                    "lng": a.lng,   # ★追加
+                "lat": a.lat,
+                "lng": a.lng,
             })
         return out
 
+
 @app.put("/api/aquariums/{aquarium_id}/visited")
-def toggle_visited(aquarium_id: int, body: VisitToggleIn):
+def toggle_visited(request: Request):
+    uid = get_user_id(request)
     with session() as db:
         a = db.get(Aquarium, aquarium_id)
         if not a:
             raise HTTPException(404, "Aquarium not found")
-        v = set_visited(db, aquarium_id, body.visited)
+        v = set_visited(db, uid, aquarium_id, body.visited)
         return {"aquarium_id": aquarium_id, "visited": v.visited, "visited_at": v.visited_at}
 
+
 @app.put("/api/aquariums/{aquarium_id}/note")
-def update_note(aquarium_id: int, body: NoteIn):
+def update_note(request: Request):
+    uid = get_user_id(request)
     with session() as db:
         a = db.get(Aquarium, aquarium_id)
         if not a:
             raise HTTPException(404, "Aquarium not found")
-        v = set_note(db, aquarium_id, body.note)
+        v = set_note(db, uid, aquarium_id, body.note)
         return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
+
 
 # 静的フロント
 app.mount("/", StaticFiles(directory="web", html=True), name="web")

@@ -22,10 +22,16 @@ class Aquarium(SQLModel, table=True):
     )
 
 class Visit(SQLModel, table=True):
-    __tablename__ = "visits"      # ★ここも固定
+    __tablename__ = "visits"  # ★固定
 
-    aquarium_id: int = Field(primary_key=True, foreign_key="aquariums.id")  # ★ここも重要
+    # ★追加：ユーザーごとに訪問状態を分ける
+    user_id: str = Field(primary_key=True, index=True)
+
+    # ★変更：aquarium_id は複合主キーの片割れにする
+    aquarium_id: int = Field(primary_key=True, foreign_key="aquariums.id")
+
     visited: bool = False
     visited_at: Optional[datetime] = None
     note: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+

@@ -9,6 +9,14 @@ services:
     envVars:
       - key: API_KEY
         sync: false
+      - key: BASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
       - key: DB_DIR
         value: /data
       # 初回自動インポートしたいなら、RenderにCSVを同梱してCSV_PATHを指定（後述）

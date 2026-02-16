@@ -50,21 +50,51 @@ function getKey() {
 function setKey(v) {
   localStorage.setItem("API_KEY", v);
 }
+
 function headers() {
-  return { "X-API-Key": getKey() };
+  return {
+    "X-API-Key": getKey(),
+    "Content-Type": "application/json",
+  };  
 }
 
+async function apiMe() {
+  try {
+    const res = await fetch("/api/me", { headers: headers(), credentials: "same-origin" });
+    if (!res.ok) return { logged_in: false };
+    return res.json();
+  } catch {
+    return { logged_in: false };
+  }
+}
+
+function setLoginStatus(me) {
+  const el = document.getElementById("loginStatus");
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (!el) return;
+
+  if (!me || !me.logged_in) {
+    el.textContent = "未ログイン";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    return;
+  }
+  el.textContent = `${me.name || me.email || me.user_id} でログイン中`;
+  if (logoutBtn) logoutBtn.style.display = "";
+}
+
+
 async function apiGet(path) {
-  const res = await fetch(path, { headers: headers() });
+  const res = await fetch(path, { headers: headers(), credentials: "same-origin" });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
 async function apiPut(path, body) {
   const res = await fetch(path, {
     method: "PUT",
-    headers: { ...headers(), "Content-Type": "application/json" },
+    headers: headers(),
+    credentials: "same-origin",
     body: JSON.stringify(body),
-  });
+  });  
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
@@ -306,6 +336,17 @@ if (qEl) {
   };
 }
 
+const loginBtn = document.getElementById("googleLogin");
+if (loginBtn) loginBtn.onclick = () => { location.href = "/login"; };
+
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) logoutBtn.onclick = async () => {
+  try {
+    await fetch("/logout", { credentials: "same-origin" });
+  } finally {
+    location.reload();
+  }
+};
 
 
   // ★追加：都道府県フィルター変更
@@ -331,7 +372,23 @@ if (qEl) {
 }
 
 wireUI();
-load().catch((e) => alert("APIエラー: " + e.message));
+
+(async () => {
+  const me = await apiMe();
+  setLoginStatus(me);
+
+  // APIキー未入力なら何もしない
+  if (!getKey()) return;
+
+  // 未ログインなら load() しない（ログインボタンから /login へ）
+  if (!me.logged_in) return;
+  if (!me.logged_in) {
+    // ここで画面に案内を出すなども可
+    return;
+  }
+
+  load().catch((e) => alert("APIエラー: " + e.message));
+})();
 
 function initMap() {
   if (map) return;
