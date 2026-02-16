@@ -7,8 +7,6 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
     envVars:
-      - key: API_KEY
-        sync: false
       - key: BASE_URL
         sync: false
       - key: SESSION_SECRET
@@ -17,6 +15,11 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # 一時的にエラー原因をレスポンスに出す（直ったら消してOK）
+      - key: DEBUG_ERRORS
+        value: "1"
+      - key: BUILD
+        value: "2026-02-17-01"
       - key: DB_DIR
         value: /data
       # 初回自動インポートしたいなら、RenderにCSVを同梱してCSV_PATHを指定（後述）

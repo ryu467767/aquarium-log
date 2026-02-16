@@ -2,6 +2,7 @@ import os
 import asyncio
 import httpx
 import sqlite3
+import traceback
 
 
 from fastapi import FastAPI, Request, HTTPException
@@ -20,6 +21,8 @@ from .import_csv import import_csv
 
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
+DEBUG_ERRORS = os.getenv("DEBUG_ERRORS", "").lower() in ("1", "true", "yes")
+BUILD = os.getenv("BUILD", "dev")
 
 
 def require_key(request: Request):
@@ -85,6 +88,16 @@ async def auth_middleware(request: Request, call_next):
         return await call_next(request)
     except HTTPException as e:
         return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+    except Exception as e:
+       # Renderのログにも出す
+        traceback.print_exc()
+        # デバッグ時だけ、画面にもエラー原因を返す
+        if DEBUG_ERRORS:
+            return JSONResponse(
+                status_code=500,
+                content={"detail": "Internal Server Error", "type": type(e).__name__, "msg": str(e)},
+            )
+        return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 @app.on_event("startup")
 def on_startup():
@@ -100,6 +113,10 @@ def on_startup():
             except Exception:
                 # 失敗してもサーバは起動させる（ログはRender側で見える）
                 pass
+
+@app.get("/debug/build")
+def debug_build():
+    return {"build": BUILD, "base_url": BASE_URL, "debug_errors": DEBUG_ERRORS}
 
 class VisitToggleIn(BaseModel):
     visited: bool
