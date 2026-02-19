@@ -17,6 +17,9 @@ from .db import init_db, session
 from .models import Aquarium, Visit
 from .crud import list_aquariums, set_visited, set_note
 from .import_csv import import_csv
+from pathlib import Path
+from fastapi.responses import FileResponse
+
 
 
 
@@ -81,6 +84,14 @@ middleware = [
 
 
 app = FastAPI(middleware=middleware)
+
+BASE_DIR = Path(__file__).resolve().parent
+CANDIDATES = [
+    BASE_DIR / "web",        # main.py と同じ階層に web がある場合
+    BASE_DIR.parent / "web", # 1つ上（リポジトリ直下）に web がある場合
+]
+WEB_DIR = next((p for p in CANDIDATES if p.exists()), CANDIDATES[0])
+
 
 
 oauth = OAuth()
@@ -254,3 +265,7 @@ def update_note(aquarium_id: int, body: NoteIn, request: Request):
 # 静的フロント
 app.mount("/", StaticFiles(directory="web", html=True), name="web")
 
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap():
+    path = WEB_DIR / "sitemap.xml"
+    return FileResponse(path, media_type="application/xml")
