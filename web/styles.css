@@ -559,3 +559,56 @@ header {
     text-decoration: underline;
   }
   
+  /* ===== Mobile UX improvements ===== */
+@media (max-width: 768px) {
+  /* 地図をスマホで少し大きく */
+  #map {
+    height: 420px;
+  }
+
+  /* ボタンを押しやすく */
+  .btn {
+    padding: 10px 18px;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  /* カード余白とタイトル */
+  .card {
+    padding: 18px;
+  }
+  .title {
+    font-size: 17px;
+  }
+
+  /* チップ行（全部/行った/未訪問）を縦並びに */
+  .chips-row {
+    flex-direction: column;
+  }
+  .chips-row .chip {
+    width: 100%;
+  }
+}
+
+/* ===== Visit animation ===== */
+.stamp-pop {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  font-size: 22px;
+  transform: rotate(-12deg) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  animation: stampPop 0.8s ease-out forwards;
+}
+
+@keyframes stampPop {
+  0%   { opacity: 0; transform: rotate(-12deg) scale(0.6); }
+  20%  { opacity: 1; transform: rotate(-12deg) scale(1.15); }
+  100% { opacity: 0; transform: rotate(-12deg) scale(1.0); }
+}
+
+/* カード内に絶対配置できるように */
+.card {
+  position: relative;
+}

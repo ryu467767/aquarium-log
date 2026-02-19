@@ -81,6 +81,15 @@ function passesFilter(item) {
   return true;
 }
 
+function showStamp(el, text = "✅") {
+  if (!el) return;
+  const s = document.createElement("div");
+  s.className = "stamp-pop";
+  s.textContent = text;
+  el.appendChild(s);
+  setTimeout(() => s.remove(), 900);
+}
+
 function setPrefOptions(items) {
   const sel = $("pref-filter");
   if (!sel) return; // HTML側に無い場合は何もしない
@@ -136,6 +145,7 @@ function renderCard(it) {
   btn.onclick = async () => {
     try {
       await apiPut(`/api/aquariums/${it.id}/visited`, { visited: !it.visited });
+      showStamp(cardEl, item.visited ? "↩️" : "✅");
       await load(); // 再取得
     } catch (e) {
       alert("APIエラー: " + e.message);
@@ -438,6 +448,20 @@ if (sortSel) {
     render();
   };
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector(".seo-toggle");
+  const content = document.querySelector(".seo-content");
+  if (!toggle || !content) return;
+
+  toggle.onclick = () => {
+    const open = content.style.display === "block";
+    content.style.display = open ? "none" : "block";
+    toggle.textContent = open
+      ? "このアプリについて ▼"
+      : "このアプリについて ▲";
+  };
+});
 
 
 
