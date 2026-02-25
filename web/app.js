@@ -155,7 +155,6 @@ function renderCard(it) {
       } catch (e) {
         alert("APIエラー: " + e.message);
       }
-    };
   }
   row.appendChild(btn);
 
@@ -175,7 +174,10 @@ function renderCard(it) {
   note.className = "note";
   note.placeholder = "メモ（例：混雑、推し、展示、感想）";
   note.value = it.note || "";
+  note.disabled = !state.loggedIn;
+if (!state.loggedIn) note.placeholder = "ログインするとメモできます";
   note.onchange = async () => {
+    if (!state.loggedIn) return;
     try {
       await apiPut(`/api/aquariums/${it.id}/note`, { note: note.value });
     } catch (e) {
@@ -266,7 +268,7 @@ function render() {
 
 
 async function load() {
-  const items = await apiGet("/api/aquariums");
+  const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
 
   let stats = { visited: 0, total: items.length };
 
