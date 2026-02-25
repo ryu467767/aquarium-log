@@ -127,9 +127,21 @@ function renderCard(it) {
     card.appendChild(stamp);
   }
 
-  const title = document.createElement("div");
-  title.className = "title";
-  title.textContent = it.name;
+  let title;
+
+  if (it.url) {
+    title = document.createElement("a");
+    title.href = it.url;
+    title.target = "_blank";
+    title.rel = "noopener noreferrer";
+    title.className = "title link-title";
+    title.textContent = it.name;
+  } else {
+    title = document.createElement("div");
+    title.className = "title";
+    title.textContent = it.name;
+  }
+  
   card.appendChild(title);
 
   const meta = document.createElement("div");
