@@ -154,7 +154,7 @@ function renderCard(it) {
 
   const btn = document.createElement("button");
   btn.className = it.visited ? "btn visited" : "btn";
-  btn.textContent = it.visited ? "行った✅（解除）" : "行ったにする";
+  btn.textContent = it.visited ? "訪問済✅（解除）" : "訪問済にする";
 
   if (!state.loggedIn) {
     btn.disabled = true;
