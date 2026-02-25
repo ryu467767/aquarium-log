@@ -157,7 +157,6 @@ function renderCard(it) {
       }
     };
   }
-  };
   row.appendChild(btn);
 
   if (it.url) {
@@ -388,16 +387,11 @@ wireUI();
 
 (async () => {
   const me = await apiMe();
+  state.loggedIn = !!(me && me.logged_in);
   setLoginStatus(me);
 
-  // 未ログインならロードしない（右上ログインから /login へ）
-  (async () => {
-    const me = await apiMe();
-    state.loggedIn = !!(me && me.logged_in);
-    setLoginStatus(me);
-  
-    load().catch((e) => alert("APIエラー: " + e.message));
-  })();
+  load().catch((e) => alert("APIエラー: " + e.message));
+})();
 
 
 function initMap() {
