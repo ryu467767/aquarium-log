@@ -173,16 +173,6 @@ function renderCard(it) {
 
   row.appendChild(btn);
 
-  if (it.url) {
-    const a = document.createElement("a");
-    a.href = it.url;
-    a.target = "_blank";
-    a.rel = "noreferrer";
-    a.className = "link";
-    a.textContent = "公式/紹介ページ";
-    row.appendChild(a);
-  }
-
   card.appendChild(row);
 
   const note = document.createElement("textarea");
