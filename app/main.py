@@ -36,7 +36,7 @@ def require_key(request: Request):
 
     # 認証不要API
     if request.url.path in ("/api/health", "/api/me", "/api/public/aquariums"):
-    return
+        return
 
     # Googleログイン済みならOK
     uid = (request.session.get("user_id") or "").strip()
