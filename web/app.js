@@ -145,7 +145,7 @@ function renderCard(it) {
   btn.onclick = async () => {
     try {
       await apiPut(`/api/aquariums/${it.id}/visited`, { visited: !it.visited });
-      showStamp(cardEl, item.visited ? "↩️" : "✅");
+      showStamp(card, it.visited ? "↩️" : "✅");
       await load(); // 再取得
     } catch (e) {
       alert("APIエラー: " + e.message);
