@@ -143,6 +143,7 @@ function renderCard(it) {
   const btn = document.createElement("button");
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "行った✅（解除）" : "行ったにする";
+
   if (!state.loggedIn) {
     btn.disabled = true;
     btn.title = "ログインすると押せます";
@@ -155,7 +156,9 @@ function renderCard(it) {
       } catch (e) {
         alert("APIエラー: " + e.message);
       }
+    };
   }
+
   row.appendChild(btn);
 
   if (it.url) {

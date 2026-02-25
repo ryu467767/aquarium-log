@@ -35,8 +35,8 @@ def require_key(request: Request):
         return
 
     # 認証不要API
-    if request.url.path in ("/api/health", "/api/me"):
-        return
+    if request.url.path in ("/api/health", "/api/me", "/api/public/aquariums"):
+    return
 
     # Googleログイン済みならOK
     uid = (request.session.get("user_id") or "").strip()
@@ -239,6 +239,26 @@ def aquariums(request: Request):
             })
         return out
 
+@app.get("/api/public/aquariums")
+def public_aquariums():
+    with session() as db:
+        aq = list_aquariums(db)  # Aquariumだけ（Visitは見ない） :contentReference[oaicite:5]{index=5}
+        return [{
+            "id": a.id,
+            "name": a.name,
+            "prefecture": a.prefecture,
+            "city": a.city,
+            "location_raw": a.location_raw,
+            "url": a.url,
+            "mola_star": a.mola_star,
+            "lat": a.lat,
+            "lng": a.lng,
+            # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
+            "visited": False,
+            "visited_at": None,
+            "note": "",
+            "updated_at": None,
+        } for a in aq]
 
 @app.put("/api/aquariums/{aquarium_id}/visited")
 def toggle_visited(aquarium_id: int, body: VisitToggleIn, request: Request):
