@@ -8,6 +8,7 @@ let state = {
   lastMapKey: "",
   regionOpen: {},
 };
+state.loggedIn = false;
 const PREF_ORDER = [
   "北海道",
   "青森県","岩手県","宮城県","秋田県","山形県","福島県",
@@ -142,14 +143,20 @@ function renderCard(it) {
   const btn = document.createElement("button");
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "行った✅（解除）" : "行ったにする";
-  btn.onclick = async () => {
-    try {
-      await apiPut(`/api/aquariums/${it.id}/visited`, { visited: !it.visited });
-      showStamp(card, it.visited ? "↩️" : "✅");
-      await load(); // 再取得
-    } catch (e) {
-      alert("APIエラー: " + e.message);
-    }
+  if (!state.loggedIn) {
+    btn.disabled = true;
+    btn.title = "ログインすると押せます";
+  } else {
+    btn.onclick = async () => {
+      try {
+        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: !it.visited });
+        showStamp(card, it.visited ? "↩️" : "✅");
+        await load(); // 再取得
+      } catch (e) {
+        alert("APIエラー: " + e.message);
+      }
+    };
+  }
   };
   row.appendChild(btn);
 
@@ -260,34 +267,37 @@ function render() {
 
 
 async function load() {
+  const items = await apiGet("/api/aquariums");
 
-  const [items, stats] = await Promise.all([
-    apiGet("/api/aquariums"),
-    apiGet("/api/stats"),
-  ]);
+  let stats = { visited: 0, total: items.length };
+
+  if (state.loggedIn) {
+    try {
+      stats = await apiGet("/api/stats");
+    } catch (e) {
+      console.warn("stats取得失敗:", e);
+    }
+  }
 
   state.items = items;
-
-  // ★追加：都道府県セレクトを items から生成
   setPrefOptions(items);
   initMap();
-  // stats -> progress
-const visited = Number(stats.visited || 0);
-const total = Math.max(1, Number(stats.total || 0));
-const pct = Math.round((visited / total) * 100);
 
-const statsTextEl = document.getElementById("statsText");
-const statsPctEl = document.getElementById("statsPct");
-const barEl = document.getElementById("progressBar");
+  const visited = Number(stats.visited || 0);
+  const total = Math.max(1, Number(stats.total || 0));
+  const pct = Math.round((visited / total) * 100);
 
-if (statsTextEl && barEl) {
-  statsTextEl.textContent = `訪問: ${visited} / ${stats.total}`;
-  if (statsPctEl) statsPctEl.textContent = `${pct}%`;
-  barEl.style.width = `${pct}%`;
-} else {
-  // フォールバック（HTML未更新でも壊れない）
-  $("stats").textContent = `訪問: ${visited} / ${stats.total}`;
-}
+  const statsTextEl = document.getElementById("statsText");
+  const statsPctEl = document.getElementById("statsPct");
+  const barEl = document.getElementById("progressBar");
+
+  if (statsTextEl && barEl) {
+    statsTextEl.textContent = `訪問: ${visited} / ${total}`;
+    if (statsPctEl) statsPctEl.textContent = `${pct}%`;
+    barEl.style.width = `${pct}%`;
+  } else {
+    $("stats").textContent = `訪問: ${visited} / ${total}`;
+  }
 
   render();
 }
@@ -381,13 +391,13 @@ wireUI();
   setLoginStatus(me);
 
   // 未ログインならロードしない（右上ログインから /login へ）
-  if (!me.logged_in) return;
-
-  // APIキーが必要な設計ならここでチェック（不要なら消してOK）
-  // if (typeof getKey === "function" && !getKey()) return;
-
-  load().catch((e) => alert("APIエラー: " + e.message));
-})();
+  (async () => {
+    const me = await apiMe();
+    state.loggedIn = !!(me && me.logged_in);
+    setLoginStatus(me);
+  
+    load().catch((e) => alert("APIエラー: " + e.message));
+  })();
 
 
 function initMap() {
