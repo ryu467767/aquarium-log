@@ -9,6 +9,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from authlib.integrations.starlette_client import OAuth
 from fastapi import UploadFile, File
 from fastapi.staticfiles import StaticFiles
@@ -21,6 +22,7 @@ from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
 from uuid import uuid4
+
 
 
 
@@ -86,6 +88,33 @@ middleware = [
 
 
 app = FastAPI(middleware=middleware)
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response: Response = await call_next(request)
+
+        # クリックジャッキング防止
+        response.headers["X-Frame-Options"] = "DENY"
+        # MIME sniffing防止
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        # 参照元の漏れを減らす
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+        # HTTPS運用なら有効（Renderは基本HTTPS）
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+
+        # 余計な機能を制限（必要なら後で緩める）
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+        return response
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.environ["SESSION_SECRET"],
+    https_only=True,          # HTTPSでしかcookieを送らない
+    same_site="lax",          # CSRF耐性を上げる
+    max_age=60 * 60 * 24 * 30 # 30日保持（好きに変更OK）
+)
 
 # ===== photo uploads =====
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/data/uploads")
@@ -330,6 +359,27 @@ async def upload_photo(aquarium_id: int, request: Request, file: UploadFile = Fi
     abs_path = os.path.join(abs_dir, fname)
 
     data = await file.read()
+    # ===== 5MB 制限 =====
+    MAX_BYTES = 5 * 1024 * 1024
+    if len(data) > MAX_BYTES:
+        raise HTTPException(413, "File too large (max 5MB)")
+
+    # ===== 画像マジックバイトチェック =====
+    def looks_like_image(b: bytes) -> bool:
+        # JPEG
+        if b.startswith(b"\xff\xd8\xff"):
+            return True
+        # PNG
+        if b.startswith(b"\x89PNG\r\n\x1a\n"):
+            return True
+        # WEBP
+        if b.startswith(b"RIFF") and b[8:12] == b"WEBP":
+            return True
+        return False
+
+    if not looks_like_image(data):
+        raise HTTPException(400, "Invalid image file")
+        
     with open(abs_path, "wb") as f:
         f.write(data)
 
