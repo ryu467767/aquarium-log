@@ -10,15 +10,17 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from authlib.integrations.starlette_client import OAuth
+from fastapi import UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlmodel import select
 from .db import init_db, session
-from .models import Aquarium, Visit
+from .models import Aquarium, Visit, Photo
 from .crud import list_aquariums, set_visited, set_note
 from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
+from uuid import uuid4
 
 
 
@@ -84,6 +86,13 @@ middleware = [
 
 
 app = FastAPI(middleware=middleware)
+
+# ===== photo uploads =====
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/data/uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# /uploads/... で画像を返せるようにする
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 BASE_DIR = Path(__file__).resolve().parent
 CANDIDATES = [
@@ -281,11 +290,56 @@ def update_note(aquarium_id: int, body: NoteIn, request: Request):
         v = set_note(db, uid, aquarium_id, body.note)
         return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
 
-
-# 静的フロント
-app.mount("/", StaticFiles(directory="web", html=True), name="web")
+# 静的フロント（webディレクトリを確実に参照）
+app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap():
     path = WEB_DIR / "sitemap.xml"
     return FileResponse(path, media_type="application/xml")
+
+@app.get("/api/aquariums/{aquarium_id}/photos")
+def list_photos(aquarium_id: int, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        rows = db.exec(
+            select(Photo)
+            .where(Photo.user_id == uid, Photo.aquarium_id == aquarium_id)
+            .order_by(Photo.created_at.desc())
+        ).all()
+        return [{"id": p.id, "url": "/uploads/" + p.path, "created_at": p.created_at.isoformat()} for p in rows]
+
+@app.post("/api/aquariums/{aquarium_id}/photos")
+async def upload_photo(aquarium_id: int, request: Request, file: UploadFile = File(...)):
+    uid = get_user_id(request)
+
+    # 画像っぽいものだけ
+    if not (file.content_type or "").startswith("image/"):
+        raise HTTPException(400, "File must be an image")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in (".jpg", ".jpeg", ".png", ".webp"):
+        ext = ".jpg"
+
+    # 保存先：/data/uploads/{user_id}/{aquarium_id}/uuid.ext
+    safe_uid = uid.replace(":", "_")
+    rel_dir = os.path.join(safe_uid, str(aquarium_id))
+    abs_dir = os.path.join(UPLOAD_DIR, rel_dir)
+    os.makedirs(abs_dir, exist_ok=True)
+
+    fname = f"{uuid4().hex}{ext}"
+    abs_path = os.path.join(abs_dir, fname)
+
+    data = await file.read()
+    with open(abs_path, "wb") as f:
+        f.write(data)
+
+    rel_path = os.path.join(rel_dir, fname).replace("\\", "/")
+
+    with session() as db:
+        p = Photo(user_id=uid, aquarium_id=aquarium_id, path=rel_path)
+        db.add(p)
+        db.commit()
+        db.refresh(p)
+
+    return {"id": p.id, "url": "/uploads/" + p.path, "created_at": p.created_at.isoformat()}

@@ -588,6 +588,32 @@ header {
   .chips-row .chip {
     width: 100%;
   }
+    /* 右上ログイン表示が被るので、下に落とす */
+    .userbox{
+      position: static;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+  
+    /* 検索行（検索/入力/ボタン）を縦積みにする */
+    .row{
+      grid-template-columns: 1fr;
+    }
+    .row > span{ font-size: 12px; opacity: .85; }
+    .row input, .row button{ width: 100%; }
+  
+    /* 都道府県セレクトも幅100%に */
+    #pref-filter{ width: 100%; }
+  
+    /* 並び替え行も詰める */
+    .sortBar{ justify-content: flex-start; padding: 0 12px; }
+    .row-compact{ width: 100%; justify-content: space-between; }
+  
+    /* 一覧コンテナの余白を少し減らす */
+    #list{
+      padding: 12px;
+      margin: 12px 12px 28px;
+    }
 }
 
 /* ===== Visit animation ===== */
@@ -611,4 +637,57 @@ header {
 /* カード内に絶対配置できるように */
 .card {
   position: relative;
+}
+
+.link-title {
+  text-decoration: none;
+  color: #1a73e8;
+}
+
+.link-title:hover {
+  text-decoration: underline;
+}
+
+/* ===== Photos ===== */
+.photos{
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.photos-title{
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.photo-input{
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.thumbs{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.thumb{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.photos-guest{
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* スマホは3列 */
+@media (max-width: 768px) {
+  .thumbs{ grid-template-columns: repeat(3, 1fr); }
 }

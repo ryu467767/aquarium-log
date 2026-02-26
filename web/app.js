@@ -190,6 +190,77 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     }
   };
   card.appendChild(note);
+    // ===== Photos UI (logged in only) =====
+    const photosWrap = document.createElement("div");
+    photosWrap.className = "photos";
+  
+    const photosTitle = document.createElement("div");
+    photosTitle.className = "photos-title";
+    photosTitle.textContent = "写真";
+    photosWrap.appendChild(photosTitle);
+  
+    const thumbs = document.createElement("div");
+    thumbs.className = "thumbs";
+    photosWrap.appendChild(thumbs);
+  
+    async function refreshPhotos() {
+      thumbs.innerHTML = "";
+      if (!state.loggedIn) {
+        const msg = document.createElement("div");
+        msg.className = "photos-guest";
+        msg.textContent = "ログインすると写真を追加できます";
+        thumbs.appendChild(msg);
+        return;
+      }
+  
+      try {
+        const list = await apiGet(`/api/aquariums/${it.id}/photos`);
+        for (const p of list) {
+          const img = document.createElement("img");
+          img.className = "thumb";
+          img.src = p.url;
+          img.loading = "lazy";
+          thumbs.appendChild(img);
+        }
+      } catch (e) {
+        console.warn("photos fetch failed:", e);
+      }
+    }
+  
+    // アップロード input
+    const up = document.createElement("input");
+    up.type = "file";
+    up.accept = "image/*";
+    up.className = "photo-input";
+    up.disabled = !state.loggedIn;
+  
+    up.onchange = async () => {
+      if (!state.loggedIn) return;
+      const file = up.files && up.files[0];
+      if (!file) return;
+  
+      const fd = new FormData();
+      fd.append("file", file);
+  
+      try {
+        const res = await fetch(`/api/aquariums/${it.id}/photos`, {
+          method: "POST",
+          body: fd,
+          credentials: "same-origin",
+        });
+        if (!res.ok) throw new Error(await res.text());
+        up.value = ""; // 同じファイルをもう一回選べるように
+        await refreshPhotos();
+      } catch (e) {
+        alert("写真アップロード失敗: " + e.message);
+      }
+    };
+  
+    photosWrap.appendChild(up);
+    card.appendChild(photosWrap);
+  
+    // 初回表示
+    refreshPhotos();
 
   return card;
 }
