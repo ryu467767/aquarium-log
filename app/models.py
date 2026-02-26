@@ -35,3 +35,27 @@ class Visit(SQLModel, table=True):
     note: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+class Photo(SQLModel, table=True):
+    __tablename__ = "photos"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # ログインユーザー単位で写真を紐付け
+    user_id: str = Field(index=True)
+
+    # aquariums テーブルの id に紐付け
+    aquarium_id: int = Field(index=True, foreign_key="aquariums.id")
+
+    # /uploads で配信する相対パスを保存
+    path: str
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    __tablename__ = "photos"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: str = Field(index=True)
+    aquarium_id: int = Field(index=True, foreign_key="aquariums.id")
+
+    # /uploads から配信する「相対パス」を保存する
+    path: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
