@@ -738,3 +738,23 @@ header {
   cursor: pointer;
 }
 .thumb-del:active{ transform: translateY(1px); }
+
+/* ===== Card separation (esp. mobile) ===== */
+.card{
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  background: #fff;
+}
+
+@media (max-width: 768px){
+  #list{ padding: 12px; }
+
+  /* カード間の余白を増やして区切りを明確に */
+  .card{
+    margin-bottom: 14px;
+  }
+
+  /* タップしやすさ＆見た目の密度改善 */
+  .card h3{ line-height: 1.2; }
+  .card .note{ margin-top: 10px; }
+}
