@@ -216,11 +216,39 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
       try {
         const list = await apiGet(`/api/aquariums/${it.id}/photos`);
         for (const p of list) {
+          const item = document.createElement("div");
+          item.className = "thumb-item";
+        
           const img = document.createElement("img");
           img.className = "thumb";
           img.src = p.url;
           img.loading = "lazy";
-          thumbs.appendChild(img);
+          item.appendChild(img);
+        
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "thumb-del";
+          del.textContent = "×";
+          del.title = "削除";
+          del.onclick = async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!confirm("この写真を削除しますか？")) return;
+        
+            try {
+              const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+              });
+              if (!res.ok) throw new Error(await res.text());
+              await refreshPhotos();
+            } catch (err) {
+              alert("削除に失敗: " + err.message);
+            }
+          };
+          item.appendChild(del);
+        
+          thumbs.appendChild(item);
         }
       } catch (e) {
         console.warn("photos fetch failed:", e);

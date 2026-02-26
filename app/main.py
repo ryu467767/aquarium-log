@@ -343,5 +343,32 @@ async def upload_photo(aquarium_id: int, request: Request, file: UploadFile = Fi
 
     return {"id": p.id, "url": "/uploads/" + p.path, "created_at": p.created_at.isoformat()}
 
+@app.delete("/api/aquariums/{aquarium_id}/photos/{photo_id}")
+def delete_photo(aquarium_id: int, photo_id: int, request: Request):
+    uid = get_user_id(request)
+
+    with session() as db:
+        p = db.get(Photo, photo_id)
+        if not p:
+            raise HTTPException(404, "Photo not found")
+
+        # 自分の写真 & 対象水族館の写真だけ消せる
+        if p.user_id != uid or p.aquarium_id != aquarium_id:
+            raise HTTPException(403, "Forbidden")
+
+        # 実ファイル削除
+        abs_path = os.path.join(UPLOAD_DIR, p.path)
+        try:
+            if os.path.exists(abs_path):
+                os.remove(abs_path)
+        except Exception:
+            # ファイルが消せなくてもDBは消す（MVPとして）
+            pass
+
+        db.delete(p)
+        db.commit()
+
+    return {"ok": True}
+
     # 静的フロント（webディレクトリを確実に参照）
 app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")

@@ -718,3 +718,23 @@ header {
   font-size: 12px;
   opacity: .7;
 }
+
+.thumb-item{
+  position: relative;
+}
+
+.thumb-del{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-weight: 900;
+  line-height: 26px;
+  cursor: pointer;
+}
+.thumb-del:active{ transform: translateY(1px); }
