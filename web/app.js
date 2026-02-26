@@ -194,11 +194,6 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     const photosWrap = document.createElement("div");
     photosWrap.className = "photos";
   
-    const photosTitle = document.createElement("div");
-    photosTitle.className = "photos-title";
-    photosTitle.textContent = "写真";
-    photosWrap.appendChild(photosTitle);
-  
     const thumbs = document.createElement("div");
     thumbs.className = "thumbs";
     photosWrap.appendChild(thumbs);
