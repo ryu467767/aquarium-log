@@ -227,36 +227,50 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
       }
     }
   
-    // アップロード input
-    const up = document.createElement("input");
-    up.type = "file";
-    up.accept = "image/*";
-    up.className = "photo-input";
-    up.disabled = !state.loggedIn;
-  
-    up.onchange = async () => {
-      if (!state.loggedIn) return;
-      const file = up.files && up.files[0];
-      if (!file) return;
-  
-      const fd = new FormData();
-      fd.append("file", file);
-  
-      try {
-        const res = await fetch(`/api/aquariums/${it.id}/photos`, {
-          method: "POST",
-          body: fd,
-          credentials: "same-origin",
-        });
-        if (!res.ok) throw new Error(await res.text());
-        up.value = ""; // 同じファイルをもう一回選べるように
-        await refreshPhotos();
-      } catch (e) {
-        alert("写真アップロード失敗: " + e.message);
-      }
-    };
-  
-    photosWrap.appendChild(up);
+  // アップロード input（非表示）
+  const up = document.createElement("input");
+  up.type = "file";
+  up.accept = "image/*";
+  up.className = "photo-input-hidden";
+  up.disabled = !state.loggedIn;
+
+  // 見た目用ボタン
+  const pickBtn = document.createElement("button");
+  pickBtn.type = "button";
+  pickBtn.className = "photo-btn";
+  pickBtn.textContent = state.loggedIn ? "写真を追加" : "ログインして写真を追加";
+  pickBtn.disabled = !state.loggedIn;
+  pickBtn.onclick = () => up.click();
+
+  const hint = document.createElement("div");
+  hint.className = "photo-hint";
+  hint.textContent = "JPG / PNG / WEBP";
+
+  up.onchange = async () => {
+    if (!state.loggedIn) return;
+    const file = up.files && up.files[0];
+    if (!file) return;
+
+    const fd = new FormData();
+    fd.append("file", file);
+
+    try {
+      const res = await fetch(`/api/aquariums/${it.id}/photos`, {
+        method: "POST",
+        body: fd,
+        credentials: "same-origin",
+      });
+      if (!res.ok) throw new Error(await res.text());
+      up.value = "";
+      await refreshPhotos();
+    } catch (e) {
+      alert("写真アップロード失敗: " + e.message);
+    }
+  };
+
+  photosWrap.appendChild(pickBtn);
+  photosWrap.appendChild(hint);
+  photosWrap.appendChild(up);
     card.appendChild(photosWrap);
   
     // 初回表示

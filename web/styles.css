@@ -691,3 +691,30 @@ header {
 @media (max-width: 768px) {
   .thumbs{ grid-template-columns: repeat(3, 1fr); }
 }
+
+.photo-input-hidden{
+  display:none;
+}
+
+.photo-btn{
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #0077b6;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .05s ease, opacity .2s ease;
+}
+.photo-btn:active{ transform: translateY(1px); }
+.photo-btn:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.photo-hint{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .7;
+}

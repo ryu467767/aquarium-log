@@ -290,8 +290,7 @@ def update_note(aquarium_id: int, body: NoteIn, request: Request):
         v = set_note(db, uid, aquarium_id, body.note)
         return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
 
-# 静的フロント（webディレクトリを確実に参照）
-app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
+
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap():
@@ -343,3 +342,6 @@ async def upload_photo(aquarium_id: int, request: Request, file: UploadFile = Fi
         db.refresh(p)
 
     return {"id": p.id, "url": "/uploads/" + p.path, "created_at": p.created_at.isoformat()}
+
+    # 静的フロント（webディレクトリを確実に参照）
+app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
