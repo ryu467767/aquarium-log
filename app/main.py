@@ -78,26 +78,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 
-from starlette.middleware import Middleware
-
-# ミドルウェア順が命：
-# Session → Auth → CSRF → RateLimit
-# （SecurityHeaders はどこでもいいけど、外側に置く）
-middleware = [
-    Middleware(RateLimitMiddleware),
-    Middleware(CSRFMiddleware),
-    Middleware(AuthMiddleware),
-    Middleware(SecurityHeadersMiddleware),
-    Middleware(
-        SessionMiddleware,
-        secret_key=SESSION_SECRET,
-        same_site="lax",
-        https_only=BASE_URL.startswith("https://"),
-        max_age=60 * 60 * 24 * 30,
-    ),
-]
-
-app = FastAPI(middleware=middleware)
+app = FastAPI()
 
 # ===== Rate limit (in-memory) =====
 _rl = {}  # key -> deque[timestamps]
@@ -206,6 +187,22 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
         return response
+
+# ===== middleware order (IMPORTANT) =====
+# 実行順（外→内）を  SecurityHeaders → Session → Auth → CSRF → RateLimit  にする
+# add_middleware は「後から追加したものほど外側」になるので、逆順で追加する
+
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(CSRFMiddleware)
+app.add_middleware(AuthMiddleware)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    same_site="lax",
+    https_only=BASE_URL.startswith("https://"),
+    max_age=60 * 60 * 24 * 30,
+)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # ===== photo uploads =====
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/data/uploads")
