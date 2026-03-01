@@ -324,7 +324,21 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
   pickBtn.className = "photo-btn";
   pickBtn.textContent = state.loggedIn ? "写真を追加" : "ログインして写真を追加";
   pickBtn.disabled = !state.loggedIn;
-  pickBtn.onclick = () => up.click();
+  pickBtn.onclick = () => {
+    if (!state.loggedIn) {
+      location.href = "/auth/login";
+      return;
+    }
+  
+    // ★初回だけ写真一覧を取得（大量リクエスト防止）
+    if (!photosWrap.dataset.loaded) {
+      photosWrap.dataset.loaded = "1";
+      refreshPhotos();
+    }
+  
+    // そのままファイル選択
+    up.click();
+  };
 
   const hint = document.createElement("div");
   hint.className = "photo-hint";
@@ -358,8 +372,6 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
   photosWrap.appendChild(up);
     card.appendChild(photosWrap);
   
-    // 初回表示
-    refreshPhotos();
 
   return card;
 }

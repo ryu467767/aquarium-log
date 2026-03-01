@@ -154,6 +154,9 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 
         path = request.url.path
 
+        if path == "/api/csrf":
+            return await call_next(request)
+
         # 公開APIはCSRF不要（未ログインで使う前提）
         if path.startswith("/api/public/"):
             return await call_next(request)
