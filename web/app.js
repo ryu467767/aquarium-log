@@ -528,6 +528,23 @@ function setLoginStatus(me) {
   statusEl.textContent = `${me.name || me.email || me.user_id} でログイン中`;
   loginBtn.style.display = "none";
   logoutBtn.style.display = "";
+
+  updateLoginCta(me);
+}
+
+function updateLoginCta(me) {
+  const cta = document.getElementById("loginCta");
+  const btn = document.getElementById("loginCtaBtn");
+  if (!cta || !btn) return;
+
+  const loggedIn = !!(me && me.logged_in);
+
+  // 未ログインなら表示、ログイン中なら非表示
+  cta.style.display = loggedIn ? "none" : "";
+
+  btn.onclick = () => {
+    location.href = "/login";
+  };
 }
 
 

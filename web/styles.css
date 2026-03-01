@@ -740,3 +740,29 @@ header {
   .card h3{ line-height: 1.2; }
   .card .note{ margin-top: 10px; }
 }
+
+/* ===== Login CTA ===== */
+.login-cta {
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 14px;
+  padding: 14px 14px;
+  margin: 12px 0 10px;
+  background: rgba(0,0,0,0.03);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-cta__text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.login-cta__btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
