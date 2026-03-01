@@ -63,8 +63,22 @@ async function apiPut(path, body) {
     },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+
+  const text = await res.text(); // 先に本文を読む
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${text || "(empty)"}`);
+  }
+
+  // 空レスポ(204など)でも落ちないように
+  if (!text) return null;
+
+  // JSONじゃない場合もあるのでtry
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 
@@ -150,6 +164,22 @@ function renderCard(it) {
   const btn = document.createElement("button");
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "訪問済✅（解除）" : "訪問済にする";
+
+  // ③-1) VISITEDバッジ（右上のstamp）をUIに反映
+let stampEl = card.querySelector(".stamp");
+
+if (newVisited) {
+  // 訪問済にする：stampが無ければ作る
+  if (!stampEl) {
+    stampEl = document.createElement("div");
+    stampEl.className = "stamp";
+    stampEl.textContent = "VISITED";
+    card.appendChild(stampEl);
+  }
+} else {
+  // 未訪問に戻す：stampがあれば消す
+  if (stampEl) stampEl.remove();
+}
 
   if (!state.loggedIn) {
     btn.disabled = true;
