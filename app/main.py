@@ -80,17 +80,22 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
 from starlette.middleware import Middleware
 
+# ミドルウェア順が命：
+# Session → Auth → CSRF → RateLimit
+# （SecurityHeaders はどこでもいいけど、外側に置く）
 middleware = [
+    Middleware(RateLimitMiddleware),
+    Middleware(CSRFMiddleware),
+    Middleware(AuthMiddleware),
+    Middleware(SecurityHeadersMiddleware),
     Middleware(
         SessionMiddleware,
         secret_key=SESSION_SECRET,
         same_site="lax",
         https_only=BASE_URL.startswith("https://"),
-        max_age=60 * 60 * 24 * 30,  # ★追加：30日
+        max_age=60 * 60 * 24 * 30,
     ),
-    Middleware(AuthMiddleware),
 ]
-
 
 app = FastAPI(middleware=middleware)
 
@@ -133,8 +138,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 return JSONResponse({"detail": "Too Many Requests"}, status_code=429)
 
         return await call_next(request)
-
-app.add_middleware(RateLimitMiddleware)
 
 # ===== CSRF =====
 CSRF_KEY = "csrf_token"
@@ -179,8 +182,6 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 
         return await call_next(request)
 
-app.add_middleware(CSRFMiddleware)
-
 @app.get("/api/csrf")
 def csrf_token(request: Request):
     # フロントが最初に叩いて token を受け取る
@@ -205,8 +206,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
         return response
-
-app.add_middleware(SecurityHeadersMiddleware)
 
 # ===== photo uploads =====
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/data/uploads")
