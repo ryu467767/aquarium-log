@@ -3,12 +3,15 @@ import asyncio
 import httpx
 import sqlite3
 import traceback
+import secrets
+import time
 
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 from starlette.responses import Response
 from authlib.integrations.starlette_client import OAuth
 from fastapi import UploadFile, File
@@ -22,6 +25,7 @@ from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
 from uuid import uuid4
+from collections import deque
 
 
 
@@ -88,6 +92,96 @@ middleware = [
 
 
 app = FastAPI(middleware=middleware)
+
+# ===== Rate limit (in-memory) =====
+_rl = {}  # key -> deque[timestamps]
+
+def _hit(key: str, limit: int, window_sec: int) -> bool:
+    now = time.time()
+    q = _rl.get(key)
+    if q is None:
+        q = deque()
+        _rl[key] = q
+    # 古いログを捨てる
+    cutoff = now - window_sec
+    while q and q[0] < cutoff:
+        q.popleft()
+    if len(q) >= limit:
+        return False
+    q.append(now)
+    return True
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+
+        # 対象を絞る（APIと認証のみ）
+        if path.startswith("/api/") or path.startswith("/auth/"):
+            ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "unknown")
+
+            # ルール：写真アップロードは厳しめ
+            if request.method == "POST" and "/photos" in path:
+                ok = _hit(f"up:{ip}", limit=10, window_sec=60)  # 1分10回
+            # 認証も厳しめ
+            elif path.startswith("/auth/"):
+                ok = _hit(f"auth:{ip}", limit=30, window_sec=60) # 1分30回
+            else:
+                ok = _hit(f"api:{ip}", limit=120, window_sec=60) # 1分120回
+
+            if not ok:
+                return JSONResponse({"detail": "Too Many Requests"}, status_code=429)
+
+        return await call_next(request)
+
+app.add_middleware(RateLimitMiddleware)
+
+# ===== CSRF =====
+CSRF_KEY = "csrf_token"
+
+def ensure_csrf_token(request: Request) -> str:
+    tok = request.session.get(CSRF_KEY)
+    if not tok:
+        tok = secrets.token_urlsafe(32)
+        request.session[CSRF_KEY] = tok
+    return tok
+
+class CSRFMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # API以外・GETなどはスルー
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return await call_next(request)
+
+        path = request.url.path
+
+        # 公開APIはCSRF不要（未ログインで使う前提）
+        if path.startswith("/api/public/"):
+            return await call_next(request)
+
+        # auth系（コールバック等）もCSRF不要
+        if path.startswith("/auth/"):
+            return await call_next(request)
+
+        # /api/ の更新系だけCSRF要求
+        if path.startswith("/api/"):
+            # ログインしてないなら、そもそも更新系は拒否（保険）
+            uid = request.session.get("user_id")  # ※あなたの実装に合わせてキーが違うなら後で直す
+            if not uid:
+                return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+
+            expected = ensure_csrf_token(request)
+            got = request.headers.get("X-CSRF-Token") or ""
+            if got != expected:
+                return JSONResponse({"detail": "CSRF token invalid"}, status_code=403)
+
+        return await call_next(request)
+
+app.add_middleware(CSRFMiddleware)
+
+@app.get("/api/csrf")
+def csrf_token(request: Request):
+    # フロントが最初に叩いて token を受け取る
+    tok = ensure_csrf_token(request)
+    return {"token": tok}
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):

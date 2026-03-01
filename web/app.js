@@ -234,6 +234,7 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
               const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
                 method: "DELETE",
                 credentials: "same-origin",
+                headers: { "X-CSRF-Token": state.csrfToken },
               });
               if (!res.ok) throw new Error(await res.text());
               await refreshPhotos();
@@ -282,6 +283,7 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
         method: "POST",
         body: fd,
         credentials: "same-origin",
+        headers: { "X-CSRF-Token": state.csrfToken },
       });
       if (!res.ok) throw new Error(await res.text());
       up.value = "";
@@ -379,6 +381,7 @@ function render() {
   updateMap(items, { fit: shouldFit });
 }
 
+await initCsrf();
 
 async function load() {
   const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
@@ -414,6 +417,18 @@ async function load() {
   }
 
   render();
+}
+
+state.csrfToken = "";
+
+async function initCsrf() {
+  try {
+    const res = await fetch("/api/csrf", { credentials: "same-origin" });
+    const j = await res.json();
+    state.csrfToken = j.token || "";
+  } catch (e) {
+    console.warn("csrf init failed", e);
+  }
 }
 
 async function apiMe() {
