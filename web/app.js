@@ -518,6 +518,9 @@ function setLoginStatus(me) {
 
   if (!statusEl || !loginBtn || !logoutBtn) return;
 
+  // ★CTAも毎回ここで同期
+  updateLoginCta(me);
+
   if (!me || !me.logged_in) {
     statusEl.textContent = "";
     loginBtn.style.display = "";
@@ -528,8 +531,6 @@ function setLoginStatus(me) {
   statusEl.textContent = `${me.name || me.email || me.user_id} でログイン中`;
   loginBtn.style.display = "none";
   logoutBtn.style.display = "";
-
-  updateLoginCta(me);
 }
 
 function updateLoginCta(me) {
