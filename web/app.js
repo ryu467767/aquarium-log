@@ -85,14 +85,6 @@ function passesFilter(item) {
   return true;
 }
 
-function showStamp(el, text = "✅") {
-  if (!el) return;
-  const s = document.createElement("div");
-  s.className = "stamp-pop";
-  s.textContent = text;
-  el.appendChild(s);
-  setTimeout(() => s.remove(), 900);
-}
 
 function setPrefOptions(items) {
   const sel = $("pref-filter");
@@ -165,9 +157,17 @@ function renderCard(it) {
   } else {
     btn.onclick = async () => {
       try {
-        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: !it.visited });
-        showStamp(card, it.visited ? "↩️" : "✅");
-        await load(); // 再取得
+        // ① 先にUIを即変更（楽観的更新）
+        const newVisited = !it.visited;
+        it.visited = newVisited;
+    
+        card.classList.toggle("is-visited", newVisited);
+        btn.className = newVisited ? "btn visited" : "btn";
+        btn.textContent = newVisited ? "訪問済✅（解除）" : "訪問済にする";
+    
+        // ② APIは裏で送る
+        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
+    
       } catch (e) {
         alert("APIエラー: " + e.message);
       }
