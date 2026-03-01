@@ -171,50 +171,43 @@ function renderCard(it) {
     btn.title = "ログインすると押せます";
   } else {
     btn.onclick = async () => {
-      try {
-        const newVisited = !it.visited;
-        it.visited = newVisited;
+      const newVisited = !it.visited;
     
-        card.classList.toggle("is-visited", newVisited);
-        btn.className = newVisited ? "btn visited" : "btn";
-        btn.textContent = newVisited ? "訪問済✅（解除）" : "訪問済にする";
+      // ① 先にUIを即変更
+      it.visited = newVisited;
+      card.classList.toggle("is-visited", newVisited);
+      btn.className = newVisited ? "btn visited" : "btn";
+      btn.textContent = newVisited ? "訪問済✅（解除）" : "訪問済にする";
     
-        // ★ここに入れる
-        let stampEl = card.querySelector(".stamp");
-        if (newVisited) {
-          if (!stampEl) {
-            stampEl = document.createElement("div");
-            stampEl.className = "stamp";
-            stampEl.textContent = "VISITED";
-            card.appendChild(stampEl);
-          }
-        } else {
-          if (stampEl) stampEl.remove();
+      // ② VISITEDバッジ（stamp）も即同期
+      let stampEl = card.querySelector(".stamp");
+      if (newVisited) {
+        if (!stampEl) {
+          stampEl = document.createElement("div");
+          stampEl.className = "stamp";
+          stampEl.textContent = "VISITED";
+          card.appendChild(stampEl);
         }
-    
-        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
-    
-      } catch (e) {
-        alert("APIエラー: " + e.message);
+      } else {
+        if (stampEl) stampEl.remove();
       }
-    };
     
-    
-      // ③ 連打防止（通信中だけ無効）
+      // ③ 連打防止
       btn.disabled = true;
     
       try {
+        // ④ API反映
         await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
       } catch (e) {
-        // 失敗したら元に戻す（整合性維持）
+        // ⑤ 失敗したら元に戻す
         it.visited = !newVisited;
         card.classList.toggle("is-visited", !newVisited);
         btn.className = !newVisited ? "btn visited" : "btn";
         btn.textContent = !newVisited ? "訪問済✅（解除）" : "訪問済にする";
     
-        // stampも元に戻す
         let stampEl2 = card.querySelector(".stamp");
         if (!newVisited) {
+          // 元に戻すと訪問済になるのでstamp必要
           if (!stampEl2) {
             stampEl2 = document.createElement("div");
             stampEl2.className = "stamp";
@@ -222,6 +215,7 @@ function renderCard(it) {
             card.appendChild(stampEl2);
           }
         } else {
+          // 元に戻すと未訪問なのでstamp不要
           if (stampEl2) stampEl2.remove();
         }
     
