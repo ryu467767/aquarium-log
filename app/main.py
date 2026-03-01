@@ -43,7 +43,7 @@ def require_key(request: Request):
         return
 
     # 認証不要API
-    if request.url.path in ("/api/health", "/api/me", "/api/public/aquariums"):
+    if request.url.path in ("/api/health", "/api/me", "/api/public/aquariums", "/api/csrf"):
         return
 
     # Googleログイン済みならOK
@@ -86,6 +86,7 @@ middleware = [
         secret_key=SESSION_SECRET,
         same_site="lax",
         https_only=BASE_URL.startswith("https://"),
+        max_age=60 * 60 * 24 * 30,  # ★追加：30日
     ),
     Middleware(AuthMiddleware),
 ]
@@ -202,13 +203,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         return response
 
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=os.environ["SESSION_SECRET"],
-    https_only=True,          # HTTPSでしかcookieを送らない
-    same_site="lax",          # CSRF耐性を上げる
-    max_age=60 * 60 * 24 * 30 # 30日保持（好きに変更OK）
-)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # ===== photo uploads =====
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/data/uploads")
