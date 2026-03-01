@@ -165,21 +165,6 @@ function renderCard(it) {
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "訪問済✅（解除）" : "訪問済にする";
 
-  // ③-1) VISITEDバッジ（右上のstamp）をUIに反映
-let stampEl = card.querySelector(".stamp");
-
-if (newVisited) {
-  // 訪問済にする：stampが無ければ作る
-  if (!stampEl) {
-    stampEl = document.createElement("div");
-    stampEl.className = "stamp";
-    stampEl.textContent = "VISITED";
-    card.appendChild(stampEl);
-  }
-} else {
-  // 未訪問に戻す：stampがあれば消す
-  if (stampEl) stampEl.remove();
-}
 
   if (!state.loggedIn) {
     btn.disabled = true;
@@ -187,7 +172,6 @@ if (newVisited) {
   } else {
     btn.onclick = async () => {
       try {
-        // ① 先にUIを即変更（楽観的更新）
         const newVisited = !it.visited;
         it.visited = newVisited;
     
@@ -195,11 +179,55 @@ if (newVisited) {
         btn.className = newVisited ? "btn visited" : "btn";
         btn.textContent = newVisited ? "訪問済✅（解除）" : "訪問済にする";
     
-        // ② APIは裏で送る
+        // ★ここに入れる
+        let stampEl = card.querySelector(".stamp");
+        if (newVisited) {
+          if (!stampEl) {
+            stampEl = document.createElement("div");
+            stampEl.className = "stamp";
+            stampEl.textContent = "VISITED";
+            card.appendChild(stampEl);
+          }
+        } else {
+          if (stampEl) stampEl.remove();
+        }
+    
         await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
     
       } catch (e) {
         alert("APIエラー: " + e.message);
+      }
+    };
+    
+    
+      // ③ 連打防止（通信中だけ無効）
+      btn.disabled = true;
+    
+      try {
+        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
+      } catch (e) {
+        // 失敗したら元に戻す（整合性維持）
+        it.visited = !newVisited;
+        card.classList.toggle("is-visited", !newVisited);
+        btn.className = !newVisited ? "btn visited" : "btn";
+        btn.textContent = !newVisited ? "訪問済✅（解除）" : "訪問済にする";
+    
+        // stampも元に戻す
+        let stampEl2 = card.querySelector(".stamp");
+        if (!newVisited) {
+          if (!stampEl2) {
+            stampEl2 = document.createElement("div");
+            stampEl2.className = "stamp";
+            stampEl2.textContent = "VISITED";
+            card.appendChild(stampEl2);
+          }
+        } else {
+          if (stampEl2) stampEl2.remove();
+        }
+    
+        alert("APIエラー: " + e.message);
+      } finally {
+        btn.disabled = false;
       }
     };
   }
