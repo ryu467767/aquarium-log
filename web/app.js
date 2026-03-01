@@ -57,7 +57,10 @@ async function apiPut(path, body) {
   const res = await fetch(path, {
     method: "PUT",
     credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": state.csrfToken || "",
+    },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(await res.text());
@@ -381,8 +384,6 @@ function render() {
   updateMap(items, { fit: shouldFit });
 }
 
-await initCsrf();
-
 async function load() {
   const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
 
@@ -516,6 +517,9 @@ if (logoutBtn) logoutBtn.onclick = async () => {
 wireUI();
 
 (async () => {
+  // まずCSRFトークン取得（ログイン前でもOK）
+  await initCsrf();
+
   const me = await apiMe();
   state.loggedIn = !!(me && me.logged_in);
   setLoginStatus(me);
