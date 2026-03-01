@@ -168,9 +168,20 @@ function renderCard(it) {
 
   if (!state.loggedIn) {
     btn.disabled = true;
+    // ★追加：連打ガード（1秒以内の再クリックは捨てる）
+const now = Date.now();
+if (btn.dataset.lastClick && now - Number(btn.dataset.lastClick) < 1000) {
+  btn.disabled = false;
+  return;
+}
+btn.dataset.lastClick = String(now);
     btn.title = "ログインすると押せます";
   } else {
     btn.onclick = async () => {
+      // ★最初に無効化（連打・二重タップ防止）
+      if (btn.disabled) return;
+      btn.disabled = true;
+    
       const newVisited = !it.visited;
     
       // ① 先にUIを即変更
@@ -192,14 +203,10 @@ function renderCard(it) {
         if (stampEl) stampEl.remove();
       }
     
-      // ③ 連打防止
-      btn.disabled = true;
-    
       try {
-        // ④ API反映
         await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
       } catch (e) {
-        // ⑤ 失敗したら元に戻す
+        // 失敗したら元に戻す
         it.visited = !newVisited;
         card.classList.toggle("is-visited", !newVisited);
         btn.className = !newVisited ? "btn visited" : "btn";
@@ -207,7 +214,6 @@ function renderCard(it) {
     
         let stampEl2 = card.querySelector(".stamp");
         if (!newVisited) {
-          // 元に戻すと訪問済になるのでstamp必要
           if (!stampEl2) {
             stampEl2 = document.createElement("div");
             stampEl2.className = "stamp";
@@ -215,7 +221,6 @@ function renderCard(it) {
             card.appendChild(stampEl2);
           }
         } else {
-          // 元に戻すと未訪問なのでstamp不要
           if (stampEl2) stampEl2.remove();
         }
     
