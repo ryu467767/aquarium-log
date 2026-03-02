@@ -24,6 +24,7 @@ section.mapwrap{
 #list,
 .site-footer{
   width: min(var(--page-max), calc(100% - (var(--page-pad) * 2))) !important;
+  max-width: none !important;   /* styles.css の max-width:800px を無効化 */
   margin-left: auto !important;
   margin-right: auto !important;
 }
