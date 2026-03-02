@@ -42,7 +42,8 @@ h1 {
 .chip { padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: #e7eefc; margin-right: 6px; }
 .chip.active { background: rgba(255,255,255,0.18); }
 
-main { padding: 0; display: grid; gap: 12px; }
+main { padding: 0; display: grid; gap: 12px; max-width: 800px; margin: 0 auto; padding: 0 16px;}
+
 .card {
     background: #ffffff;
     border-radius: 18px;
@@ -345,12 +346,15 @@ header, .panel, main, .card{
     opacity: 0.22 !important;
     animation-duration: 16s !important;
   }
-  .mapwrap{
-    margin: 14px 16px 0;
+/* ===== Map responsive center ===== */
+  .mapwrap {
+    max-width: 800px;
+    margin: 24px auto 0;   /* 中央揃え */
+    padding: 0 16px;
   }
   
   #map{
-    height: 320px;              /* 好みで */
+    height: 380px;              /* 好みで */
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(0,0,0,0.06);
