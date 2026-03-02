@@ -339,6 +339,53 @@ btn.dataset.lastClick = String(now);
   dateRow.appendChild(dateInput);
   card.appendChild(dateRow);
 
+  // 訪問回数行（ログイン中のみ）
+  if (state.loggedIn) {
+    const countRow = document.createElement("div");
+    countRow.className = "visit-count-row";
+
+    const countLbl = document.createElement("span");
+    countLbl.className = "visit-count-label";
+    countLbl.textContent = "訪問回数：";
+
+    const minusBtn = document.createElement("button");
+    minusBtn.type = "button";
+    minusBtn.className = "count-btn";
+    minusBtn.textContent = "−";
+
+    const countDisplay = document.createElement("span");
+    countDisplay.className = "count-display";
+    countDisplay.textContent = String(it.visit_count || 0);
+
+    const plusBtn = document.createElement("button");
+    plusBtn.type = "button";
+    plusBtn.className = "count-btn";
+    plusBtn.textContent = "＋";
+
+    async function saveCount(newCount) {
+      if (newCount < 0) return;
+      const old = it.visit_count || 0;
+      it.visit_count = newCount;
+      countDisplay.textContent = String(newCount);
+      try {
+        await apiPut(`/api/aquariums/${it.id}/visit_count`, { visit_count: newCount });
+      } catch (e) {
+        it.visit_count = old;
+        countDisplay.textContent = String(old);
+        alert("保存に失敗: " + e.message);
+      }
+    }
+
+    minusBtn.onclick = () => saveCount((it.visit_count || 0) - 1);
+    plusBtn.onclick = () => saveCount((it.visit_count || 0) + 1);
+
+    countRow.appendChild(countLbl);
+    countRow.appendChild(minusBtn);
+    countRow.appendChild(countDisplay);
+    countRow.appendChild(plusBtn);
+    card.appendChild(countRow);
+  }
+
   const note = document.createElement("textarea");
   note.className = "note";
   note.placeholder = "メモ（例：混雑、推し、展示、感想）";
@@ -516,6 +563,20 @@ function render() {
       const ra = regionOf(a.prefecture);
       const rb = regionOf(b.prefecture);
       return ra.localeCompare(rb) || ja(a.name, b.name);
+    });
+
+  } else if (state.sort === "visit_count") {
+    // 訪問回数順（未訪問は非表示）
+    items = items.filter(x => x.visited);
+    items.sort((a, b) => (b.visit_count || 0) - (a.visit_count || 0) || ja(a.name, b.name));
+
+  } else if (state.sort === "visited_at") {
+    // 訪問日順（新しい順）、未訪問は末尾
+    items.sort((a, b) => {
+      if (!a.visited_at && !b.visited_at) return ja(a.name, b.name);
+      if (!a.visited_at) return 1;
+      if (!b.visited_at) return -1;
+      return b.visited_at.localeCompare(a.visited_at);
     });
   }
 

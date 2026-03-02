@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from sqlmodel import select
 from .db import init_db, session
 from .models import Aquarium, Visit, Photo
-from .crud import list_aquariums, set_visited, set_note, set_visited_at
+from .crud import list_aquariums, set_visited, set_note, set_visited_at, set_visit_count
 from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
@@ -275,6 +275,9 @@ class NoteIn(BaseModel):
 class VisitedAtIn(BaseModel):
     visited_at: Optional[str] = None  # "YYYY-MM-DD" または null
 
+class VisitCountIn(BaseModel):
+    visit_count: int
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -363,6 +366,7 @@ def aquariums(request: Request):
                 "mola_star": a.mola_star,
                 "visited": bool(v.visited) if v else False,
                 "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
+                "visit_count": v.visit_count if v else 0,
                 "note": v.note if v else "",
                 "updated_at": v.updated_at.isoformat() if v else None,
                 "lat": a.lat,
@@ -387,6 +391,7 @@ def public_aquariums():
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
             "visited": False,
             "visited_at": None,
+            "visit_count": 0,
             "note": "",
             "updated_at": None,
         } for a in aq]
@@ -423,6 +428,17 @@ def update_visited_at(aquarium_id: int, body: VisitedAtIn, request: Request):
             "aquarium_id": aquarium_id,
             "visited_at": v.visited_at.isoformat() if v.visited_at else None,
         }
+
+
+@app.put("/api/aquariums/{aquarium_id}/visit_count")
+def update_visit_count(aquarium_id: int, body: VisitCountIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        v = set_visit_count(db, uid, aquarium_id, body.visit_count)
+        return {"aquarium_id": aquarium_id, "visit_count": v.visit_count}
 
 
 @app.put("/api/aquariums/{aquarium_id}/note")

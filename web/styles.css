@@ -1055,3 +1055,42 @@ section.mapwrap {
   color: #666;
   cursor: default;
 }
+
+/* ===== 訪問回数 ===== */
+.visit-count-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+  font-size: 13px;
+}
+
+.visit-count-label {
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.count-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #caf0f8;
+  background: white;
+  color: #003b4d;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.count-btn:hover {
+  background: #e0f7ff;
+}
+
+.count-display {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+}
