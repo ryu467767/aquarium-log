@@ -890,3 +890,14 @@ header {
 .site-footer span {
   margin-top: 2px;
 }
+
+/* ===== timeline footer spacing override ===== */
+.site-footer .timeline {
+  margin: 0 auto 12px !important; /* sectionの40pxを打ち消す */
+  padding: 0 16px;
+}
+
+.site-footer {
+  margin: 12px 0 12px !important; /* 強制的に詰める */
+  padding-top: 0;
+}
