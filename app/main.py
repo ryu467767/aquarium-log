@@ -6,7 +6,7 @@ import sqlite3
 import traceback
 import secrets
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 from fastapi import FastAPI, Request, HTTPException
@@ -643,12 +643,39 @@ def post_contact(body: InquiryIn):
         return {"ok": True, "id": inq.id}
 
 
-@app.get("/api/admin/contacts")
-def get_contacts(request: Request):
-    uid = get_user_id(request)
+def require_admin(request: Request) -> str:
+    """管理者チェック。非管理者は403を返す。"""
+    uid = get_user_id(request)  # 未ログインは401
     admin_uid = os.getenv("ADMIN_USER_ID", "")
     if not admin_uid or uid != admin_uid:
         raise HTTPException(403, "Forbidden")
+    return uid
+
+
+@app.get("/api/admin/stats")
+def get_admin_stats(request: Request):
+    require_admin(request)
+    cutoff = datetime.utcnow() - timedelta(days=30)
+    with session() as db:
+        total_users     = len(db.exec(select(UserProfile)).all())
+        active_users    = len(db.exec(select(UserProfile).where(UserProfile.last_login_at >= cutoff)).all())
+        total_aquariums = len(db.exec(select(Aquarium)).all())
+        total_visits    = len(db.exec(select(Visit).where(Visit.visited == True)).all())
+        total_inq       = len(db.exec(select(Inquiry)).all())
+        unread_inq      = len(db.exec(select(Inquiry).where(Inquiry.is_read == False)).all())
+    return {
+        "total_users": total_users,
+        "active_users_30d": active_users,
+        "total_aquariums": total_aquariums,
+        "total_visits": total_visits,
+        "total_inquiries": total_inq,
+        "unread_inquiries": unread_inq,
+    }
+
+
+@app.get("/api/admin/contacts")
+def get_contacts(request: Request):
+    require_admin(request)
     with session() as db:
         rows = list_inquiries(db)
         return [
@@ -661,6 +688,38 @@ def get_contacts(request: Request):
                 "is_read": r.is_read,
             }
             for r in rows
+        ]
+
+
+@app.put("/api/admin/contacts/{inquiry_id}/read")
+def mark_contact_read(inquiry_id: int, request: Request):
+    require_admin(request)
+    with session() as db:
+        inq = db.get(Inquiry, inquiry_id)
+        if not inq:
+            raise HTTPException(404, "Inquiry not found")
+        inq.is_read = True
+        db.add(inq)
+        db.commit()
+    return {"ok": True}
+
+
+@app.get("/api/admin/users")
+def get_users(request: Request):
+    require_admin(request)
+    with session() as db:
+        users = db.exec(
+            select(UserProfile).order_by(UserProfile.last_login_at.desc())
+        ).all()
+        return [
+            {
+                "user_id": u.user_id,
+                "name": u.name,
+                "email": u.email,
+                "created_at": u.created_at.isoformat(),
+                "last_login_at": u.last_login_at.isoformat(),
+            }
+            for u in users
         ]
 
 
