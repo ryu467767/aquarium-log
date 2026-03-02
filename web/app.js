@@ -179,6 +179,25 @@ function setPrefOptions(items) {
   state.pref = sel.value;
 }
 
+function showConfirm(title, body) {
+  return new Promise((resolve) => {
+    const overlay = document.getElementById("confirmModal");
+    document.getElementById("confirmTitle").textContent = title;
+    document.getElementById("confirmBody").textContent = body;
+    overlay.style.display = "flex";
+
+    function cleanup(result) {
+      overlay.style.display = "none";
+      document.getElementById("confirmOk").onclick = null;
+      document.getElementById("confirmCancel").onclick = null;
+      resolve(result);
+    }
+
+    document.getElementById("confirmOk").onclick = () => cleanup(true);
+    document.getElementById("confirmCancel").onclick = () => cleanup(false);
+  });
+}
+
 function renderCard(it) {
   const card = document.createElement("div");
   card.id = "card-" + it.id;
@@ -243,7 +262,7 @@ btn.dataset.lastClick = String(now);
       btn.disabled = true;
 
       // 解除時は確認ポップアップ
-      if (it.visited && !confirm("訪問済を解除しますか？\n訪問日や訪問回数がリセットされます")) {
+      if (it.visited && !(await showConfirm("訪問済を解除しますか？", "訪問日や訪問回数がリセットされます"))) {
         btn.disabled = false;
         return;
       }
