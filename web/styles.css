@@ -867,3 +867,26 @@ header {
 .site-footer .timeline__item {
   background: rgba(0,0,0,0.03);
 }
+
+/* ===== footer spacing tweak ===== */
+
+/* フッター全体の上余白を少し減らす */
+.site-footer {
+  margin: 24px 0 16px; /* 40px → 24px */
+  padding-top: 8px;
+}
+
+/* timelineと下のリンクの距離を自然に */
+.site-footer .timeline {
+  margin-bottom: 18px;
+}
+
+/* footer-innerのgapを少し詰める */
+.footer-inner {
+  gap: 4px; /* 6px → 4px */
+}
+
+/* ©行を少し上に寄せる */
+.site-footer span {
+  margin-top: 2px;
+}
