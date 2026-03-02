@@ -221,9 +221,10 @@ function renderCard(it) {
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "訪問済✅（解除）" : "訪問済にする";
 
-  // 訪問日入力（クロージャで参照するため先に宣言）
+  // 訪問日入力・訪問回数表示（クロージャで参照するため先に宣言）
   const dateRow = document.createElement("div");
   const dateInput = document.createElement("input");
+  let countDisplay = null; // ログイン中のみ後でセット
 
   if (!state.loggedIn) {
     btn.disabled = true;
@@ -271,6 +272,15 @@ btn.dataset.lastClick = String(now);
           + String(d.getDate()).padStart(2, "0");
       }
 
+      // ④ 訪問回数の楽観的更新（訪問済みにした時は最低1）
+      const oldCount = it.visit_count || 0;
+      if (newVisited && oldCount === 0) {
+        it.visit_count = 1;
+        if (countDisplay) countDisplay.textContent = "1";
+      } else if (!newVisited) {
+        // 解除時はカウントはそのまま（リセットしない）
+      }
+
       try {
         const res = await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
         if (res && res.visited_at) {
@@ -279,6 +289,10 @@ btn.dataset.lastClick = String(now);
         } else if (!newVisited) {
           it.visited_at = null;
           dateInput.value = "";
+        }
+        if (res && res.visit_count !== undefined) {
+          it.visit_count = res.visit_count;
+          if (countDisplay) countDisplay.textContent = String(res.visit_count);
         }
       } catch (e) {
         // 失敗したら元に戻す
@@ -300,6 +314,9 @@ btn.dataset.lastClick = String(now);
         }
     
         dateRow.style.display = !newVisited ? "" : "none";
+        // 訪問回数も元に戻す
+        it.visit_count = oldCount;
+        if (countDisplay) countDisplay.textContent = String(oldCount);
         alert("APIエラー: " + e.message);
       } finally {
         btn.disabled = false;
@@ -353,7 +370,7 @@ btn.dataset.lastClick = String(now);
     minusBtn.className = "count-btn";
     minusBtn.textContent = "−";
 
-    const countDisplay = document.createElement("span");
+    countDisplay = document.createElement("span");
     countDisplay.className = "count-display";
     countDisplay.textContent = String(it.visit_count || 0);
 

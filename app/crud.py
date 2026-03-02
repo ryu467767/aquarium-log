@@ -19,6 +19,8 @@ def set_visited(db, user_id: str, aquarium_id: int, visited: bool):
     v.visited = visited
     v.updated_at = now
     v.visited_at = (v.visited_at or now) if visited else None  # 既存の日付を優先
+    if visited:
+        v.visit_count = max(1, v.visit_count)  # 訪問済みは最低1回
     db.add(v)
     db.commit()
     db.refresh(v)

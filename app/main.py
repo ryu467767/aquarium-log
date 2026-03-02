@@ -404,7 +404,7 @@ def toggle_visited(aquarium_id: int, body: VisitToggleIn, request: Request):
         if not a:
             raise HTTPException(404, "Aquarium not found")
         v = set_visited(db, uid, aquarium_id, body.visited)
-        return {"aquarium_id": aquarium_id, "visited": v.visited, "visited_at": v.visited_at}
+        return {"aquarium_id": aquarium_id, "visited": v.visited, "visited_at": v.visited_at, "visit_count": v.visit_count}
 
 
 @app.put("/api/aquariums/{aquarium_id}/visited_at")
