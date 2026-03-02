@@ -37,6 +37,27 @@ class Visit(SQLModel, table=True):
     note: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+class UserProfile(SQLModel, table=True):
+    __tablename__ = "user_profiles"
+
+    user_id: str = Field(primary_key=True)
+    email: str = ""
+    name: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    last_login_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Inquiry(SQLModel, table=True):
+    __tablename__ = "inquiries"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = ""
+    email: str = ""
+    message: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_read: bool = Field(default=False)
+
+
 class Photo(SQLModel, table=True):
     __tablename__ = "photos"
 

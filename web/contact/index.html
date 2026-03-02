@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>お問い合わせ｜全国水族館スタンプラリー</title>
+  <meta name="description" content="全国水族館スタンプラリーへのお問い合わせはこちらから。">
+  <link rel="canonical" href="https://aquarium-log.onrender.com/contact/">
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .contact-wrap {
+      max-width: 600px;
+      margin: 24px auto;
+      padding: 0 16px;
+      line-height: 1.9;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      opacity: 0.85;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #caf0f8;
+      background: white;
+      color: #003b4d;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: #00b4d8;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #0096c7; }
+    .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    #result {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: none;
+    }
+    #result.success {
+      background: #e0f7ff;
+      color: #005f7a;
+      border: 1px solid #caf0f8;
+    }
+    #result.error {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #ffcdd2;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="contact-wrap">
+    <p><a href="/" style="text-decoration:none;">← トップへ戻る</a></p>
+
+    <h1>お問い合わせ</h1>
+    <p>ご要望・不具合報告・データ削除依頼などはこちらからどうぞ。</p>
+
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="name">お名前</label>
+        <input type="text" id="name" name="name" placeholder="山田 太郎" required />
+      </div>
+      <div class="form-group">
+        <label for="email">メールアドレス（返信先）</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com" required />
+      </div>
+      <div class="form-group">
+        <label for="message">お問い合わせ内容</label>
+        <textarea id="message" name="message" placeholder="お問い合わせ内容をご記入ください" required></textarea>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">送信する</button>
+    </form>
+
+    <div id="result"></div>
+
+    <p style="margin-top: 32px; font-size: 12px; opacity: 0.6;">
+      送信いただいた情報は、お問い合わせ対応以外の目的には使用しません。<br>
+      詳しくは<a href="/privacy/">プライバシーポリシー</a>をご覧ください。
+    </p>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById("contactForm");
+      const btn = document.getElementById("submitBtn");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = "送信中...";
+        result.style.display = "none";
+
+        const body = {
+          name: document.getElementById("name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          message: document.getElementById("message").value.trim(),
+        };
+
+        try {
+          const res = await fetch("/api/public/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          if (res.ok) {
+            result.className = "success";
+            result.textContent = "お問い合わせを受け付けました。ありがとうございます。";
+            result.style.display = "block";
+            form.reset();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.detail || "送信に失敗しました");
+          }
+        } catch (err) {
+          result.className = "error";
+          result.textContent = "エラー: " + err.message;
+          result.style.display = "block";
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "送信する";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

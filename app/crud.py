@@ -1,6 +1,31 @@
 from datetime import datetime
 from sqlmodel import select
-from .models import Aquarium, Visit
+from .models import Aquarium, Visit, UserProfile, Inquiry
+
+def upsert_user_profile(db, user_id: str, email: str, name: str):
+    now = datetime.utcnow()
+    p = db.get(UserProfile, user_id)
+    if p is None:
+        p = UserProfile(user_id=user_id, email=email, name=name, created_at=now)
+    else:
+        p.email = email
+        p.name = name
+    p.last_login_at = now
+    db.add(p)
+    db.commit()
+
+
+def create_inquiry(db, name: str, email: str, message: str):
+    inq = Inquiry(name=name, email=email, message=message)
+    db.add(inq)
+    db.commit()
+    db.refresh(inq)
+    return inq
+
+
+def list_inquiries(db):
+    return db.exec(select(Inquiry).order_by(Inquiry.created_at.desc())).all()
+
 
 def list_aquariums(db):
     return db.exec(select(Aquarium).order_by(Aquarium.prefecture, Aquarium.name)).all()

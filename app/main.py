@@ -21,8 +21,11 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlmodel import select
 from .db import init_db, session
-from .models import Aquarium, Visit, Photo
-from .crud import list_aquariums, set_visited, set_note, set_visited_at, set_visit_count, set_want_to_go
+from .models import Aquarium, Visit, Photo, UserProfile, Inquiry
+from .crud import (
+    list_aquariums, set_visited, set_note, set_visited_at, set_visit_count,
+    set_want_to_go, upsert_user_profile, create_inquiry, list_inquiries,
+)
 from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
@@ -45,7 +48,9 @@ def require_key(request: Request):
         return
 
     # 認証不要API
-    if request.url.path in ("/api/health", "/api/me", "/api/public/aquariums", "/api/csrf"):
+    if request.url.path in ("/api/health", "/api/me", "/api/csrf"):
+        return
+    if request.url.path.startswith("/api/public/"):
         return
 
     # Googleログイン済みならOK
@@ -310,10 +315,17 @@ async def auth_callback(request: Request):
         userinfo = await oauth.google.userinfo(token=token)
 
     sub = userinfo["sub"]
-    request.session["user_id"] = f"google:{sub}"
-    request.session["email"] = userinfo.get("email")
-    request.session["name"] = userinfo.get("name")
+    uid = f"google:{sub}"
+    email = userinfo.get("email", "")
+    name = userinfo.get("name", "")
+    request.session["user_id"] = uid
+    request.session["email"] = email
+    request.session["name"] = name
     request.session["picture"] = userinfo.get("picture")
+
+    # ユーザー情報をDBに保存（初回作成 or 最終ログイン時刻を更新）
+    with session() as db:
+        upsert_user_profile(db, uid, email, name)
 
     return RedirectResponse(url="/")
 
@@ -567,6 +579,43 @@ def delete_photo(aquarium_id: int, photo_id: int, request: Request):
         db.commit()
 
     return {"ok": True}
+
+
+# ===== Contact (お問い合わせ) =====
+
+class InquiryIn(BaseModel):
+    name: str
+    email: str
+    message: str
+
+
+@app.post("/api/public/contact")
+def post_contact(body: InquiryIn):
+    with session() as db:
+        inq = create_inquiry(db, body.name, body.email, body.message)
+        return {"ok": True, "id": inq.id}
+
+
+@app.get("/api/admin/contacts")
+def get_contacts(request: Request):
+    uid = get_user_id(request)
+    admin_uid = os.getenv("ADMIN_USER_ID", "")
+    if not admin_uid or uid != admin_uid:
+        raise HTTPException(403, "Forbidden")
+    with session() as db:
+        rows = list_inquiries(db)
+        return [
+            {
+                "id": r.id,
+                "name": r.name,
+                "email": r.email,
+                "message": r.message,
+                "created_at": r.created_at.isoformat(),
+                "is_read": r.is_read,
+            }
+            for r in rows
+        ]
+
 
     # 静的フロント（webディレクトリを確実に参照）
 app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
