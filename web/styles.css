@@ -931,3 +931,31 @@ header {
   .timeline__list { gap: 8px; }
   .timeline__item { padding: 10px 12px; }
 }
+
+/* ===== Layout normalization (stop random margins) ===== */
+
+/* main が「幅・左右余白」の基準 */
+main{
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: grid;
+  gap: 16px;
+}
+
+/* 一覧(#list)は main の幅に従わせる（独自の左右余白を潰す） */
+#list{
+  margin: 0 0 24px !important;   /* 旧: 16px 16px 40px を潰す */
+  padding: 0 !important;         /* 二重パディングを潰す */
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  min-height: auto !important;
+}
+
+/* 地図も main と幅を揃える */
+.mapwrap{
+  max-width: 800px;
+  margin: 24px auto 0 !important;
+  padding: 0 16px !important;
+}
