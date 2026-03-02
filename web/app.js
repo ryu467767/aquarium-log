@@ -579,7 +579,7 @@ function render() {
   const list = $("list");
   list.innerHTML = "";
 
-  const items = state.items.filter((x) => match(x, q)).filter(passesFilter);
+  let items = state.items.filter((x) => match(x, q)).filter(passesFilter);
 
   const ja = (a, b) => (a ?? "").toString().localeCompare((b ?? "").toString(), "ja");
 
