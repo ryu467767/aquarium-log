@@ -164,7 +164,14 @@ function setPrefOptions(items) {
   const current = sel.value || state.pref || "";
   const prefs = Array.from(
     new Set(items.map((x) => x.prefecture).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, "ja"));
+  ).sort((a, b) => {
+    const ai = PREF_ORDER.indexOf(a);
+    const bi = PREF_ORDER.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b, "ja");
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
 
   // option を作り直し
   sel.innerHTML = `<option value="">都道府県（すべて）</option>`;
@@ -730,9 +737,11 @@ async function load() {
     statsTextEl.textContent = `訪問: ${visited} / ${total}`;
     if (statsPctEl) statsPctEl.textContent = `${pct}%`;
     barEl.style.width = `${pct}%`;
-  } else {
-    $("stats").textContent = `訪問: ${visited} / ${total}`;
   }
+
+  // stats dashboard の表示制御（ログイン時のみ表示）
+  const dashboardEl = document.getElementById('statsDashboard');
+  if (dashboardEl) dashboardEl.style.display = state.loggedIn ? '' : 'none';
 
   render();
 }
@@ -788,8 +797,13 @@ function updateLoginCta(me) {
 
   const loggedIn = !!(me && me.logged_in);
 
-  // 未ログインなら表示、ログイン中なら非表示
   cta.style.display = loggedIn ? "none" : "";
+
+  // ログアウト時はダッシュボードも非表示（load()でも制御するが念のため）
+  if (!loggedIn) {
+    const dashboard = document.getElementById('statsDashboard');
+    if (dashboard) dashboard.style.display = 'none';
+  }
 
   btn.onclick = () => {
     location.href = "/login";
@@ -845,11 +859,51 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   // 初期フィルタ
   document.querySelector('.chip[data-filter="all"]').classList.add("active");
 
- 
-  
+  initSuggestions();
 }
 
 wireUI();
+
+function initSuggestions() {
+  const qEl = $('q');
+  const list = $('suggestList');
+  if (!qEl || !list) return;
+
+  qEl.addEventListener('input', () => {
+    const q = qEl.value.trim();
+    if (!q || !state.items.length) {
+      list.style.display = 'none';
+      return;
+    }
+    const lq = q.toLowerCase();
+    const matches = state.items
+      .filter(item => item.name.toLowerCase().includes(lq))
+      .slice(0, 8);
+    if (!matches.length) {
+      list.style.display = 'none';
+      return;
+    }
+    list.innerHTML = '';
+    for (const item of matches) {
+      const li = document.createElement('li');
+      li.textContent = item.name;
+      li.addEventListener('click', () => {
+        qEl.value = item.name;
+        list.style.display = 'none';
+        render();
+      });
+      list.appendChild(li);
+    }
+    list.style.display = '';
+  });
+
+  // 外側クリックで候補を閉じる
+  document.addEventListener('click', (e) => {
+    if (!qEl.contains(e.target) && !list.contains(e.target)) {
+      list.style.display = 'none';
+    }
+  });
+}
 
 (async () => {
   // まずCSRFトークン取得（ログイン前でもOK）
