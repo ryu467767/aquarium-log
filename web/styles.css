@@ -1061,3 +1061,84 @@ main{
 .modal-btn--cancel:hover {
   background: #cce8f4;
 }
+
+/* ===== ① 背景の魚：濃く表示・アニメーション無し ===== */
+body::before {
+  opacity: 0.38 !important;
+  animation: none !important;
+}
+
+/* ===== ② ヘッダー：魚＋サンゴ装飾 ===== */
+header {
+  background-image:
+    /* 大きめの魚（右向き） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 45'%3E%3Cpath fill='white' fill-opacity='.22' d='M70 8L80 22 70 36Z'/%3E%3Cellipse cx='35' cy='22' rx='28' ry='15' fill='white' fill-opacity='.28'/%3E%3Ccircle cx='18' cy='18' r='3' fill='white' fill-opacity='.55'/%3E%3C/svg%3E"),
+    /* 小さめの魚（左向き） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 45'%3E%3Cpath fill='white' fill-opacity='.18' d='M10 10L0 22 10 34Z'/%3E%3Cellipse cx='45' cy='22' rx='26' ry='13' fill='white' fill-opacity='.22'/%3E%3Ccircle cx='60' cy='18' r='2.5' fill='white' fill-opacity='.48'/%3E%3C/svg%3E"),
+    /* サンゴ */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 70'%3E%3Cpath stroke='white' stroke-opacity='.30' stroke-width='3' stroke-linecap='round' fill='none' d='M25 68V42M25 42L12 22M25 42L38 24M25 42V20'/%3E%3Ccircle cx='12' cy='17' r='5' fill='white' fill-opacity='.28'/%3E%3Ccircle cx='38' cy='19' r='5' fill='white' fill-opacity='.28'/%3E%3Ccircle cx='25' cy='14' r='5' fill='white' fill-opacity='.28'/%3E%3C/svg%3E"),
+    /* もとのグラデーション */
+    linear-gradient(90deg, #00b4d8, #0077b6);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: right 220px center, right 80px 55%, right 18px 82%;
+  background-size: 88px 52px, 52px 32px, 44px 60px, auto;
+}
+
+/* タブレット */
+@media (max-width: 768px) {
+  header {
+    background-position: right 70px 32%, right 8px 30%, right 2px 78%;
+    background-size: 64px 38px, 40px 24px, 32px 44px, auto;
+  }
+}
+
+/* 極小スマホ：サンゴは非表示 */
+@media (max-width: 480px) {
+  header {
+    background-size: 56px 34px, 36px 22px, 0 0, auto;
+  }
+}
+
+/* ===== ③ フッター：海底カラーで差別化 ===== */
+.site-footer {
+  background: linear-gradient(160deg, #00527a 0%, #003349 100%) !important;
+  color: #c8eef8 !important;
+  border-radius: 16px !important;
+  padding: 20px 24px !important;
+  margin-bottom: 24px !important;
+  opacity: 1 !important;
+}
+
+.site-footer a {
+  color: #7fd4f0 !important;
+  text-decoration: none !important;
+}
+
+.site-footer a:hover {
+  color: #b8eeff !important;
+  text-decoration: underline !important;
+}
+
+.site-footer span {
+  color: #8ec8de !important;
+}
+
+/* タイムライン内テキストも暗背景対応 */
+.site-footer .timeline__title {
+  color: #c8eef8 !important;
+}
+
+.site-footer .timeline__item {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #b8e4f5 !important;
+}
+
+.site-footer .timeline__date {
+  color: #90d8f0 !important;
+  opacity: 1 !important;
+}
+
+.site-footer .timeline__body {
+  color: #b8e4f5 !important;
+}
