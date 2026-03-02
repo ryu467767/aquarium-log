@@ -901,3 +901,29 @@ header {
   margin: 12px 0 12px !important; /* 強制的に詰める */
   padding-top: 0;
 }
+
+/* ===== footer timeline: hard override (PCの余白を潰す) ===== */
+.site-footer section.timeline {
+  margin: 0 auto 10px !important;   /* section { margin: 40px } を潰す */
+  padding: 0 16px !important;
+  max-width: 800px;
+}
+
+.site-footer {
+  margin: 12px 0 12px !important;   /* footer自体の余白も詰める */
+  padding: 8px 0 !important;
+}
+
+/* footerの縦並びの間隔も詰める */
+.site-footer .footer-inner {
+  gap: 6px;
+}
+
+/* ===== PCだけ、さらに見た目を締める ===== */
+@media (min-width: 900px) {
+  .site-footer section.timeline {
+    margin-bottom: 8px !important;
+  }
+  .timeline__list { gap: 8px; }
+  .timeline__item { padding: 10px 12px; }
+}
