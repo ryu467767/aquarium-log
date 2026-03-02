@@ -192,12 +192,6 @@ input {
 
   
   
-  /* 前面のUIが泡より上に来るように */
-  header, .panel, main{
-    position: relative;
-    z-index: 1;
-  }
-  
   @keyframes bubblesUp{
     0%{
       transform: translateY(0);
@@ -231,25 +225,6 @@ header{
     opacity: 0.95;
   }
   
-  .progress{
-    margin-top: 8px;
-    height: 10px;
-    border-radius: 999px;
-    background: rgba(0, 90, 120, 0.22); /* 土台を青寄りに */
-    border: 1px solid rgba(255,255,255,0.55);
-    overflow: hidden;
-  }
-  
-  .progress .bar{
-    height: 100%;
-    width: 0%;
-    border-radius: 999px;
-    background: rgba(0, 180, 216, 0.95); /* バーを水色に */
-    box-shadow: 0 0 10px rgba(0,180,216,0.45);
-    transition: width 0.35s ease;
-  }
-
-
 /* ===== BACKGROUND LAYERS RESET ===== */
 body{
     position: relative;
@@ -361,21 +336,6 @@ header, .panel, main, .card{
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   }
 
-  .marker {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid white;
-  }
-  
-  .marker.visited {
-    background: #2ecc71;
-  }
-  
-  .marker.unvisited {
-    background: #3498db;
-  }
-  
   /* Leaflet divIconのデフォ背景/枠を消す */
 .leaflet-div-icon {
     background: transparent !important;
@@ -406,17 +366,6 @@ header, .panel, main, .card{
     margin-right:0;      /* 既存chipのmarginを無効化 */
     text-align:center;
     padding: 10px 0;     /* 高さも揃う */
-  }
-
-  .regionHeading{
-    margin: 14px 0 8px;
-    padding: 8px 10px;
-    border-radius: 12px;
-    font-weight: 800;
-    letter-spacing: .04em;
-    background: rgba(255,255,255,.75);
-    border: 1px solid rgba(0,0,0,.06);
-    backdrop-filter: blur(6px);
   }
 
   .sortBar{
@@ -580,7 +529,10 @@ header {
   /* カード余白とタイトル */
   .card {
     padding: 18px;
+    margin-bottom: 14px;
   }
+  .card h3 { line-height: 1.2; }
+  .card .note { margin-top: 10px; }
   .title {
     font-size: 17px;
   }
@@ -730,19 +682,6 @@ header {
   border: 1px solid rgba(0,0,0,0.08);
   box-shadow: 0 10px 24px rgba(0,0,0,0.06);
   background: #fff;
-}
-
-@media (max-width: 768px){
-  #list{ padding: 12px; }
-
-  /* カード間の余白を増やして区切りを明確に */
-  .card{
-    margin-bottom: 14px;
-  }
-
-  /* タップしやすさ＆見た目の密度改善 */
-  .card h3{ line-height: 1.2; }
-  .card .note{ margin-top: 10px; }
 }
 
 /* ===== Login CTA (polished) ===== */
@@ -960,72 +899,6 @@ main{
   padding: 0 16px !important;
 }
 
-
-/* ===== Layout override (PCの左右スカスカ/左寄りを直す) ===== */
-
-/* 1) トップページの panel/mapwrap は section 汎用ルールの影響を受けない */
-section.panel,
-section.mapwrap {
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* 2) 主要ブロックを同じ幅で中央揃え（PCで揃う） */
-:root {
-  --page-max: 1100px;
-  --page-pad: 16px;
-}
-
-.panel,
-.mapwrap,
-.sortBar,
-#list,
-.site-footer {
-  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* 3) それぞれの縦方向の間隔を整える（気持ち悪い余白を消す） */
-.panel { margin-top: 18px; }
-.mapwrap { margin-top: 14px; }
-.sortBar { margin-top: 10px; }
-#list {
-  margin-top: 14px;
-  margin-bottom: 28px;
-}
-
-/* 4) 地図を“ブロック中央”で素直に伸ばす */
-#map {
-  width: 100%;
-  height: 420px; /* PCのデフォ */
-  border-radius: 18px;
-}
-
-/* 5) 画面が広い時は地図を少し大きく */
-@media (min-width: 980px) {
-  #map { height: 520px; }
-}
-
-/* 6) 画面が狭い時はパディングを少し詰める */
-@media (max-width: 520px) {
-  :root { --page-pad: 12px; }
-  #map { height: 420px; } /* 既存のモバイル設定とも整合 */
-}
-
-/* 7) フッター周りの余白を詰める（timeline/リンクの距離を自然に） */
-.site-footer {
-  margin-top: 22px;
-  padding-top: 10px;
-  padding-bottom: 14px;
-}
-
-/* “section”汎用の margin:40px auto の副作用をtimelineが引かないようにする */
-.site-footer .timeline {
-  margin-top: 0;
-  margin-bottom: 14px;
-}
 
 /* ===== 訪問日入力行 ===== */
 .visit-date-row {
