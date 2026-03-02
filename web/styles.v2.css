@@ -1,0 +1,333 @@
+/* =========================================================
+   Aquarium Log - styles.v2.css
+   目的：レイアウトの基準を1つにしてPC/スマホ両方を安定させる
+   ========================================================= */
+
+:root{
+  --page-max: 980px;
+  --page-pad: 16px;
+
+  --card-radius: 18px;
+  --card-shadow: 0 10px 25px rgba(0, 119, 182, 0.10);
+
+  --brand: #00b4d8;
+  --brand2:#0096c7;
+  --text:#003b4d;
+}
+
+/* ===== base ===== */
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #bfefff 0%, #eaf9ff 70%, #ffffff 100%);
+}
+
+/* “柱”を統一：panel / map / sort / list / footer は全部この幅 */
+.container{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* ===== header ===== */
+header{
+  position: relative;
+  padding: 18px 0 14px;
+  background: linear-gradient(180deg, #0077b6 0%, #0096c7 100%);
+  color: #fff;
+}
+header h1{
+  margin:0;
+  font-size: 22px;
+  letter-spacing: .02em;
+}
+header > *{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* stats */
+.stats{ margin-top: 10px; }
+.stats-row{ display:flex; justify-content:space-between; align-items:center; }
+.progress{
+  margin-top: 8px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0, 80, 110, 0.25);
+  border: 1px solid rgba(0, 80, 110, 0.18);
+  overflow: hidden;
+}
+.progress .bar{
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255,255,255,0.8), 0 0 14px rgba(255,255,255,0.6), inset 0 0 4px rgba(0,0,0,0.15);
+  transition: width 0.35s ease;
+}
+
+/* header login box */
+.userbox{
+  position:absolute;
+  top: 10px;
+  right: 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size: 12px;
+  opacity: .95;
+  z-index: 20;
+  pointer-events: auto;
+}
+.userbox .usertext{
+  max-width: 260px;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.linklike{
+  background: transparent;
+  border:none;
+  padding:0;
+  font-size:12px;
+  cursor:pointer;
+  text-decoration: underline;
+  opacity: .9;
+  color: #eaf9ff;
+}
+.linklike:hover{ opacity: 1; }
+
+/* ===== panel (search/filter) ===== */
+.panel{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 18px auto 0;
+  padding: 16px;
+  border-radius: var(--card-radius);
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(6px);
+}
+.row{
+  display:grid;
+  grid-template-columns: 70px 1fr 92px;
+  gap: 10px;
+  align-items:center;
+}
+.row > span{ font-size: 13px; opacity: .9; }
+.row input{
+  width:100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: #fff;
+}
+.row button{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--brand);
+  color:#fff;
+  cursor:pointer;
+}
+.row button:hover{ background: var(--brand2); }
+
+#pref-filter{
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: #fff;
+}
+
+/* chips */
+.chips-row{
+  display:flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.chip{
+  flex:1;
+  padding: 10px 0;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(255,255,255,0.80);
+  cursor:pointer;
+}
+.chip.active{
+  background: rgba(0, 180, 216, 0.18);
+  border-color: rgba(0, 180, 216, 0.35);
+}
+
+/* ===== map ===== */
+.mapwrap{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 14px auto 0;
+}
+#map{
+  width:100%;
+  height: 520px;
+  border-radius: var(--card-radius);
+  overflow:hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--card-shadow);
+}
+
+/* leaflet marker */
+.leaflet-div-icon{ background: transparent !important; border:none !important; }
+.marker{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.marker.visited{ background:#2ecc71; }
+.marker.unvisited{ background:#3498db; }
+
+/* ===== sort bar ===== */
+.sortBar{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 10px auto 0;
+  display:flex;
+  justify-content: flex-end;
+}
+.row-compact{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+.row-compact span{ font-size: 12px; opacity: .8; }
+#sort{
+  width:auto;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+/* ===== list ===== */
+#list{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 12px auto 28px;
+  padding: 0;
+  background: transparent;
+}
+
+/* region headings (accordion buttons) */
+.regionHeadingBtn{
+  width: 100%;
+  text-align: left;
+  margin: 14px 0 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.regionBody{ padding-left: 0; }
+
+/* cards */
+.card{
+  background: #ffffff;
+  border-radius: var(--card-radius);
+  padding: 16px;
+  margin: 0 0 16px;
+  box-shadow: var(--card-shadow);
+}
+.title{ font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+.meta{ opacity: .8; font-size: 12px; margin-bottom: 10px; }
+.row2{ display:flex; gap: 10px; align-items:center; margin-bottom: 10px; flex-wrap: wrap; }
+
+.btn{
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.btn:hover{ background: var(--brand2); }
+
+.btn.visited{
+  background: #90e0ef;
+  color: #003b4d;
+  font-weight: 700;
+}
+
+.note{
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #caf0f8;
+  background: white;
+  color: #003b4d;
+}
+
+/* stamp (残しておく：既存JS/HTMLが依存してても壊れない) */
+.card{ position: relative; }
+.stamp{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transform: rotate(10deg);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  color: white;
+  background: var(--brand);
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.4);
+}
+
+/* ===== footer ===== */
+.site-footer{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 26px auto 14px;
+  padding: 12px 0;
+  text-align:center;
+  font-size: 12px;
+  opacity: .75;
+}
+.footer-inner{
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.site-footer a{
+  text-decoration:none;
+  color:#0077b6;
+}
+.site-footer a:hover{ text-decoration: underline; }
+
+/* ===== timeline (footer上に置く想定) ===== */
+.timeline{
+  width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
+  margin: 0 auto 14px;
+}
+
+/* ===== responsive ===== */
+@media (max-width: 768px){
+  #map{ height: 420px; }
+
+  .row{ grid-template-columns: 1fr; }
+  .row > span{ font-size: 12px; opacity: .85; }
+  .row input, .row button{ width:100%; }
+
+  .chips-row{ flex-direction: column; }
+  .chip{ width: 100%; }
+
+  .userbox{
+    position: static;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-right: 16px;
+  }
+}
