@@ -221,6 +221,9 @@ function renderCard(it) {
   btn.className = it.visited ? "btn visited" : "btn";
   btn.textContent = it.visited ? "訪問済✅（解除）" : "訪問済にする";
 
+  // 訪問日入力（クロージャで参照するため先に宣言）
+  const dateRow = document.createElement("div");
+  const dateInput = document.createElement("input");
 
   if (!state.loggedIn) {
     btn.disabled = true;
@@ -259,8 +262,24 @@ btn.dataset.lastClick = String(now);
         if (stampEl) stampEl.remove();
       }
     
+      // ③ 訪問日行の表示切替（楽観的）
+      dateRow.style.display = newVisited ? "" : "none";
+      if (newVisited && !dateInput.value) {
+        const d = new Date();
+        dateInput.value = d.getFullYear() + "-"
+          + String(d.getMonth() + 1).padStart(2, "0") + "-"
+          + String(d.getDate()).padStart(2, "0");
+      }
+
       try {
-        await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
+        const res = await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
+        if (res && res.visited_at) {
+          it.visited_at = res.visited_at;
+          dateInput.value = res.visited_at.slice(0, 10);
+        } else if (!newVisited) {
+          it.visited_at = null;
+          dateInput.value = "";
+        }
       } catch (e) {
         // 失敗したら元に戻す
         it.visited = !newVisited;
@@ -280,6 +299,7 @@ btn.dataset.lastClick = String(now);
           if (stampEl2) stampEl2.remove();
         }
     
+        dateRow.style.display = !newVisited ? "" : "none";
         alert("APIエラー: " + e.message);
       } finally {
         btn.disabled = false;
@@ -290,6 +310,34 @@ btn.dataset.lastClick = String(now);
   row.appendChild(btn);
 
   card.appendChild(row);
+
+  // 訪問日行のセットアップ
+  dateRow.className = "visit-date-row";
+  dateRow.style.display = it.visited ? "" : "none";
+
+  const dateLbl = document.createElement("span");
+  dateLbl.className = "visit-date-label";
+  dateLbl.textContent = "訪問日：";
+
+  dateInput.type = "date";
+  dateInput.className = "visit-date-input";
+  dateInput.disabled = !state.loggedIn;
+  if (it.visited_at) {
+    dateInput.value = it.visited_at.slice(0, 10);
+  }
+  dateInput.onchange = async () => {
+    if (!state.loggedIn) return;
+    try {
+      const res = await apiPut(`/api/aquariums/${it.id}/visited_at`, { visited_at: dateInput.value || null });
+      if (res) it.visited_at = res.visited_at;
+    } catch (e) {
+      alert("日付の保存に失敗: " + e.message);
+    }
+  };
+
+  dateRow.appendChild(dateLbl);
+  dateRow.appendChild(dateInput);
+  card.appendChild(dateRow);
 
   const note = document.createElement("textarea");
   note.className = "note";

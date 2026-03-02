@@ -5,6 +5,7 @@ import sqlite3
 import traceback
 import secrets
 import time
+from datetime import datetime
 
 
 from fastapi import FastAPI, Request, HTTPException
@@ -16,11 +17,12 @@ from starlette.responses import Response
 from authlib.integrations.starlette_client import OAuth
 from fastapi import UploadFile, File
 from fastapi.staticfiles import StaticFiles
+from typing import Optional
 from pydantic import BaseModel
 from sqlmodel import select
 from .db import init_db, session
 from .models import Aquarium, Visit, Photo
-from .crud import list_aquariums, set_visited, set_note
+from .crud import list_aquariums, set_visited, set_note, set_visited_at
 from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
@@ -270,6 +272,9 @@ class VisitToggleIn(BaseModel):
 class NoteIn(BaseModel):
     note: str
 
+class VisitedAtIn(BaseModel):
+    visited_at: Optional[str] = None  # "YYYY-MM-DD" または null
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -395,6 +400,29 @@ def toggle_visited(aquarium_id: int, body: VisitToggleIn, request: Request):
             raise HTTPException(404, "Aquarium not found")
         v = set_visited(db, uid, aquarium_id, body.visited)
         return {"aquarium_id": aquarium_id, "visited": v.visited, "visited_at": v.visited_at}
+
+
+@app.put("/api/aquariums/{aquarium_id}/visited_at")
+def update_visited_at(aquarium_id: int, body: VisitedAtIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        dt = None
+        if body.visited_at:
+            try:
+                dt = datetime.fromisoformat(body.visited_at)
+            except ValueError:
+                raise HTTPException(400, "Invalid date format. Use YYYY-MM-DD")
+        try:
+            v = set_visited_at(db, uid, aquarium_id, dt)
+        except ValueError:
+            raise HTTPException(404, "Visit record not found")
+        return {
+            "aquarium_id": aquarium_id,
+            "visited_at": v.visited_at.isoformat() if v.visited_at else None,
+        }
 
 
 @app.put("/api/aquariums/{aquarium_id}/note")

@@ -18,7 +18,19 @@ def set_visited(db, user_id: str, aquarium_id: int, visited: bool):
         v = Visit(user_id=user_id, aquarium_id=aquarium_id)
     v.visited = visited
     v.updated_at = now
-    v.visited_at = now if visited else None
+    v.visited_at = (v.visited_at or now) if visited else None  # 既存の日付を優先
+    db.add(v)
+    db.commit()
+    db.refresh(v)
+    return v
+
+
+def set_visited_at(db, user_id: str, aquarium_id: int, visited_at):
+    v = get_visit(db, user_id, aquarium_id)
+    if v is None or not v.visited:
+        raise ValueError("Visit record not found or not visited")
+    v.visited_at = visited_at
+    v.updated_at = datetime.utcnow()
     db.add(v)
     db.commit()
     db.refresh(v)

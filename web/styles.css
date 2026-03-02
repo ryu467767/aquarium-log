@@ -1026,3 +1026,32 @@ section.mapwrap {
   margin-top: 0;
   margin-bottom: 14px;
 }
+
+/* ===== 訪問日入力行 ===== */
+.visit-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+  font-size: 13px;
+}
+
+.visit-date-label {
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.visit-date-input {
+  border-radius: 8px;
+  border: 1px solid #caf0f8;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: #003b4d;
+  background: white;
+}
+
+.visit-date-input:disabled {
+  background: #f5f5f5;
+  color: #666;
+  cursor: default;
+}
