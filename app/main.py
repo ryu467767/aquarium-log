@@ -1,4 +1,5 @@
 import os
+import json
 import asyncio
 import httpx
 import sqlite3
@@ -28,7 +29,7 @@ from .crud import (
 )
 from .import_csv import import_csv
 from pathlib import Path
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from uuid import uuid4
 from collections import deque
 
@@ -479,6 +480,52 @@ def update_note(aquarium_id: int, body: NoteIn, request: Request):
         v = set_note(db, uid, aquarium_id, body.note)
         return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
 
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def serve_index():
+    """水族館リストをLD+JSONとして埋め込んで index.html を返す（SEO用）"""
+    html_path = WEB_DIR / "index.html"
+    html = html_path.read_text(encoding="utf-8")
+
+    try:
+        with session() as db:
+            aquariums = list_aquariums(db)
+
+        items = []
+        for i, a in enumerate(aquariums):
+            entry = {
+                "@type": "TouristAttraction",
+                "name": a.name,
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressRegion": a.prefecture,
+                    "addressLocality": a.city,
+                    "addressCountry": "JP",
+                },
+            }
+            if a.url:
+                entry["url"] = a.url
+            items.append({"@type": "ListItem", "position": i + 1, "item": entry})
+
+        ld = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "日本全国の水族館一覧",
+            "description": "全国の水族館をスタンプラリー形式で管理できるアプリ",
+            "numberOfItems": len(items),
+            "itemListElement": items,
+        }
+        ld_tag = (
+            '<script type="application/ld+json">'
+            + json.dumps(ld, ensure_ascii=False, separators=(",", ":"))
+            + "</script>"
+        )
+        html = html.replace("</head>", ld_tag + "\n</head>", 1)
+    except Exception:
+        pass  # DB障害時はそのまま静的HTMLを返す
+
+    return HTMLResponse(content=html)
 
 
 @app.get("/sitemap.xml", include_in_schema=False)
