@@ -241,7 +241,13 @@ btn.dataset.lastClick = String(now);
       // ★最初に無効化（連打・二重タップ防止）
       if (btn.disabled) return;
       btn.disabled = true;
-    
+
+      // 解除時は確認ポップアップ
+      if (it.visited && !confirm("訪問済を解除しますか？\n訪問日や訪問回数がリセットされます")) {
+        btn.disabled = false;
+        return;
+      }
+
       const newVisited = !it.visited;
     
       // ① 先にUIを即変更
@@ -278,7 +284,8 @@ btn.dataset.lastClick = String(now);
         it.visit_count = 1;
         if (countDisplay) countDisplay.textContent = "1";
       } else if (!newVisited) {
-        // 解除時はカウントはそのまま（リセットしない）
+        it.visit_count = 0;
+        if (countDisplay) countDisplay.textContent = "0";
       }
 
       try {
