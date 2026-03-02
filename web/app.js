@@ -4,7 +4,7 @@ let state = {
   items: [],
   filter: "all",
   pref: "",
-  sort: "pref",
+  sort: "pref_plain",
   lastMapKey: "",
   regionOpen: {},
 };
@@ -391,17 +391,27 @@ function render() {
 
   if (state.sort === "name") {
     items.sort((a, b) => ja(a.name, b.name));
-  } else if (state.sort === "pref") {
+  
+  } else if (state.sort === "pref_plain") {
+    // 地域分けしない「都道府県順」（デフォルト）
     items.sort((a, b) => {
       const ai = PREF_ORDER.indexOf(a.prefecture);
       const bi = PREF_ORDER.indexOf(b.prefecture);
-
+  
       if (ai === -1 && bi === -1) return ja(a.name, b.name);
       if (ai === -1) return 1;
       if (bi === -1) return -1;
-
+  
       if (ai !== bi) return ai - bi;
       return ja(a.name, b.name);
+    });
+  
+  } else if (state.sort === "pref") {
+    // 地域別
+    items.sort((a, b) => {
+      const ra = regionOf(a.prefecture);
+      const rb = regionOf(b.prefecture);
+      return ra.localeCompare(rb) || ja(a.name, b.name);
     });
   }
 
