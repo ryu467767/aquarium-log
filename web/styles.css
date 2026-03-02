@@ -854,3 +854,16 @@ header {
   margin: 0;
   padding-left: 18px;
 }
+
+/* footer内timelineの見た目調整 */
+.site-footer .timeline {
+  max-width: 800px;
+  margin: 0 auto 14px;
+  padding: 0 16px;
+  text-align: left;
+  opacity: 1; /* footerの薄さを引きずらない */
+}
+
+.site-footer .timeline__item {
+  background: rgba(0,0,0,0.03);
+}
