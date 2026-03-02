@@ -323,20 +323,22 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
   pickBtn.type = "button";
   pickBtn.className = "photo-btn";
   pickBtn.textContent = state.loggedIn ? "写真を追加" : "ログインして写真を追加";
-  pickBtn.disabled = !state.loggedIn;
+
+  // 未ログインでも押せるようにする（押したらログインへ）
+  pickBtn.disabled = false;
+  
   pickBtn.onclick = () => {
     if (!state.loggedIn) {
-      location.href = "/auth/login";
+      location.href = "/login";
       return;
     }
   
-    // ★初回だけ写真一覧を取得（大量リクエスト防止）
+    // 429対策：写真一覧は必要になった時だけ読む（初回だけ）
     if (!photosWrap.dataset.loaded) {
       photosWrap.dataset.loaded = "1";
       refreshPhotos();
     }
   
-    // そのままファイル選択
     up.click();
   };
 
