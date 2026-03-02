@@ -81,6 +81,62 @@ async function apiPut(path, body) {
   }
 }
 
+const CHANGELOG = [
+  {
+    date: "2026-03-02",
+    items: [
+      "ログイン導線（検索上のCTA）を追加",
+      "写真ボタン押下でログインへ誘導",
+      "写真は必要なときだけ読み込む（レート制限対策）",
+    ],
+  },
+  {
+    date: "2026-03-01",
+    items: [
+      "訪問済トグルのUI整合性を改善",
+      "CSRF / セッション周りの安定化",
+    ],
+  },
+];
+
+function renderTimeline() {
+  const section = document.getElementById("timeline");
+  const list = document.getElementById("timelineList");
+  if (!section || !list) return;
+
+  if (!CHANGELOG.length) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  list.innerHTML = "";
+
+  for (const entry of CHANGELOG) {
+    const item = document.createElement("div");
+    item.className = "timeline__item";
+
+    const d = document.createElement("div");
+    d.className = "timeline__date";
+    d.textContent = entry.date;
+
+    const body = document.createElement("div");
+    body.className = "timeline__body";
+
+    const ul = document.createElement("ul");
+    for (const t of entry.items) {
+      const li = document.createElement("li");
+      li.textContent = t;
+      ul.appendChild(li);
+    }
+    body.appendChild(ul);
+
+    item.appendChild(d);
+    item.appendChild(body);
+    list.appendChild(item);
+  }
+}
+
 
 function match(item, q) {
   if (!q) return true;
@@ -687,6 +743,7 @@ if (sortSel) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  renderTimeline();
   const toggle = document.querySelector(".seo-toggle");
   const content = document.querySelector(".seo-content");
   if (!toggle || !content) return;
