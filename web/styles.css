@@ -1122,33 +1122,102 @@ header {
   box-shadow: 0 0 8px rgba(255,255,255,.5);
 }
 
-/* ===== ③ Sidebar ===== */
-.sidebar {
-  padding: 14px 8px 0 0;
+/* ===== ③ Hamburger Button ===== */
+.hamburger-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: background .12s;
+  flex-shrink: 0;
 }
-.sidebar__inner {
+.hamburger-btn:hover {
+  background: rgba(255,255,255,.14);
+}
+
+/* ===== ③ Drawer (右からスライド) ===== */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.drawer-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -280px;
+  width: 260px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -4px 0 20px rgba(0,0,0,.15);
+  z-index: 1000;
+  transition: right .28s cubic-bezier(.4,0,.2,1);
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+.drawer.is-open {
+  right: 0;
+}
+.drawer-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #64748b;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background .1s;
+}
+.drawer-close:hover { background: #f1f5f9; color: #334155; }
+.drawer__inner {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  margin-top: 44px;
 }
-.sidebar-link {
+.drawer-link {
   display: block;
-  padding: 10px 12px;
+  padding: 11px 14px;
   border-radius: 10px;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
   transition: background .12s;
 }
-.sidebar-link:hover {
+.drawer-link:hover {
   background: rgba(0,119,182,.08);
   color: #0077b6;
 }
-.sidebar-link--active {
+.drawer-link--active {
   background: rgba(0,119,182,.10);
   color: #0077b6;
 }
+
+/* ===== ③ Fix btn-want hover bug (解除後のホバーが黄色にならないよう) ===== */
+.btn-want:hover:not(.active) {
+  border-color: #bbb;
+  background: rgba(0,0,0,.02);
+  color: #666;
+}
+
+/* ===== ④ 行きたい：地図の黄色マーカー ===== */
+.marker.want-to-go { background: #f6a623; }
 
 /* ===== ④ Search suggestions ===== */
 .suggest-wrap {

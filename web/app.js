@@ -81,61 +81,6 @@ async function apiPut(path, body) {
   }
 }
 
-const CHANGELOG = [
-  {
-    date: "2026-03-02",
-    items: [
-      "ログイン導線（検索上のログイン案内）を追加",
-      "写真追加ボタン：未ログイン時はログイン画面へ案内",
-      "並び替え：都道府県順（デフォルト）/ 地域別 / 五十音順 を整理",
-    ],
-  },
-  {
-    date: "2026-03-01",
-    items: [
-      "訪問済ボタンの反応を改善（押した瞬間に見た目が変わる）",
-      "写真表示の安定性を改善（必要な時だけ読み込み）",
-    ],
-  },
-];
-
-function renderTimeline() {
-  const section = document.getElementById("timeline");
-  const list = document.getElementById("timelineList");
-  if (!section || !list) return;
-
-  if (!CHANGELOG.length) {
-    section.style.display = "none";
-    return;
-  }
-
-  section.style.display = "";
-  list.innerHTML = "";
-
-  for (const entry of CHANGELOG) {
-    const item = document.createElement("div");
-    item.className = "timeline__item";
-
-    const d = document.createElement("div");
-    d.className = "timeline__date";
-    d.textContent = entry.date;
-
-    const body = document.createElement("div");
-    body.className = "timeline__body";
-
-    const ul = document.createElement("ul");
-    for (const t of entry.items) {
-      const li = document.createElement("li");
-      li.textContent = t;
-      ul.appendChild(li);
-    }
-    body.appendChild(ul);
-
-    item.appendChild(d);
-    item.appendChild(body);
-    list.appendChild(item);
-  }
-}
 
 
 function match(item, q) {
@@ -734,7 +679,7 @@ async function load() {
   const barEl = document.getElementById("progressBar");
 
   if (statsTextEl && barEl) {
-    statsTextEl.textContent = `訪問: ${visited} / ${total}`;
+    statsTextEl.textContent = `${visited} / ${total}`;
     if (statsPctEl) statsPctEl.textContent = `${pct}%`;
     barEl.style.width = `${pct}%`;
   }
@@ -860,6 +805,29 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   document.querySelector('.chip[data-filter="all"]').classList.add("active");
 
   initSuggestions();
+
+  // ===== ハンバーガードロワー =====
+  const menuBtn = document.getElementById('menuBtn');
+  const drawer = document.getElementById('drawer');
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const drawerClose = document.getElementById('drawerClose');
+
+  function openDrawer() {
+    if (!drawer) return;
+    drawer.classList.add('is-open');
+    if (drawerOverlay) drawerOverlay.classList.add('is-open');
+    drawer.removeAttribute('aria-hidden');
+  }
+  function closeDrawer() {
+    if (!drawer) return;
+    drawer.classList.remove('is-open');
+    if (drawerOverlay) drawerOverlay.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+
+  if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+  if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+  if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
 }
 
 wireUI();
@@ -942,13 +910,21 @@ function updateMap(items, opts = { fit: true }) {
 
     pts.push([lat, lng]);
 
-    const label = it.name;                 // ★消した版
-    const badge = it.visited ? "✅" : "⬜";
+    const label = it.name;
+    let badge, markerHtml;
+    if (it.visited) {
+      badge = "✅";
+      markerHtml = '<div class="marker visited"></div>';
+    } else if (it.want_to_go) {
+      badge = "⭐";
+      markerHtml = '<div class="marker want-to-go"></div>';
+    } else {
+      badge = "⬜";
+      markerHtml = '<div class="marker unvisited"></div>';
+    }
     const icon = L.divIcon({
       className: "",
-      html: it.visited
-        ? '<div class="marker visited"></div>'
-        : '<div class="marker unvisited"></div>',
+      html: markerHtml,
       iconSize: [16, 16],
     });
 
@@ -976,20 +952,6 @@ if (sortSel) {
   };
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderTimeline();
-  const toggle = document.querySelector(".seo-toggle");
-  const content = document.querySelector(".seo-content");
-  if (!toggle || !content) return;
-
-  toggle.onclick = () => {
-    const open = content.style.display === "block";
-    content.style.display = open ? "none" : "block";
-    toggle.textContent = open
-      ? "このアプリについて ▼"
-      : "このアプリについて ▲";
-  };
-});
 
 
 

@@ -54,57 +54,11 @@ section.mapwrap{
   :root{ --page-pad: 12px; }
 }
 
-/* ===== Sidebar Layout ===== */
-:root {
-  --sidebar-w: 164px;
-}
-
-.page-body {
+/* ===== Stats dashboard / Login CTA centering ===== */
+.stats-dashboard,
+.login-cta {
   width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  align-items: flex-start;
-}
-
-.sidebar {
-  width: var(--sidebar-w);
-  flex: 0 0 var(--sidebar-w);
-  position: sticky;
-  top: 56px;
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
-}
-
-.content-col {
-  flex: 1;
-  min-width: 0;
-}
-
-/* content-col 内の要素は auto centering を解除して幅100%に */
-.content-col .panel,
-.content-col .mapwrap,
-.content-col .sortBar,
-.content-col #list,
-.content-col .site-footer {
-  width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* stats-dashboard / login-cta の上マージン */
-.content-col .stats-dashboard,
-.content-col .login-cta {
+  margin-left: auto !important;
+  margin-right: auto !important;
   margin-top: 14px !important;
-}
-
-/* Mobile: サイドバーを非表示 */
-@media (max-width: 760px) {
-  .page-body {
-    display: block;
-    width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
-  }
-  .sidebar {
-    display: none;
-  }
 }

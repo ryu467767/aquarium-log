@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260302-18">
-  <link rel="stylesheet" href="styles.layout.css?v=20260302-13">
+  <link rel="stylesheet" href="styles.css?v=20260302-19">
+  <link rel="stylesheet" href="styles.layout.css?v=20260302-14">
   <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -31,7 +31,6 @@
     }
     </script>
 
-
 </head>
 <body>
   <header>
@@ -40,105 +39,100 @@
       <span class="usertext" id="loginStatus"></span>
       <button class="linklike" id="googleLogin" type="button">ログイン</button>
       <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
+      <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
     </div>
   </header>
 
-  <div class="page-body">
+  <!-- ドロワーオーバーレイ -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
 
-    <!-- ===== Left Sidebar ===== -->
-    <nav class="sidebar">
-      <div class="sidebar__inner">
-        <a href="/" class="sidebar-link sidebar-link--active">トップページ</a>
-        <a href="/about/" class="sidebar-link">このアプリについて</a>
-      </div>
-    </nav>
+  <!-- ドロワー（右からスライド） -->
+  <nav id="drawer" class="drawer" aria-hidden="true">
+    <button id="drawerClose" class="drawer-close" aria-label="閉じる">×</button>
+    <div class="drawer__inner">
+      <a href="/" class="drawer-link drawer-link--active">トップページ</a>
+      <a href="/about/" class="drawer-link">このアプリについて</a>
+      <a href="/contact/" class="drawer-link">お問い合わせ</a>
+      <a href="/privacy/" class="drawer-link">プライバシーポリシー</a>
+    </div>
+  </nav>
 
-    <!-- ===== Main Content ===== -->
-    <div class="content-col">
+  <!-- Stats Dashboard（ログイン時のみ表示） -->
+  <div id="statsDashboard" class="stats-dashboard" style="display:none;">
+    <div class="stats-dashboard__label">訪問状況</div>
+    <div class="stats-dashboard__row">
+      <span id="statsText" class="stats-dashboard__num">-</span>
+      <span id="statsPct" class="stats-dashboard__pct"></span>
+    </div>
+    <div class="progress">
+      <div class="bar" id="progressBar"></div>
+    </div>
+  </div>
 
-      <!-- Stats Dashboard（ログイン時のみ表示） -->
-      <div id="statsDashboard" class="stats-dashboard" style="display:none;">
-        <div class="stats-dashboard__label">水族館制覇状況</div>
-        <div class="stats-dashboard__row">
-          <span id="statsText" class="stats-dashboard__num">-</span>
-          <span id="statsPct" class="stats-dashboard__pct"></span>
-        </div>
-        <div class="progress">
-          <div class="bar" id="progressBar"></div>
-        </div>
-      </div>
-
-      <!-- Login CTA（未ログイン時のみ表示） -->
-      <div id="loginCta" class="login-cta" style="display:none;">
-        <div class="login-cta__inner">
-          <div class="login-cta__left">
-            <div class="login-cta__icon">🔐</div>
-            <div class="login-cta__text">
-              <div class="login-cta__title">全国の水族館を踏破しよう</div>
-              <div class="login-cta__desc">ログインで訪問済・メモ・写真追加が使えます</div>
-            </div>
-          </div>
-          <button id="loginCtaBtn" class="login-cta__btn" type="button">
-            Googleでログイン
-          </button>
+  <!-- Login CTA（未ログイン時のみ表示） -->
+  <div id="loginCta" class="login-cta" style="display:none;">
+    <div class="login-cta__inner">
+      <div class="login-cta__left">
+        <div class="login-cta__icon">🔐</div>
+        <div class="login-cta__text">
+          <div class="login-cta__title">全国の水族館を踏破しよう</div>
+          <div class="login-cta__desc">ログインで訪問済・メモ・写真追加が使えます</div>
         </div>
       </div>
+      <button id="loginCtaBtn" class="login-cta__btn" type="button">
+        Googleでログイン
+      </button>
+    </div>
+  </div>
 
-      <section class="panel">
-        <label class="row">
-          <span>検索</span>
-          <span class="suggest-wrap">
-            <input id="q" type="text" placeholder="施設名/都道府県/市区町村" />
-            <ul id="suggestList" class="suggest-list" style="display:none;"></ul>
-          </span>
-          <button id="searchBtn">検索</button>
-        </label>
+  <section class="panel">
+    <label class="row">
+      <span>検索</span>
+      <span class="suggest-wrap">
+        <input id="q" type="text" placeholder="施設名/都道府県/市区町村" />
+        <ul id="suggestList" class="suggest-list" style="display:none;"></ul>
+      </span>
+      <button id="searchBtn">検索</button>
+    </label>
 
-        <select id="pref-filter">
-          <option value="">都道府県（すべて）</option>
-        </select>
+    <select id="pref-filter">
+      <option value="">都道府県（すべて）</option>
+    </select>
 
-        <div class="chips-row">
-          <button class="chip" data-filter="all">全部</button>
-          <button class="chip" data-filter="visited">行った</button>
-          <button class="chip" data-filter="want_to_go">行きたい</button>
-          <button class="chip" data-filter="unvisited">未訪問</button>
-        </div>
-      </section>
+    <div class="chips-row">
+      <button class="chip" data-filter="all">全部</button>
+      <button class="chip" data-filter="visited">行った</button>
+      <button class="chip" data-filter="want_to_go">行きたい</button>
+      <button class="chip" data-filter="unvisited">未訪問</button>
+    </div>
+  </section>
 
-      <section class="mapwrap">
-        <div id="map"></div>
-      </section>
+  <section class="mapwrap">
+    <div id="map"></div>
+  </section>
 
-      <div class="sortBar">
-        <label class="row row-compact">
-          <span>並び替え</span>
-          <select id="sort">
-            <option value="pref_plain">都道府県順</option>
-            <option value="pref">地域別</option>
-            <option value="name">五十音順</option>
-            <option value="visit_count">訪問回数順</option>
-            <option value="visited_at">訪問日順</option>
-          </select>
-        </label>
-      </div>
+  <div class="sortBar">
+    <label class="row row-compact">
+      <span>並び替え</span>
+      <select id="sort">
+        <option value="pref_plain">都道府県順</option>
+        <option value="pref">地域別</option>
+        <option value="name">五十音順</option>
+        <option value="visit_count">訪問回数順</option>
+        <option value="visited_at">訪問日順</option>
+      </select>
+    </label>
+  </div>
 
-      <main id="list"></main>
+  <main id="list"></main>
 
-      <footer class="site-footer">
-        <div class="footer-inner">
-          <section id="timeline" class="panel timeline" style="display:none;">
-            <h2 class="timeline__title">更新履歴</h2>
-            <div id="timelineList" class="timeline__list"></div>
-          </section>
-          <a href="/contact/">お問い合わせ</a>
-          <a href="/privacy/">プライバシーポリシー</a>
-          <span>© 2025 全国水族館スタンプラリー</span>
-        </div>
-      </footer>
-
-    </div><!-- /content-col -->
-  </div><!-- /page-body -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="/contact/">お問い合わせ</a>
+      <a href="/privacy/">プライバシーポリシー</a>
+      <span>© 2025 全国水族館スタンプラリー</span>
+    </div>
+  </footer>
 
   <!-- カスタム確認モーダル -->
   <div id="confirmModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
@@ -153,6 +147,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260302-5"></script>
+  <script src="app.js?v=20260302-6"></script>
 </body>
 </html>
