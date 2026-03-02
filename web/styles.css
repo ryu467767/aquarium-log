@@ -741,28 +741,80 @@ header {
   .card .note{ margin-top: 10px; }
 }
 
-/* ===== Login CTA ===== */
+/* ===== Login CTA (polished) ===== */
 .login-cta {
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 16px;
   padding: 14px 14px;
-  margin: 12px 0 10px;
-  background: rgba(0,0,0,0.03);
+  margin: 12px 0 12px;
+  background: rgba(0,0,0,0.02);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+.login-cta__inner {
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
 }
 
+.login-cta__left {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.login-cta__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.06);
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
 .login-cta__text {
+  min-width: 0;
+}
+
+.login-cta__title {
+  font-weight: 800;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.login-cta__desc {
+  font-size: 12px;
+  opacity: 0.75;
+  line-height: 1.35;
 }
 
 .login-cta__btn {
-  border: 0;
-  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 999px;
   padding: 10px 14px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  white-space: nowrap;
+}
+
+.login-cta__btn:active {
+  transform: translateY(1px);
+}
+
+/* モバイル：縦積み */
+@media (max-width: 520px) {
+  .login-cta__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .login-cta__btn {
+    width: 100%;
+  }
 }

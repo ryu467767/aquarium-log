@@ -56,12 +56,19 @@
 
   <section class="panel">
     <div id="loginCta" class="login-cta" style="display:none;">
-      <div class="login-cta__text">
-        ログインすると「訪問済」「メモ」「写真追加」が使えます
+      <div class="login-cta__inner">
+        <div class="login-cta__left">
+          <div class="login-cta__icon">🔐</div>
+          <div class="login-cta__text">
+            <div class="login-cta__title">ログインでスタンプラリーが完成する</div>
+            <div class="login-cta__desc">訪問済・メモ・写真追加が使えます</div>
+          </div>
+        </div>
+    
+        <button id="loginCtaBtn" class="login-cta__btn" type="button">
+          Googleでログイン
+        </button>
       </div>
-      <button id="loginCtaBtn" class="login-cta__btn" type="button">
-        Googleでログイン
-      </button>
     </div>
     <label class="row">
       <span>検索</span>
