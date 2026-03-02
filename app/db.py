@@ -17,13 +17,17 @@ engine = create_engine(
 def _migrate():
     """既存テーブルに新しいカラムを追加するマイグレーション。"""
     con = _sqlite3.connect(get_db_path())
-    try:
-        con.execute("ALTER TABLE visits ADD COLUMN visit_count INTEGER NOT NULL DEFAULT 0")
-        con.commit()
-    except _sqlite3.OperationalError:
-        pass  # 既にカラムが存在する場合は無視
-    finally:
-        con.close()
+    migrations = [
+        "ALTER TABLE visits ADD COLUMN visit_count INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE visits ADD COLUMN want_to_go INTEGER NOT NULL DEFAULT 0",
+    ]
+    for sql in migrations:
+        try:
+            con.execute(sql)
+            con.commit()
+        except _sqlite3.OperationalError:
+            pass  # 既にカラムが存在する場合は無視
+    con.close()
 
 def init_db() -> None:
     SQLModel.metadata.create_all(engine)

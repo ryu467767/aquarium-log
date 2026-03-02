@@ -150,6 +150,7 @@ function passesFilter(item) {
   if (state.sort === "pref" && state.pref && item.prefecture !== state.pref) return false;
   if (state.filter === "all") return true;
   if (state.filter === "visited") return item.visited;
+  if (state.filter === "want_to_go") return item.want_to_go;
   if (state.filter === "unvisited") return !item.visited;
   if (state.filter === "star") return item.mola_star === 1;
   return true;
@@ -351,6 +352,33 @@ btn.dataset.lastClick = String(now);
   }
 
   row.appendChild(btn);
+
+  // 「行きたい」ボタン（ログイン中のみ）
+  if (state.loggedIn) {
+    const wantBtn = document.createElement("button");
+    wantBtn.type = "button";
+    wantBtn.className = it.want_to_go ? "btn-want active" : "btn-want";
+    wantBtn.textContent = it.want_to_go ? "行きたい★" : "行きたい☆";
+    wantBtn.onclick = async () => {
+      if (wantBtn.disabled) return;
+      wantBtn.disabled = true;
+      const newVal = !it.want_to_go;
+      it.want_to_go = newVal;
+      wantBtn.className = newVal ? "btn-want active" : "btn-want";
+      wantBtn.textContent = newVal ? "行きたい★" : "行きたい☆";
+      try {
+        await apiPut(`/api/aquariums/${it.id}/want_to_go`, { want_to_go: newVal });
+      } catch (e) {
+        it.want_to_go = !newVal;
+        wantBtn.className = !newVal ? "btn-want active" : "btn-want";
+        wantBtn.textContent = !newVal ? "行きたい★" : "行きたい☆";
+        alert("APIエラー: " + e.message);
+      } finally {
+        wantBtn.disabled = false;
+      }
+    };
+    row.appendChild(wantBtn);
+  }
 
   card.appendChild(row);
 

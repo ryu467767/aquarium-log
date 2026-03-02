@@ -33,6 +33,7 @@ class Visit(SQLModel, table=True):
     visited: bool = False
     visited_at: Optional[datetime] = None
     visit_count: int = Field(default=0)
+    want_to_go: bool = Field(default=False)
     note: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

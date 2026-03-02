@@ -54,6 +54,19 @@ def set_visit_count(db, user_id: str, aquarium_id: int, count: int):
     return v
 
 
+def set_want_to_go(db, user_id: str, aquarium_id: int, want_to_go: bool):
+    v = get_visit(db, user_id, aquarium_id)
+    now = datetime.utcnow()
+    if v is None:
+        v = Visit(user_id=user_id, aquarium_id=aquarium_id)
+    v.want_to_go = want_to_go
+    v.updated_at = now
+    db.add(v)
+    db.commit()
+    db.refresh(v)
+    return v
+
+
 def set_note(db, user_id: str, aquarium_id: int, note: str):
     v = get_visit(db, user_id, aquarium_id)
     now = datetime.utcnow()

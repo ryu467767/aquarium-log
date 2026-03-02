@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from sqlmodel import select
 from .db import init_db, session
 from .models import Aquarium, Visit, Photo
-from .crud import list_aquariums, set_visited, set_note, set_visited_at, set_visit_count
+from .crud import list_aquariums, set_visited, set_note, set_visited_at, set_visit_count, set_want_to_go
 from .import_csv import import_csv
 from pathlib import Path
 from fastapi.responses import FileResponse
@@ -278,6 +278,9 @@ class VisitedAtIn(BaseModel):
 class VisitCountIn(BaseModel):
     visit_count: int
 
+class WantToGoIn(BaseModel):
+    want_to_go: bool
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -367,6 +370,7 @@ def aquariums(request: Request):
                 "visited": bool(v.visited) if v else False,
                 "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
                 "visit_count": v.visit_count if v else 0,
+                "want_to_go": bool(v.want_to_go) if v else False,
                 "note": v.note if v else "",
                 "updated_at": v.updated_at.isoformat() if v else None,
                 "lat": a.lat,
@@ -392,6 +396,7 @@ def public_aquariums():
             "visited": False,
             "visited_at": None,
             "visit_count": 0,
+            "want_to_go": False,
             "note": "",
             "updated_at": None,
         } for a in aq]
@@ -439,6 +444,17 @@ def update_visit_count(aquarium_id: int, body: VisitCountIn, request: Request):
             raise HTTPException(404, "Aquarium not found")
         v = set_visit_count(db, uid, aquarium_id, body.visit_count)
         return {"aquarium_id": aquarium_id, "visit_count": v.visit_count}
+
+
+@app.put("/api/aquariums/{aquarium_id}/want_to_go")
+def update_want_to_go(aquarium_id: int, body: WantToGoIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        v = set_want_to_go(db, uid, aquarium_id, body.want_to_go)
+        return {"aquarium_id": aquarium_id, "want_to_go": v.want_to_go}
 
 
 @app.put("/api/aquariums/{aquarium_id}/note")

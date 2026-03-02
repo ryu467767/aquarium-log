@@ -900,6 +900,30 @@ main{
 }
 
 
+/* ===== 行きたいボタン ===== */
+.btn-want {
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #888;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-want:hover {
+  border-color: #f6a623;
+  color: #f6a623;
+}
+
+.btn-want.active {
+  background: #fff8e6;
+  border-color: #f6a623;
+  color: #d4820a;
+  font-weight: 700;
+}
+
 /* ===== 訪問日入力行 ===== */
 .visit-date-row {
   display: flex;
