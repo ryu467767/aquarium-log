@@ -13,7 +13,8 @@
 section.panel,
 section.mapwrap{
   max-width: none !important;
-  margin: 0 !important;
+  margin-top: 0 !important;    /* section { margin:40px } の上下だけ潰す */
+  margin-bottom: 0 !important; /* 左右は下の .panel/.mapwrap の margin:auto に任せる */
   padding: 0 !important;
 }
 
