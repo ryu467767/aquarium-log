@@ -318,12 +318,17 @@ btn.dataset.lastClick = String(now);
       it.want_to_go = newVal;
       wantBtn.className = newVal ? "btn-want active" : "btn-want";
       wantBtn.textContent = newVal ? "行きたい★" : "行きたい☆";
+      // 地図マーカーも即時更新
+      const _q = $("q") ? $("q").value.trim() : "";
+      updateMap(state.items.filter(x => match(x, _q)).filter(passesFilter), { fit: false });
       try {
         await apiPut(`/api/aquariums/${it.id}/want_to_go`, { want_to_go: newVal });
       } catch (e) {
         it.want_to_go = !newVal;
         wantBtn.className = !newVal ? "btn-want active" : "btn-want";
         wantBtn.textContent = !newVal ? "行きたい★" : "行きたい☆";
+        // 失敗時は地図も元に戻す
+        updateMap(state.items.filter(x => match(x, _q)).filter(passesFilter), { fit: false });
         alert("APIエラー: " + e.message);
       } finally {
         wantBtn.disabled = false;
