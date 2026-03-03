@@ -1253,6 +1253,46 @@ header {
   background: #e6faff;
 }
 
+/* ===== Drawer login area ===== */
+.drawer__login {
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid #e8f0f5;
+  margin-bottom: 4px;
+}
+.drawer-login-status {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  word-break: break-all;
+}
+.drawer__login .linklike {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0077b6;
+  text-align: left;
+  padding: 4px 0;
+  opacity: 1;
+}
+.drawer__login .linklike:hover {
+  color: #005f8e;
+}
+
+/* ===== Map popup card link ===== */
+.popup-card-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0077b6;
+  text-decoration: none;
+}
+.popup-card-link:hover {
+  text-decoration: underline;
+}
+
 /* ===== ③ フッター：海底カラーで差別化 ===== */
 .site-footer {
   background: linear-gradient(160deg, #00527a 0%, #003349 100%) !important;

@@ -36,9 +36,6 @@
   <header>
     <h1>全国水族館スタンプラリー</h1>
     <div class="userbox" id="userbox">
-      <span class="usertext" id="loginStatus"></span>
-      <button class="linklike" id="googleLogin" type="button">ログイン</button>
-      <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
       <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
     </div>
   </header>
@@ -49,6 +46,14 @@
   <!-- ドロワー（右からスライド） -->
   <nav id="drawer" class="drawer" aria-hidden="true">
     <button id="drawerClose" class="drawer-close" aria-label="閉じる">×</button>
+
+    <!-- ログイン状態エリア -->
+    <div class="drawer__login">
+      <span id="loginStatus" class="drawer-login-status"></span>
+      <button class="linklike" id="googleLogin" type="button">Googleでログイン</button>
+      <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
+    </div>
+
     <div class="drawer__inner">
       <a href="/" class="drawer-link drawer-link--active">トップページ</a>
       <a href="/about/" class="drawer-link">このアプリについて</a>
@@ -147,6 +152,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260302-6"></script>
+  <script src="app.js?v=20260302-7"></script>
 </body>
 </html>

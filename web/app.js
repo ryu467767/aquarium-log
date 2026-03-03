@@ -9,6 +9,7 @@ let state = {
   regionOpen: {},
 };
 state.loggedIn = false;
+state.markerById = {};
 const PREF_ORDER = [
   "北海道",
   "青森県","岩手県","宮城県","秋田県","山形県","福島県",
@@ -318,6 +319,7 @@ btn.dataset.lastClick = String(now);
       it.want_to_go = newVal;
       wantBtn.className = newVal ? "btn-want active" : "btn-want";
       wantBtn.textContent = newVal ? "行きたい★" : "行きたい☆";
+      refreshMarker(it); // 地図マーカーを即時更新
       try {
         await apiPut(`/api/aquariums/${it.id}/want_to_go`, { want_to_go: newVal });
       } catch (e) {
@@ -898,9 +900,24 @@ function initMap() {
 }
 
 
+function refreshMarker(it) {
+  const marker = state.markerById[it.id];
+  if (!marker) return;
+  let markerHtml;
+  if (it.visited) {
+    markerHtml = '<div class="marker visited"></div>';
+  } else if (it.want_to_go) {
+    markerHtml = '<div class="marker want-to-go"></div>';
+  } else {
+    markerHtml = '<div class="marker unvisited"></div>';
+  }
+  marker.setIcon(L.divIcon({ className: '', html: markerHtml, iconSize: [16, 16] }));
+}
+
 function updateMap(items, opts = { fit: true }) {
   if (!map) return;
   markersLayer.clearLayers();
+  state.markerById = {};
 
   const pts = [];
   for (const it of items) {
@@ -928,9 +945,24 @@ function updateMap(items, opts = { fit: true }) {
       iconSize: [16, 16],
     });
 
+    const popupHtml = `${badge} <strong>${label}</strong><br>${it.prefecture}${it.city ? " / " + it.city : ""}<br><a href="#" class="popup-card-link" data-id="${it.id}">カードを見る →</a>`;
     const marker = L.marker([lat, lng], { icon })
       .addTo(markersLayer)
-      .bindPopup(`${badge} ${label}<br>${it.prefecture}${it.city ? " / " + it.city : ""}`);
+      .bindPopup(popupHtml);
+
+    state.markerById[it.id] = marker;
+
+    // ポップアップのカードリンクにスクロール処理を紐付け
+    marker.on('popupopen', () => {
+      const link = marker.getPopup().getElement()?.querySelector('.popup-card-link');
+      if (!link) return;
+      link.onclick = (e) => {
+        e.preventDefault();
+        marker.closePopup();
+        const card = document.getElementById('card-' + it.id);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+    });
   }
 
   if (opts.fit && pts.length) {
