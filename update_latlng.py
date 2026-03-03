@@ -17,7 +17,9 @@ from pathlib import Path
 BASE = Path(__file__).parent
 SRC_CSV   = BASE / "aquariums_with_latlng.csv"   # 座標のソース
 LIST_CSV  = BASE / "aquariums_list.csv"            # 更新対象マスターCSV
-DB_PATH   = BASE / "data" / "app.db"               # ローカルDB (Render は /data/app.db)
+# Render 環境 (/data/app.db) を優先、なければローカルの data/app.db
+_render_db = Path("/data/app.db")
+DB_PATH    = _render_db if _render_db.exists() else BASE / "data" / "app.db"
 # ─────────────────────────────────────────────────────
 
 def load_src_csv():
