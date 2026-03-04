@@ -1,9 +1,9 @@
 """
 update_latlng.py
 ================
-aquariums_with_latlng.csv の座標を使って:
-  1. ローカルの app.db (SQLite) を UPDATE
-  2. aquariums_list.csv の lat/lng 列を上書き更新
+aquariums_with_latlng.csv の情報を使って:
+  1. ローカルの app.db (SQLite) を UPDATE（lat/lng/prefecture/city）
+  2. aquariums_list.csv の lat/lng/prefecture/city 列を上書き更新
 
 使い方:
   python update_latlng.py
@@ -23,22 +23,29 @@ DB_PATH    = _render_db if _render_db.exists() else BASE / "data" / "app.db"
 # ─────────────────────────────────────────────────────
 
 def load_src_csv():
-    """ソースCSVを {name: {lat, lng}} の辞書で返す"""
-    coords = {}
+    """ソースCSVを {name: {lat, lng, prefecture, city}} の辞書で返す"""
+    data = {}
     with open(SRC_CSV, encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             name = row["name"].strip()
-            lat  = row["lat"].strip()
-            lng  = row["lng"].strip()
+            lat  = row.get("lat", "").strip()
+            lng  = row.get("lng", "").strip()
+            pref = row.get("prefecture", "").strip()
+            city = row.get("city", "").strip()
             if lat and lng:
                 try:
-                    coords[name] = (float(lat), float(lng))
+                    data[name] = {
+                        "lat": float(lat),
+                        "lng": float(lng),
+                        "prefecture": pref,
+                        "city": city,
+                    }
                 except ValueError:
                     print(f"  [SKIP] 無効な座標: {name} lat={lat} lng={lng}")
-    return coords
+    return data
 
 
-def update_db(coords: dict):
+def update_db(data: dict):
     """app.db の aquariums テーブルを UPDATE"""
     if not DB_PATH.exists():
         print(f"[DB] ファイルが見つかりません: {DB_PATH}")
@@ -50,10 +57,10 @@ def update_db(coords: dict):
     updated = 0
     not_found = []
 
-    for name, (lat, lng) in coords.items():
+    for name, vals in data.items():
         cur.execute(
-            "UPDATE aquariums SET lat=?, lng=? WHERE name=?",
-            (lat, lng, name)
+            "UPDATE aquariums SET lat=?, lng=?, prefecture=?, city=? WHERE name=?",
+            (vals["lat"], vals["lng"], vals["prefecture"], vals["city"], name)
         )
         if cur.rowcount > 0:
             updated += 1
@@ -63,15 +70,15 @@ def update_db(coords: dict):
     con.commit()
     con.close()
 
-    print(f"\n[DB] 更新完了: {updated} / {len(coords)} 件")
+    print(f"\n[DB] 更新完了: {updated} / {len(data)} 件")
     if not_found:
         print(f"[DB] DBに存在しない名前 ({len(not_found)} 件):")
         for n in not_found:
             print(f"  - {n}")
 
 
-def update_list_csv(coords: dict):
-    """aquariums_list.csv の lat/lng 列を上書き"""
+def update_list_csv(data: dict):
+    """aquariums_list.csv の lat/lng/prefecture/city 列を上書き"""
     if not LIST_CSV.exists():
         print(f"[CSV] ファイルが見つかりません: {LIST_CSV}")
         return
@@ -79,22 +86,23 @@ def update_list_csv(coords: dict):
     # 読み込み
     with open(LIST_CSV, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames
+        fieldnames = list(reader.fieldnames)
         rows = list(reader)
 
-    # lat/lng 列がなければ追加
-    if "lat" not in fieldnames:
-        fieldnames = list(fieldnames) + ["lat"]
-    if "lng" not in fieldnames:
-        fieldnames = list(fieldnames) + ["lng"]
+    # 列がなければ追加
+    for col in ["lat", "lng", "prefecture", "city"]:
+        if col not in fieldnames:
+            fieldnames.append(col)
 
     updated = 0
     for row in rows:
         name = row["name"].strip()
-        if name in coords:
-            lat, lng = coords[name]
-            row["lat"] = lat
-            row["lng"] = lng
+        if name in data:
+            vals = data[name]
+            row["lat"] = vals["lat"]
+            row["lng"] = vals["lng"]
+            row["prefecture"] = vals["prefecture"]
+            row["city"] = vals["city"]
             updated += 1
 
     # 書き戻し（BOM付きUTF-8 で Excel でも開ける）
@@ -112,11 +120,11 @@ def main():
     print(f"DB        : {DB_PATH}")
     print()
 
-    coords = load_src_csv()
-    print(f"座標を読み込みました: {len(coords)} 件\n")
+    data = load_src_csv()
+    print(f"データを読み込みました: {len(data)} 件\n")
 
-    update_db(coords)
-    update_list_csv(coords)
+    update_db(data)
+    update_list_csv(data)
 
     print("\n完了！")
 

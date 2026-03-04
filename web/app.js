@@ -994,8 +994,16 @@ function updateMap(items, opts = { fit: true }) {
 
 const sortSel = $("sort");
 if (sortSel) {
+  // 前回の並び替えをlocalStorageから復元
+  const savedSort = localStorage.getItem("aquarium_sort");
+  if (savedSort && sortSel.querySelector(`option[value="${savedSort}"]`)) {
+    state.sort = savedSort;
+    sortSel.value = savedSort;
+  }
+
   sortSel.onchange = () => {
     state.sort = sortSel.value;
+    localStorage.setItem("aquarium_sort", state.sort);
 
     if (state.sort === "name") {
       state.pref = "";

@@ -31,8 +31,8 @@ section.mapwrap{
 }
 
 /* 縦の間隔を整える（好みで微調整OK） */
-.panel{ margin-top: 18px !important; }
-.mapwrap{ margin-top: 14px !important; }
+.panel{ margin-top: 18px !important; padding-bottom: 20px !important; }
+.mapwrap{ margin-top: 12px !important; }
 .sortBar{ margin-top: 10px !important; }
 #list{
   margin-top: 14px !important;
@@ -52,6 +52,24 @@ section.mapwrap{
 /* スマホは既存の styles.css を尊重しつつ、左右余白だけ詰める */
 @media (max-width: 520px){
   :root{ --page-pad: 12px; }
+}
+
+/* ===== Header: h1左・ハンバーガー右上に固定 ===== */
+header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 16px !important;
+}
+header h1 {
+  margin: 0 !important;
+  font-size: clamp(15px, 4.5vw, 26px) !important;
+  line-height: 1.2 !important;
+}
+.userbox {
+  position: static !important;
+  margin-top: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 /* ===== Stats dashboard / Login CTA centering ===== */
