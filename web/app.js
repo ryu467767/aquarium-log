@@ -161,44 +161,9 @@ function showConfirm(title, body) {
 }
 
 function renderCard(it) {
-  // 閉館館は専用の簡易カードを返す
-  if (it.is_closed) {
-    const card = document.createElement("div");
-    card.id = "card-" + it.id;
-    card.className = "card closed";
-
-    const titleRow = document.createElement("div");
-    titleRow.className = "title";
-
-    if (it.url) {
-      const a = document.createElement("a");
-      a.href = it.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.className = "link-title";
-      a.textContent = it.name;
-      titleRow.appendChild(a);
-    } else {
-      titleRow.textContent = it.name;
-    }
-
-    const badge = document.createElement("span");
-    badge.className = "closed-badge";
-    badge.textContent = "閉館" + (it.closed_at ? " " + it.closed_at : "");
-    titleRow.appendChild(badge);
-    card.appendChild(titleRow);
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    meta.textContent = `${it.prefecture}${it.city ? " / " + it.city : ""}`;
-    card.appendChild(meta);
-
-    return card;
-  }
-
   const card = document.createElement("div");
   card.id = "card-" + it.id;
-  card.className = "card" + (it.visited ? " is-visited" : "");
+  card.className = "card" + (it.is_closed ? " closed" : "") + (it.visited ? " is-visited" : "");
 
   // ★スタンプ風バッジ（訪問済み）
   if (it.visited) {
@@ -224,6 +189,14 @@ function renderCard(it) {
   }
   
   card.appendChild(title);
+
+  // 閉館バッジ
+  if (it.is_closed) {
+    const badge = document.createElement("span");
+    badge.className = "closed-badge";
+    badge.textContent = "閉館" + (it.closed_at ? " " + it.closed_at : "");
+    title.appendChild(badge);
+  }
 
   const meta = document.createElement("div");
   meta.className = "meta";

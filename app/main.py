@@ -355,7 +355,9 @@ def stats(request: Request):
         total = db.exec(select(Aquarium).where(Aquarium.is_closed == False)).all()
         total_n = len(total)
         visited_n = db.exec(
-            select(Visit).where(Visit.user_id == uid, Visit.visited == True)
+            select(Visit)
+            .join(Aquarium, Visit.aquarium_id == Aquarium.id)
+            .where(Visit.user_id == uid, Visit.visited == True, Aquarium.is_closed == False)
         ).all()
         return {"total": total_n, "visited": len(visited_n)}
 
