@@ -20,6 +20,11 @@ def _migrate():
     migrations = [
         "ALTER TABLE visits ADD COLUMN visit_count INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE visits ADD COLUMN want_to_go INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_penguin INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_dolphin INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_sealion INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_orca INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_jellyfish INTEGER NOT NULL DEFAULT 0",
     ]
     for sql in migrations:
         try:
