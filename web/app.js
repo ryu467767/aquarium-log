@@ -10,6 +10,7 @@ let state = {
 };
 state.loggedIn = false;
 state.markerById = {};
+const selectedAnimals = new Set();
 const PREF_ORDER = [
   "北海道",
   "青森県","岩手県","宮城県","秋田県","山形県","福島県",
@@ -91,14 +92,20 @@ function match(item, q) {
 }
 
 function passesFilter(item) {
-  // ★追加：都道府県
-// 都道府県順のときだけ都道府県フィルタを効かせる
+  // 都道府県順のときだけ都道府県フィルタを効かせる
   if (state.sort === "pref" && state.pref && item.prefecture !== state.pref) return false;
   if (state.filter === "all") return true;
   if (state.filter === "visited") return item.visited;
   if (state.filter === "want_to_go") return item.want_to_go;
   if (state.filter === "unvisited") return !item.visited;
   if (state.filter === "star") return item.mola_star === 1;
+  return true;
+}
+
+function passesAnimalFilter(item) {
+  for (const animal of selectedAnimals) {
+    if (!item[animal]) return false; // AND: 1つでもFalseならNG
+  }
   return true;
 }
 
@@ -561,7 +568,7 @@ function render() {
   const list = $("list");
   list.innerHTML = "";
 
-  let items = state.items.filter((x) => match(x, q)).filter(passesFilter);
+  let items = state.items.filter((x) => match(x, q)).filter(passesFilter).filter(passesAnimalFilter);
 
   const ja = (a, b) => (a ?? "").toString().localeCompare((b ?? "").toString(), "ja");
 
@@ -805,6 +812,21 @@ if (logoutBtn) logoutBtn.onclick = async () => {
 
   // 初期フィルタ
   document.querySelector('.chip[data-filter="all"]').classList.add("active");
+
+  // 生き物チップ（AND フィルター）
+  document.querySelectorAll(".animal-chip").forEach((btn) => {
+    btn.onclick = () => {
+      const animal = btn.dataset.animal;
+      if (selectedAnimals.has(animal)) {
+        selectedAnimals.delete(animal);
+        btn.classList.remove("active");
+      } else {
+        selectedAnimals.add(animal);
+        btn.classList.add("active");
+      }
+      render();
+    };
+  });
 
   initSuggestions();
 

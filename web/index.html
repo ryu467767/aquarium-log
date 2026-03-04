@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260302-19">
-  <link rel="stylesheet" href="styles.layout.css?v=20260302-14">
+  <link rel="stylesheet" href="styles.css?v=20260304-20">
+  <link rel="stylesheet" href="styles.layout.css?v=20260304-15">
   <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -110,6 +110,17 @@
       <button class="chip" data-filter="want_to_go">行きたい</button>
       <button class="chip" data-filter="unvisited">未訪問</button>
     </div>
+
+    <div class="animal-filter">
+      <span class="animal-filter__label">生き物で絞り込み</span>
+      <div class="animal-chips-row">
+        <button class="animal-chip" data-animal="has_penguin">🐧 ペンギン</button>
+        <button class="animal-chip" data-animal="has_dolphin">🐬 イルカ</button>
+        <button class="animal-chip" data-animal="has_sealion">🦭 アシカ</button>
+        <button class="animal-chip" data-animal="has_orca">🐋 シャチ</button>
+        <button class="animal-chip" data-animal="has_jellyfish">🪼 クラゲ</button>
+      </div>
+    </div>
   </section>
 
   <section class="mapwrap">
@@ -152,6 +163,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260302-7"></script>
+  <script src="app.js?v=20260304-8"></script>
 </body>
 </html>

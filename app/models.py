@@ -17,6 +17,13 @@ class Aquarium(SQLModel, table=True):
     lat: Optional[float] = None
     lng: Optional[float] = None
 
+    # 生き物フラグ
+    has_penguin: bool = Field(default=False)
+    has_dolphin: bool = Field(default=False)
+    has_sealion: bool = Field(default=False)
+    has_orca: bool = Field(default=False)
+    has_jellyfish: bool = Field(default=False)
+
     __table_args__ = (
         UniqueConstraint("name", "location_raw", "url", name="uq_aquarium_identity"),
     )

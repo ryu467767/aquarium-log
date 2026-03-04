@@ -388,6 +388,11 @@ def aquariums(request: Request):
                 "updated_at": v.updated_at.isoformat() if v else None,
                 "lat": a.lat,
                 "lng": a.lng,
+                "has_penguin": bool(a.has_penguin),
+                "has_dolphin": bool(a.has_dolphin),
+                "has_sealion": bool(a.has_sealion),
+                "has_orca": bool(a.has_orca),
+                "has_jellyfish": bool(a.has_jellyfish),
             })
         return out
 
@@ -405,6 +410,11 @@ def public_aquariums():
             "mola_star": a.mola_star,
             "lat": a.lat,
             "lng": a.lng,
+            "has_penguin": bool(a.has_penguin),
+            "has_dolphin": bool(a.has_dolphin),
+            "has_sealion": bool(a.has_sealion),
+            "has_orca": bool(a.has_orca),
+            "has_jellyfish": bool(a.has_jellyfish),
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
             "visited": False,
             "visited_at": None,

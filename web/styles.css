@@ -171,6 +171,46 @@ input {
   border-color: #00b4d8;
   font-weight: 700;
 }
+/* === 生き物フィルター === */
+.animal-filter {
+  margin-top: 10px;
+}
+.animal-filter__label {
+  display: block;
+  font-size: 12px;
+  color: #caf0f8;
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.panel .animal-filter__label {
+  color: #0077b6;
+}
+.animal-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.animal-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #90e0ef;
+  background: #ffffff;
+  color: #003b4d;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.animal-chip:hover {
+  background: #e6faff;
+}
+.animal-chip.active {
+  background: #0077b6;
+  color: #ffffff;
+  border-color: #0077b6;
+  font-weight: 700;
+}
+
 /* === Filter chips（全部 / 行った / 未訪問 / ★のみ）を明るい背景でも見えるように === */
 .panel .chip{
     background: #ffffff;

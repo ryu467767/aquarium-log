@@ -13,7 +13,14 @@ FIELDS = [
     "mola_star",
     "lat",
     "lng",
+    "has_penguin",
+    "has_dolphin",
+    "has_sealion",
+    "has_orca",
+    "has_jellyfish",
 ]
+
+BOOL_FIELDS = {"has_penguin", "has_dolphin", "has_sealion", "has_orca", "has_jellyfish"}
 
 
 def import_csv(csv_path: str) -> int:
@@ -50,6 +57,10 @@ def import_csv(csv_path: str) -> int:
                 except Exception:
                     data["lng"] = None
 
+                # bool 変換（"TRUE"/"true" → True, それ以外 → False）
+                for bf in BOOL_FIELDS:
+                    if bf in data:
+                        data[bf] = str(data[bf]).strip().lower() in ("true", "1", "yes")
 
                 # 既存チェック（uqに合わせる）
                 exists = db.exec(
