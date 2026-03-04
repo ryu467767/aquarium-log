@@ -18,6 +18,11 @@ section.mapwrap{
   padding: 0 !important;
 }
 
+/* panel は下に余白を追加（生き物フィルターと地図の間隔） */
+section.panel {
+  padding-bottom: 24px !important;
+}
+
 /* 主要ブロックは同じ柱（幅）に揃える */
 .panel,
 .mapwrap,
@@ -39,9 +44,11 @@ section.mapwrap{
   margin-bottom: 28px !important;
 }
 
-/* 地図は柱いっぱいに伸ばす */
+/* 地図は柱いっぱいに伸ばす・GPU合成で描画を滑らかに */
 #map{
   width: 100% !important;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* PCでは地図を少し大きく（バランス良く） */
@@ -59,12 +66,9 @@ header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 10px 16px !important;
 }
 header h1 {
   margin: 0 !important;
-  font-size: clamp(15px, 4.5vw, 26px) !important;
-  line-height: 1.2 !important;
 }
 .userbox {
   position: static !important;

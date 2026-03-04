@@ -654,7 +654,6 @@ function render() {
   }
 
   // --- 地図更新（ここは必ず通す）
-  console.log("sample item keys:", items[0] && Object.keys(items[0]));
   const mapKey = `${state.filter}|${state.pref}|${q}`;
   const shouldFit = state.lastMapKey !== mapKey;
   state.lastMapKey = mapKey;
