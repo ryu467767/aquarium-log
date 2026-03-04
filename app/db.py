@@ -25,6 +25,8 @@ def _migrate():
         "ALTER TABLE aquariums ADD COLUMN has_sealion INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN has_orca INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN has_jellyfish INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN is_closed INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN closed_at TEXT",
     ]
     for sql in migrations:
         try:

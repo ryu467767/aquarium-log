@@ -24,6 +24,10 @@ class Aquarium(SQLModel, table=True):
     has_orca: bool = Field(default=False)
     has_jellyfish: bool = Field(default=False)
 
+    # 閉館フラグ
+    is_closed: bool = Field(default=False)
+    closed_at: Optional[str] = Field(default=None)  # 例: "2024-03"
+
     __table_args__ = (
         UniqueConstraint("name", "location_raw", "url", name="uq_aquarium_identity"),
     )

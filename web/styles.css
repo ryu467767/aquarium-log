@@ -211,6 +211,30 @@ input {
   font-weight: 700;
 }
 
+/* === 閉館水族館 === */
+.card.closed {
+  opacity: 0.55;
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+.closed-badge {
+  display: inline-block;
+  font-size: 11px;
+  background: #999;
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.marker.closed {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #aaa;
+  border: 2px solid #777;
+}
+
 /* === Filter chips（全部 / 行った / 未訪問 / ★のみ）を明るい背景でも見えるように === */
 .panel .chip{
     background: #ffffff;

@@ -18,9 +18,11 @@ FIELDS = [
     "has_sealion",
     "has_orca",
     "has_jellyfish",
+    "is_closed",
+    "closed_at",
 ]
 
-BOOL_FIELDS = {"has_penguin", "has_dolphin", "has_sealion", "has_orca", "has_jellyfish"}
+BOOL_FIELDS = {"has_penguin", "has_dolphin", "has_sealion", "has_orca", "has_jellyfish", "is_closed"}
 
 
 def import_csv(csv_path: str) -> int:

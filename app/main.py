@@ -352,7 +352,7 @@ def me(request: Request):
 def stats(request: Request):
     uid = get_user_id(request)
     with session() as db:
-        total = db.exec(select(Aquarium)).all()
+        total = db.exec(select(Aquarium).where(Aquarium.is_closed == False)).all()
         total_n = len(total)
         visited_n = db.exec(
             select(Visit).where(Visit.user_id == uid, Visit.visited == True)
@@ -393,6 +393,8 @@ def aquariums(request: Request):
                 "has_sealion": bool(a.has_sealion),
                 "has_orca": bool(a.has_orca),
                 "has_jellyfish": bool(a.has_jellyfish),
+                "is_closed": bool(a.is_closed),
+                "closed_at": a.closed_at or "",
             })
         return out
 
@@ -415,6 +417,8 @@ def public_aquariums():
             "has_sealion": bool(a.has_sealion),
             "has_orca": bool(a.has_orca),
             "has_jellyfish": bool(a.has_jellyfish),
+            "is_closed": bool(a.is_closed),
+            "closed_at": a.closed_at or "",
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
             "visited": False,
             "visited_at": None,

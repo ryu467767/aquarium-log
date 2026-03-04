@@ -1,177 +1,177 @@
-﻿name,prefecture,city,url,mola_star,lat,lng,has_penguin,penguin_source_url,penguin_checked_at,penguin_status,has_dolphin,has_sealion,has_orca,has_jellyfish,animal_checked_at
-札幌市豊平川さけ科学館,北海道,札幌市,https://salmon-museum.jp/,0,43.0010659,141.343248,false,https://salmon-museum.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-サンピアザ水族館,北海道,札幌市,http://www.sunpiazza-aquarium.com/,0,43.036808,141.4717964,true,http://www.sunpiazza-aquarium.com/,2026/2/26,unknown,false,true,false,false,2026-03-05
-AOAO SAPPORO,北海道,札幌市,https://aoao-sapporo.blue/,0,43.057763,141.3535774,true,https://aoao-sapporo.blue/,2026/2/26,unknown,false,false,false,false,2026-03-04
-サケのふるさと千歳水族館,北海道,千歳市,https://chitose-aq.jp/,0,42.8329229,141.6591748,false,https://chitose-aq.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-おたる水族館,北海道,小樽市,https://otaru-aq.jp/,0,43.237007,141.0114018,true,https://otaru-aq.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-登別マリンパークニクス,北海道,小樽市,https://www.nixe.co.jp/,0,42.4550334,141.1827924,true,https://www.nixe.co.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-市立室蘭水族館,北海道,室蘭市,http://iburi.net/murosui/index.html,0,42.3398313,140.9439762,true,http://iburi.net/murosui/index.html,2026/2/26,unknown,false,false,false,true,2026-03-05
-函館朝市ミニ水族館,北海道,函館市,https://event.hakobura.jp/6137,0,41.768793,140.729008,unknown,https://event.hakobura.jp/6137,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04
-標津サーモン科学館,北海道,標津町,http://s-salmon.com/,0,43.6592967,145.1151733,unknown,http://s-salmon.com/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04
-おんねゆ温泉「北の大地の水族館」（山の水族館）,北海道,北見市,https://onneyu-aq.com/,0,43.8029391,143.8946351,false,https://onneyu-aq.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-くしろ水族館　ぷくぷく,北海道,釧路市,https://www.sennosuke.net/pukupuku/,0,42.9849503,144.3820491,false,https://www.sennosuke.net/pukupuku/,2026/2/26,unknown,false,false,false,true,2026-03-04
-水族館プティ,北海道,厚岸町,https://www.conchiglie.net/facility,0,43.0518221,144.8476917,false,https://www.conchiglie.net/facility,2026/2/26,unknown,false,false,false,false,2026-03-04
-氷海展望塔オホーツクタワー,北海道,紋別市,https://o-tower.co.jp/okhotsktower.html,0,44.3565151,143.3545224,false,https://o-tower.co.jp/okhotsktower.html,2026/2/26,unknown,false,true,false,false,2026-03-04
-わっかりうむ ノシャップ寒流水族館,北海道,稚内市,https://www.city.wakkanai.hokkaido.jp/suizokukan/,0,45.415737,141.6739836,true,https://www.city.wakkanai.hokkaido.jp/suizokukan/,2026/2/26,unknown,false,true,false,false,2026-03-05
-旭川市 旭山動物園,北海道,旭川市,https://www.city.asahikawa.hokkaido.jp/asahiyamazoo/,0,43.7686424,142.4792729,true,https://www.city.asahikawa.hokkaido.jp/asahiyamazoo/,2026/2/26,unknown,false,true,false,true,2026-03-05
-美深チョウザメ館,北海道,美深町,https://www.bifukaonsen.com/sturgeon/,0,44.5572161,142.3245838,false,https://www.bifukaonsen.com/sturgeon/,2026/2/26,unknown,false,false,false,false,2026-03-05
-青森県営浅虫水族館,青森県,青森市,http://asamushi-aqua.com/,0,40.8222833,140.7472027,false,http://asamushi-aqua.com/,2026/2/26,unknown,true,true,false,true,2026-03-04
-八戸市水産科学館マリエント,青森県,八戸市,http://www.marient.org/,0,40.5396437,141.5627763,unknown,http://www.marient.org/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-久慈地下水族科学館 もぐらんぴあ,岩手県,久慈市,http://www.moguranpia.com/,0,40.1904323,141.7756812,unknown,http://www.moguranpia.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-岩手県立水産科学館,岩手県,宮古市,https://www.city.miyako.iwate.jp/gyosei/soshiki/suisan/2/1/1/1759.html,0,39.6395835,141.9461177,false,https://www.city.miyako.iwate.jp/gyosei/soshiki/suisan/2/1/1/1759.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-男鹿水族館GAO,青森県,男鹿市,http://www.gao-aqua.jp/,0,39.9440945,139.7184133,true,http://www.gao-aqua.jp/,2026/2/26,unknown,false,true,false,false,2026-03-04
-アクアテラス錦ケ丘,宮城県,仙台市,https://aquaterrace.co.jp/,0,38.2677554,140.8691498,false,https://aquaterrace.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-仙台うみの杜水族館,宮城県,仙台市,http://www.uminomori.jp/umino/index.html,0,38.2710627,140.9804667,unknown,http://www.uminomori.jp/umino/index.html,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-仙台市八木山動物公園,宮城県,仙台市,http://www.city.sendai.jp/zoo/index.html,0,38.2457859,140.8460443,false,http://www.city.sendai.jp/zoo/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-登米市伊豆沼・内沼サンクチュアリセンター（淡水魚館）,宮城県,仙台市,http://izunuma.org/1_3.html,0,38.7139179,141.1221473,false,http://izunuma.org/1_3.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-鶴岡市立加茂水族館,山形県,鶴岡市,https://kamo-kurage.jp/,0,38.7616467,139.7246984,true,https://kamo-kurage.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05
-アクアマリンふくしま,福島県,いわき市,https://www.aquamarine.or.jp/,0,36.9425928,140.9010779,false,https://www.aquamarine.or.jp/,2026/2/26,unknown,false,true,false,false,2026-03-04
-アクアマリンいなわしろカワセミ水族館,福島県,猪苗代市,https://www.aquamarine.or.jp/kawasemi/,0,37.6759747,140.2423537,false,https://www.aquamarine.or.jp/kawasemi/,2026/2/26,unknown,false,false,false,false,2026-03-04
-栃木県なかがわ水遊園,栃木県,大田原市,https://tnap.jp/,0,36.7886682,140.1290051,false,https://tnap.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-道の駅 水紀行館 水産学習館,群馬県,みなかみ市,http://www9.wind.ne.jp/mizukikou/frame.htm,0,36.6916153,138.9833065,false,http://www9.wind.ne.jp/mizukikou/frame.htm,2026/2/26,unknown,false,false,false,false,2026-03-04
-桐生が岡動物園,群馬県,桐生市,http://www.city.kiryu.lg.jp/zoo/index.html,0,36.4206189,139.3397621,unknown,http://www.city.kiryu.lg.jp/zoo/index.html,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04
-アクアワールド 茨城県大洗水族館,茨城県,大洗町,http://www.aquaworld-oarai.com/,0,36.3333185,140.593871,true,http://www.aquaworld-oarai.com/,2026/2/26,unknown,true,true,false,true,2026-03-04
-かすみがうら市水族館,茨城県,かすみがうら市,http://www.dane-kerry.com/aquarium/,0,36.0716321,140.3760291,true,http://www.dane-kerry.com/aquarium/,2026/2/26,unknown,false,true,false,true,2026-03-05
-さいたま水族館,埼玉県,羽生市,http://www.parks.or.jp/suizokukan/,0,36.1731966,139.5978047,false,http://www.parks.or.jp/suizokukan/,2026/2/26,,false,false,false,false,2026-03-05
-埼玉県立川の水族館,埼玉県,寄居町,https://www.river-museum.jp/,0,36.1182741,139.1927779,false,https://www.river-museum.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-鴨川シーワールド,千葉県,鴨川市,http://www.kamogawa-seaworld.jp/,0,35.1152464,140.1190315,true,http://www.kamogawa-seaworld.jp/,2026/2/26,unknown,true,true,true,true,2026-03-05
-みなとオアシス「渚の駅たてやま」海辺の広場,千葉県,館山市,https://www.city.tateyama.chiba.jp/minato/page100102.html,0,34.9965304,139.8699838,false,https://www.city.tateyama.chiba.jp/minato/page100102.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-板橋区立熱帯環境植物館,東京都,板橋区,https://www.seibu-la.co.jp/nettaikan/,0,35.7512814,139.7087794,false,https://www.seibu-la.co.jp/nettaikan/,2026/2/26,unknown,false,false,false,false,2026-03-04
-足立区生物園,東京都,足立区,https://seibutuen.jp/,0,35.7923576,139.8071899,false,https://seibutuen.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-しながわ水族館,東京都,品川区,https://www.aquarium.gr.jp/,0,35.5886394,139.7374728,true,https://www.aquarium.gr.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-マクセル アクアパーク品川,東京都,港区,http://www.aqua-park.jp/aqua/index.html,0,35.628389,139.7357544,true,http://www.aqua-park.jp/aqua/index.html,2026/2/26,unknown,true,true,false,true,2026-03-05
-UWS AQUARIUM GA☆KYO,東京都,港区,https://uws-gakyo.com/,0,35.6580089,139.7515137,false,https://uws-gakyo.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-すみだ水族館,東京都,墨田区,https://www.sumida-aquarium.com/,0,35.7101011,139.8093338,true,https://www.sumida-aquarium.com/,2026/2/26,unknown,false,true,false,true,2026-03-05
-葛西臨海水族園,東京都,江戸川区,https://www.tokyo-zoo.net/zoo/kasai/,0,35.6406595,139.8620492,true,https://www.tokyo-zoo.net/zoo/kasai/,2026/2/26,unknown,false,false,false,true,2026-03-05
-サンシャイン水族館,東京都,豊島区,https://sunshinecity.jp/aquarium/,0,35.7291388,139.7202726,true,https://sunshinecity.jp/aquarium/,2026/2/26,unknown,false,true,false,false,2026-03-05
-上野動物園 両生爬虫類館,東京都,台東区,https://www.tokyo-zoo.net/zoo/ueno/,0,35.7152915,139.7738278,false,https://www.tokyo-zoo.net/zoo/ueno/,2026/2/26,unknown,false,false,false,false,2026-03-05
-井の頭公園自然文化園 水生物館,東京都,三鷹市,https://www.tokyo-zoo.net/zoo/ino/about.html,0,35.6833926,139.5592421,false,https://www.tokyo-zoo.net/zoo/ino/about.html,2026/2/26,unknown,false,false,false,false,2026-03-05
-小笠原海洋センター,東京都,小笠原町,http://bonin-ocean.net/,0,27.0939245,142.2037854,false,http://bonin-ocean.net/,2026/2/26,unknown,false,false,false,false,2026-03-04
-小笠原水産センター 小さな水族館,東京都,小笠原町,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,0,27.0956,142.191,false,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-横浜・八景島シーパラダイス,神奈川県,横浜市,http://www.seaparadise.co.jp/,0,35.3365026,139.6457835,false,http://www.seaparadise.co.jp/,2026/2/26,unknown,true,true,false,false,2026-03-05
-横浜開運水族館 フォーチュンアクアリウム,神奈川県,横浜市,https://fortune-aquarium.com/,0,35.4503381,139.6343802,false,https://fortune-aquarium.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-新江ノ島水族館,神奈川県,藤沢市,https://www.enosui.com/,0,35.310075,139.4794388,true,https://www.enosui.com/,2026/2/26,unknown,true,true,false,true,2026-03-05
-観音崎自然博物館,神奈川県,横須賀市,https://kannonzaki-nature-museum.jimdofree.com/,0,35.251788,139.742333,unknown,https://kannonzaki-nature-museum.jimdofree.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-相模川ふれあい科学館 アクアリウムさがみはら,神奈川県,相模原市,https://sagamigawa-fureai.com/,0,35.5474136,139.3288881,false,https://sagamigawa-fureai.com/,2026/2/26,unknown,false,false,false,false,2026-03-05
-北里大学アクアリウムラボ,神奈川県,相模原市,http://kalsdiary.blog.fc2.com/,0,35.5714621,139.3731052,false,http://kalsdiary.blog.fc2.com/,2026/2/26,unknown,false,false,false,true,2026-03-04
-箱根園水族館,神奈川県,箱根町,https://www.princehotels.co.jp/amuse/hakone-en/suizokukan/,0,35.2122439,139.0093068,true,https://www.princehotels.co.jp/amuse/hakone-en/suizokukan/,2026/2/26,unknown,false,true,false,false,2026-03-05
-カワスイ 川崎水族館,神奈川県,川崎市,https://kawa-sui.com/,0,35.5292942,139.6968358,false,https://kawa-sui.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-よみうりランド,神奈川県,川崎市,https://www.yomiuriland.com/,0,35.6248943,139.5158633,false,https://www.yomiuriland.com/,2026/2/26,unknown,false,true,false,false,2026-03-04
-新潟市水族館 マリンピア日本海,新潟県,新潟市,https://www.marinepia.or.jp/,0,37.9163757,139.0365062,true,https://www.marinepia.or.jp/,2026/2/26,unknown,true,true,false,false,2026-03-04
-長岡市寺泊水族博物館,新潟県,長岡市,http://www.aquarium-teradomari.jp/,0,37.6338595,138.760273,unknown,http://www.aquarium-teradomari.jp/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04
-上越市立水族博物館 うみがたり,新潟県,上越市,https://www.umigatari.jp/joetsu/,0,37.1735213,138.2329915,unknown,https://www.umigatari.jp/joetsu/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-イヨボヤ会館,新潟県,村上市,https://www.iyoboya.jp/,0,38.2277764,139.4714764,false,https://www.iyoboya.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-小千谷市錦鯉の里,新潟県,小千谷市,https://www.city.ojiya.niigata.jp/site/kanko/nishikigoinosato.html,0,37.3110039,138.7954153,unknown,https://www.city.ojiya.niigata.jp/site/kanko/nishikigoinosato.html,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-魚津水族館,富山県,魚津市,https://www.uozu-aquarium.jp/,0,36.7983076,137.388119,true,https://www.uozu-aquarium.jp/,2026/2/26,unknown,false,true,false,true,2026-03-05
-ひみラボ水族館,富山県,氷見市,https://sites.google.com/site/himilab/5%E3%81%B2%E3%81%BF%E3%83%A9%E3%83%9C%E6%B0%B4%E6%97%8F%E9%A4%A8?authuser=0,0,36.8645966,136.9704027,true,https://sites.google.com/site/himilab/5%E3%81%B2%E3%81%BF%E3%83%A9%E3%83%9C%E6%B0%B4%E6%97%8F%E9%A4%A8?authuser=0,2026/2/26,unknown,false,true,false,true,2026-03-05
-のとじま水族館,石川県,七尾市,https://www.notoaqua.jp/,0,37.148723,136.9821597,true,https://www.notoaqua.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-のと海洋ふれあいセンター,石川県,能登町,http://notomarine.jp/,0,37.304877,137.240809,false,http://notomarine.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-くにみクラゲ公民館,福井県,福井市,https://tjwcf52557.wixsite.com/kunimikurage,0,36.061751,136.2260542,false,https://tjwcf52557.wixsite.com/kunimikurage,2026/2/26,unknown,false,false,false,true,2026-03-04
-越前松島水族館,福井県,坂井市,https://www.echizen-aquarium.com/,0,36.2526485,136.1466764,true,https://www.echizen-aquarium.com/,2026/2/26,unknown,true,true,false,true,2026-03-05
-越前がにミュージアム,福井県,越前町,https://www.town-echizen.jp/spot/spot05Detail.php?id=339,0,35.921722,135.997683,false,https://www.town-echizen.jp/spot/spot05Detail.php?id=339,2026/2/26,unknown,false,false,false,false,2026-03-05
-福井県海浜自然センター,福井県,若狭町,https://fcnc.pref.fukui.lg.jp/,0,35.5644665,135.8414667,false,https://fcnc.pref.fukui.lg.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04
-岐阜県世界淡水魚園水族館 アクア・トトぎふ,岐阜県,各務原市,https://aquatotto.com/,0,35.3995831,136.8485648,false,https://aquatotto.com/,2026/2/26,unknown,false,true,false,false,2026-03-05
-民芸ミュージアム 匠の館 森の水族館,岐阜県,高山市,http://hida.net/aquarium.htm,0,36.1396246,137.2510322,false,http://hida.net/aquarium.htm,2026/2/26,unknown,false,false,false,false,2026-03-04
-山梨県立富士湧水の里水族館,山梨県,忍野村,http://www.morinonakano-suizokukan.com/,0,35.4600722,138.8478637,false,http://www.morinonakano-suizokukan.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-蓼科アミューズメント水族館,長野県,茅野市,https://www.tateshina-aquarium.jp/,0,36.0662657,138.3028697,unknown,https://www.tateshina-aquarium.jp/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-国営アルプスあづみの公園 あづみの学校,長野県,安曇野市,http://www.azumino-koen.jp/horigane_hotaka/map/den-en/index.html,0,36.3044083,137.9054972,false,http://www.azumino-koen.jp/horigane_hotaka/map/den-en/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-SMART AQUARiUM SHIZUOKA（スマートアクアリウム静岡）,静岡県,静岡市,https://smartaqua-sz.jp/,0,34.9751974,138.3831697,false,https://smartaqua-sz.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-沼津港深海水族館,静岡県,沼津市,http://www.numazu-deepsea.com/,0,35.0840228,138.8581762,false,http://www.numazu-deepsea.com/,2026/2/26,unknown,false,false,false,false,2026-03-05
-伊豆・三津シーパラダイス,静岡県,沼津市,https://www.mitosea.com/,0,35.0196583,138.8961819,true,https://www.mitosea.com/,2026/2/26,unknown,true,true,false,true,2026-03-05
-下田海中水族館,静岡県,下田市,https://shimoda-aquarium.com/,0,34.6661667,138.9460634,true,https://shimoda-aquarium.com/,2026/2/26,unknown,true,true,false,false,2026-03-05
-体感型動物園 iZoo,静岡県,河津町,http://izoo.co.jp/,0,34.7570038,138.9875358,false,http://izoo.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-熱川バナナワニ園,静岡県,南伊豆町,http://bananawani.jp/,0,34.8164143,139.0679944,false,http://bananawani.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-ドルフィンファンタジー伊東,静岡県,伊東市,http://dolphin-fantasy.com/,0,34.973118,139.1082994,false,http://dolphin-fantasy.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-浜名湖体験学習施設 ウォット,静岡県,浜松市,https://ulotto.entetsuassist-dms.com/,0,34.697483,137.6058449,false,https://ulotto.entetsuassist-dms.com/,2026/2/26,unknown,false,false,false,true,2026-03-05
-幼魚水族館,静岡県,清水町,https://yo-sui.com/,0,35.0169,138.9163,true,https://yo-sui.com/,2026/2/26,unknown,false,true,false,true,2026-03-05
-時之栖水中楽園AQUARIUM,静岡県,御殿場市,https://www.tokinosumika.com/eventinfo/details.php?log=1427705462,0,35.308753,138.9349133,false,https://www.tokinosumika.com/eventinfo/details.php?log=1427705462,2026/2/26,unknown,false,false,false,false,2026-03-04
-名古屋港水族館,愛知県,名古屋市,http://www.nagoyaaqua.jp/,0,35.09097,136.8780335,false,http://www.nagoyaaqua.jp/,2026/2/26,unknown,true,false,false,true,2026-03-05
-名古屋市東山動植物園 世界のメダカ館・自然動物館,愛知県,名古屋市,http://www.higashiyama.city.nagoya.jp/,0,35.1851045,136.8998438,false,http://www.higashiyama.city.nagoya.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-シーライフ名古屋,愛知県,名古屋市,https://www.legoland.jp/resort-guide/sealife-nagoya/,0,35.0796,136.8421,false,https://www.legoland.jp/resort-guide/sealife-nagoya/,2026/2/26,unknown,false,false,false,false,2026-03-04
-南知多ビーチランド,愛知県,美浜町,https://beachland.jp/,0,34.7868063,136.8547061,true,https://beachland.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-竹島水族館,愛知県,蒲郡市,https://www.city.gamagori.lg.jp/site/takesui/,0,34.8171414,137.2318491,false,https://www.city.gamagori.lg.jp/site/takesui/,2026/2/26,unknown,false,true,false,true,2026-03-05
-碧南海浜水族館,愛知県,碧南市,http://www.city.hekinan.lg.jp/aquarium/index.html,0,34.8628,136.9969,false,http://www.city.hekinan.lg.jp/aquarium/index.html,2026/2/26,unknown,false,false,false,true,2026-03-05
-のんほいパーク 豊橋総合動植物公園,愛知県,豊橋市,https://www.nonhoi.jp/,0,34.769123,137.391461,false,https://www.nonhoi.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-赤塚山公園 淡水魚水族館 ぎょぎょランド,愛知県,豊橋市,http://www.akatsukayama.jp/,0,34.767,137.3825,false,http://www.akatsukayama.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-弥富金魚水族館,愛知県,弥富市,https://www.city.yatomi.lg.jp/event_info/1001259/1005653.html,0,35.1138,136.7322,true,https://www.city.yatomi.lg.jp/event_info/1001259/1005653.html,2026/2/26,unknown,false,true,false,true,2026-03-05
-鳥羽水族館,三重県,鳥羽市,https://www.aquarium.co.jp/,0,34.4820148,136.8453304,false,https://www.aquarium.co.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-伊勢夫婦岩ふれあい水族館 シーパラダイス,三重県,伊勢市,https://ise-seaparadise.com/,0,34.4875944,136.7092334,true,https://ise-seaparadise.com/,2026/2/26,unknown,false,true,false,true,2026-03-04
-赤目滝水族館（旧：日本サンショウウオセンター）,三重県,名張市,https://www.akame48taki.com/,0,34.6279243,136.1086582,false,https://www.akame48taki.com/,2026/2/26,unknown,false,false,false,false,2026-03-05
-小さな水族館  びわこベース,滋賀県,大津市,https://www.biwako-base.com/,0,35.0177852,135.8548122,false,https://www.biwako-base.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-滋賀県立琵琶湖博物館,滋賀県,草津市,https://www.biwahaku.jp/,0,35.0738256,135.9347759,false,https://www.biwahaku.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-小さなびわ湖水族館,滋賀県,長浜市,https://ohmitsk.jimdofree.com/%E5%B0%8F%E3%81%95%E3%81%AA%E3%81%B3%E3%82%8F%E6%B9%96%E6%B0%B4%E6%97%8F%E9%A4%A8/,0,35.3789514,136.2660672,true,https://ohmitsk.jimdofree.com/%E5%B0%8F%E3%81%95%E3%81%AA%E3%81%B3%E3%82%8F%E6%B9%96%E6%B0%B4%E6%97%8F%E9%A4%A8/,2026/2/26,unknown,true,true,false,true,2026-03-05
-京都水族館,京都府,京都市,https://www.kyoto-aquarium.com/,0,34.9875543,135.7478778,true,https://www.kyoto-aquarium.com/,2026/2/26,unknown,true,false,false,true,2026-03-05
-花園教会水族館,京都府,京都市,https://www.kyotohanasui.com/,0,35.0109804,135.7694346,true,https://www.kyotohanasui.com/,2026/2/26,unknown,false,true,false,false,2026-03-05
-海遊館,大阪府,大阪市,https://www.kintetsu.co.jp/leisure/shimamarine/,0,34.6545464,135.4289211,true,https://www.kintetsu.co.jp/leisure/shimamarine/,2026/2/26,unknown,true,true,false,true,2026-03-05
-高槻市立自然博物館（あくあぴあ芥川）,大阪府,高槻市,http://www.aquapia.net/,0,34.8464785,135.6172204,false,http://www.aquapia.net/,2026/2/26,unknown,false,false,false,false,2026-03-04
-ニフレル,大阪府,吹田市,https://www.nifrel.jp/,0,34.8062757,135.5336456,false,https://www.nifrel.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-きんたい廃校博物館,大阪府,八尾市,https://www.satodukuri.jp/pages/4583172/page_202101262135,0,34.6269018,135.6008668,false,https://www.satodukuri.jp/pages/4583172/page_202101262135,2026/2/26,unknown,false,false,false,false,2026-03-04
-プラネットアクア・ポート,大阪府,枚方市,https://www.hirakatapark.co.jp/attractions/aquarium/,0,34.8144363,135.6507278,false,https://www.hirakatapark.co.jp/attractions/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-05
-神戸須磨シーワールド,兵庫県,神戸市,https://www.kobesuma-seaworld.jp/,0,34.6439517,135.12784,true,https://www.kobesuma-seaworld.jp/,2026/2/26,unknown,true,true,true,true,2026-03-05
-átoa（アトア）,兵庫県,神戸市,https://atoa-kobe.jp/,0,34.683244,135.1936099,false,https://atoa-kobe.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-みなとやま水族館,兵庫県,神戸市,https://minatoyama.jp/,0,34.6932379,135.1943764,false,https://minatoyama.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05
-姫路市立水族館,兵庫県,姫路市,https://www.city.himeji.lg.jp/aqua/,0,34.8226563,134.6763377,true,https://www.city.himeji.lg.jp/aqua/,2026/2/26,unknown,false,false,false,true,2026-03-05
-城崎マリンワールド,兵庫県,豊岡市,http://marineworld.hiyoriyama.co.jp/,0,35.6557822,134.8240505,true,http://marineworld.hiyoriyama.co.jp/,2026/2/26,unknown,true,true,false,false,2026-03-05
-アクア東条,兵庫県,加東市,https://www.hyoturi.or.jp/aqua/,0,34.817126,135.5615474,false,https://www.hyoturi.or.jp/aqua/,2026/2/26,unknown,false,false,false,false,2026-03-04
-淡路じゃのひれアウトドアリゾート,兵庫県,南あわじ市,http://janohire.co.jp/,0,34.2945545,134.7798281,false,http://janohire.co.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04
-金魚のふるさと 郡山金魚資料館,奈良県,大和郡山市,https://www.kingyoen.com/,0,34.6496181,135.7829497,false,https://www.kingyoen.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-和歌山県立自然博物館,和歌山県,海南市,https://www.shizenhaku.wakayama-c.ed.jp/,0,34.1586779,135.1920762,false,https://www.shizenhaku.wakayama-c.ed.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-京都大学白浜水族館,和歌山県,白浜町,http://www.seto.kyoto-u.ac.jp/aquarium/,0,33.693,135.3428,false,http://www.seto.kyoto-u.ac.jp/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-05
-アドベンチャーワールド,和歌山県,白浜町,https://www.aws-s.com/,0,33.6658997,135.3724345,true,https://www.aws-s.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-串本海中公園,和歌山県,串本町,http://www.kushimoto.co.jp/,0,33.4761,135.773,false,http://www.kushimoto.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05
-すさみ町立エビとカニの水族館,和歌山県,すさみ町,http://www.ebikani-aquarium.com/,0,33.5507649,135.4946824,false,http://www.ebikani-aquarium.com/,2026/2/26,unknown,false,true,false,false,2026-03-05
-太地町立くじらの博物館,和歌山県,太地町,http://www.kujirakan.jp/,0,33.6018725,135.9457777,unknown,http://www.kujirakan.jp/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-ドルフィンリゾート,和歌山県,太地町,https://www.dolphinresort2.net/,0,33.5987301,135.9370203,false,https://www.dolphinresort2.net/,2026/2/26,unknown,true,false,false,false,2026-03-04
-ドルフィンベェイス,和歌山県,太地町,https://dolphinbase.co.jp/,0,33.5920999,135.9444352,false,https://dolphinbase.co.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04
-とっとり賀露かにっこ館,鳥取県,鳥取市,https://www.kanikko.jp/,0,35.5345849,134.1789117,false,https://www.kanikko.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-島根県立しまね海洋館 アクアス,鳥取県,浜田市,https://aquas.or.jp/,0,34.959579,132.144636,true,https://aquas.or.jp/,2026/2/26,unknown,true,true,false,true,2026-03-04
-島根県立宍道湖自然館 ゴビウス,島根県,出雲市,http://www.gobius.jp/,0,35.3668891,132.7548827,false,http://www.gobius.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-笠岡市立カブトガニ博物館,島根県,笠岡市,https://www.city.kasaoka.okayama.jp/site/kabutogani/,0,34.4774642,133.5213699,false,https://www.city.kasaoka.okayama.jp/site/kabutogani/,2026/2/26,unknown,false,false,false,false,2026-03-04
-渋川マリン水族館（玉野海洋水族館）,鳥取県,玉野町,https://www.city.tamano.lg.jp/site/kaihaku/,0,34.4841,133.9408,true,https://www.city.tamano.lg.jp/site/kaihaku/,2026/2/26,unknown,false,true,false,true,2026-03-05
-広島もとまち水族館,広島県,広島市,https://aquarium-hiroshima.com/,0,34.3969496,132.4575305,false,https://aquarium-hiroshima.com/,2026/2/26,unknown,false,false,false,false,2026-03-05
-広島市水産振興センター 魚と漁業の資料展示室,広島県,広島市,https://www.haff.city.hiroshima.jp/info/suisansc/facility/exhibition/,0,34.3917241,132.4517589,unknown,https://www.haff.city.hiroshima.jp/info/suisansc/facility/exhibition/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-みやじマリン 宮島水族館,広島県,廿日市市,https://www.miyajima-aqua.jp/,0,34.3499239,132.3306058,true,https://www.miyajima-aqua.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-福山大学 マリンバイオセンター（水族館）,広島県,尾道市,https://www.fukuyama-u.ac.jp/marine-bio-center/,0,34.4088519,133.2051549,false,https://www.fukuyama-u.ac.jp/marine-bio-center/,2026/2/26,unknown,false,false,false,false,2026-03-04
-市立しものせき水族館「海響館」,山口県,下関市,http://www.kaikyokan.com/,0,33.9577116,130.9415455,true,http://www.kaikyokan.com/,2026/2/26,unknown,true,true,false,false,2026-03-04
-岩国市ミクロ生物館,山口県,岩国市,http://micro.shiokaze-kouen.net/index.html,0,34.1664995,132.2191163,false,http://micro.shiokaze-kouen.net/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-なぎさ水族館,山口県,周防大島町,https://nagisapark.jimdofree.com/%E3%81%AA%E3%81%8E%E3%81%95%E6%B0%B4%E6%97%8F%E9%A4%A8/,0,33.9246,132.3149,false,https://nagisapark.jimdofree.com/%E3%81%AA%E3%81%8E%E3%81%95%E6%B0%B4%E6%97%8F%E9%A4%A8/,2026/2/26,unknown,false,false,false,false,2026-03-05
-新屋島水族館,香川県,高松市,http://www.new-yashima-aq.com/newYAQ/home/home.html,0,34.3580735,134.0997137,true,http://www.new-yashima-aq.com/newYAQ/home/home.html,2026/2/26,unknown,true,true,false,true,2026-03-05
-四国水族館,香川県,宇多津町,https://shikoku-aquarium.jp/,0,34.3123308,133.8077902,true,https://shikoku-aquarium.jp/,2026/2/26,unknown,false,true,false,true,2026-03-05
-日本ドルフィンセンター,香川県,さぬき市,https://www.j-dc2.net/,0,34.2875346,134.2676815,false,https://www.j-dc2.net/,2026/2/26,unknown,true,false,false,false,2026-03-04
-日和佐うみがめ博物館カレッタ,徳島県,美波町,http://caretta-hiwasa.com/,0,33.7348537,134.5409388,unknown,http://caretta-hiwasa.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-海洋自然博物館マリンジャム 島のちいさな水族館,徳島県,海陽町,https://marine.kaiyo-kankou.jp/,0,33.5937388,134.3220808,false,https://marine.kaiyo-kankou.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-虹の森公園 おさかな館,愛媛県,松野町,https://morinokuni.or.jp/publics/index/27/,0,33.2271539,132.7104971,true,https://morinokuni.or.jp/publics/index/27/,2026/2/26,unknown,false,false,false,false,2026-03-04
-ドルフィンファームしまなみ,愛媛県,今治市,https://www.df-shimanami.com/,0,34.2006476,133.0760666,false,https://www.df-shimanami.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-長高水族館（愛媛県立長浜高等学校 高校内水族館）,愛媛県,大洲市,https://nagakoaquarium.wixsite.com/home,0,33.506488,132.5446842,false,https://nagakoaquarium.wixsite.com/home,2026/2/26,unknown,false,false,false,false,2026-03-04
-桂浜水族館,高知県,高知市,https://katurahama-aq.jp/,0,33.4972686,133.573653,false,https://katurahama-aq.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05
-高知県立足摺海洋館SATOUMI,高知県,土佐清水市,https://www.kaiyoukan.jp/,0,32.7816213,132.9548557,false,https://www.kaiyoukan.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04
-四万十川学遊館 あきついお,高知県,四万十市,https://www.shimanto-kankou.com/kanko/natural-park/akituio.html,0,32.9912232,132.9336984,false,https://www.shimanto-kankou.com/kanko/natural-park/akituio.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-むろと廃校水族館,高知県,室戸市,https://x.com/murosui_kochi,0,33.3257892,134.1950297,unknown,https://x.com/murosui_kochi,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04
-室戸ドルフィンセンター,高知県,室戸市,https://muroto.j-dc.net/,0,33.2682346,134.1596277,unknown,https://muroto.j-dc.net/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04
-マリンワールド海の中道,福岡県,福岡市,https://marine-world.jp/,0,33.661407,130.36335,true,https://marine-world.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05
-北九州市水環境館,福岡県,北九州市,https://mizukankyokan.jp/,0,33.8843504,130.8776027,false,https://mizukankyokan.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-やながわ有明海水族館,福岡県,柳川市,https://www.spera-morisatoumi.com/,0,33.1630969,130.4058091,false,https://www.spera-morisatoumi.com/,2026/2/26,,false,false,false,false,2026-03-05
-鹿島市干潟交流館「なな海」,佐賀県,鹿島市,https://saga-kashima-kankou.com/spot/1138,0,33.1039529,130.0985169,false,https://saga-kashima-kankou.com/spot/1138,2026/2/26,unknown,false,false,false,false,2026-03-04
-佐賀県立宇宙科学館 ゆめぎんが,佐賀県,武雄市,https://www.yumeginga.jp/,0,33.1935518,130.0194484,false,https://www.yumeginga.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04
-大分マリーンパレス水族館「うみたまご」,大分県,大分市,https://www.umitamago.jp/,0,33.2589684,131.5356401,true,https://www.umitamago.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04
-道の駅やよい 番匠おさかな館,大分県,佐伯市,https://www.michinoeki-yayoi.com/banjou-osakanakan,0,32.9601732,131.8996704,false,https://www.michinoeki-yayoi.com/banjou-osakanakan,2026/2/26,unknown,false,false,false,false,2026-03-04
-白池地獄,大分県,別府市,http://www.beppu-jigoku.com/shiraike/,0,33.3153269,131.4741443,false,http://www.beppu-jigoku.com/shiraike/,2026/2/26,unknown,false,false,false,false,2026-03-04
-つくみイルカ島,大分県,津久見市,http://www.tsukumi-irukajima.jp/,0,33.0722942,131.861347,true,http://www.tsukumi-irukajima.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04
-大淀川学習館,宮崎県,宮崎市,http://oyodo.miyabunkyo.com/,0,31.9184,131.4264,false,http://oyodo.miyabunkyo.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-高千穂峡淡水魚水族館,宮崎県,高千穂町,https://takachiho-kanko.info/sightseeing/detail.php?log=1338291652,0,32.702147,131.3006739,false,https://takachiho-kanko.info/sightseeing/detail.php?log=1338291652,2026/2/26,unknown,false,false,false,false,2026-03-04
-すみえファミリー水族館,宮崎県,延岡市,http://sunbeach-sumie.com/sumie_family_aquarium.html,0,32.661755,131.7680697,false,http://sunbeach-sumie.com/sumie_family_aquarium.html,2026/2/26,unknown,false,false,false,false,2026-03-04
-出の山淡水魚水族館,宮崎県,小林市,http://kankou-kobayashi.jp/publics/index/37/,0,31.9966841,130.9731456,false,http://kankou-kobayashi.jp/publics/index/37/,2026/2/26,unknown,false,false,false,false,2026-03-04
-志布志湾大黒イルカランド,宮崎県,串間市,http://www.irukaland.com/,0,31.4649768,131.2282568,false,http://www.irukaland.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-海中水族館シードーナツ,熊本県,上天草市,https://amakusapearl.com/,0,32.5298573,130.4283611,false,https://amakusapearl.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-長崎ペンギン水族館,長崎県,長崎市,https://penguin-aqua.jp/,0,32.758177,129.946765,true,https://penguin-aqua.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04
-九十九島水族館「海きらら」,長崎県,佐世保市,https://umikirara.jp/,0,33.1611395,129.6791481,false,https://umikirara.jp/,2026/2/26,unknown,true,false,false,true,2026-03-04
-諫早ゆうゆうランド 干拓の里 むつごろう水族館,長崎県,諫早市,http://www.kantakunosato.co.jp/learning/aquarium/,0,32.843426,130.0530537,false,http://www.kantakunosato.co.jp/learning/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-04
-壱岐イルカパーク,長崎県,壱岐市,https://irukapark.com/,0,33.8607595,129.703766,false,https://irukapark.com/,2026/2/26,unknown,true,false,false,false,2026-03-04
-いおワールドかごしま水族館,鹿児島県,鹿児島市,http://hsmop.web.fc2.com/,0,31.5959379,130.5645832,false,http://hsmop.web.fc2.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-奄美海洋展示館,鹿児島県,奄美市,https://www.ohama.marutani-amami.com/ocean-exhibition-hall,0,28.4025796,129.455333,false,https://www.ohama.marutani-amami.com/ocean-exhibition-hall,2026/2/26,unknown,true,false,false,false,2026-03-04
-沖縄美ら海水族館,沖縄県,本部町,https://churaumi.okinawa/,0,26.6943689,127.878038,false,https://churaumi.okinawa/,2026/2/26,unknown,true,false,false,false,2026-03-05
-DMMかりゆし水族館,沖縄県,豊見城町,https://kariyushi-aquarium.com/,0,26.1635,127.6716,true,https://kariyushi-aquarium.com/,2026/2/26,unknown,false,false,false,false,2026-03-04
-さんご畑,沖縄県,読谷村,https://seaseed.com/coral-farm/,0,26.3974,127.7607,false,https://seaseed.com/coral-farm/,2026/2/26,unknown,false,false,false,false,2026-03-04
-波左間海中公園,千葉県,館山市,http://hsmop.web.fc2.com/,0,34.9751188,139.7830763,false,http://hsmop.web.fc2.com/,2026/2/26,unknown,false,false,false,false,2026-03-05
-延岡マリンサービス,宮崎県,延岡市,https://marine.gr.jp/manbo/,0,32.5823063,131.6649034,false,https://marine.gr.jp/manbo/,2026/2/26,unknown,true,false,false,false,2026-03-04
-あげしま海のでじたる館,新潟県,佐渡市,https://sado-ageshima.com/aquarium/,0,38.0182578,138.3683995,false,https://sado-ageshima.com/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-04
+﻿name,prefecture,city,url,mola_star,lat,lng,has_penguin,penguin_source_url,penguin_checked_at,penguin_status,has_dolphin,has_sealion,has_orca,has_jellyfish,animal_checked_at,is_closed,closed_at
+札幌市豊平川さけ科学館,北海道,札幌市,https://salmon-museum.jp/,0,43.0010659,141.343248,false,https://salmon-museum.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+サンピアザ水族館,北海道,札幌市,http://www.sunpiazza-aquarium.com/,0,43.036808,141.4717964,true,http://www.sunpiazza-aquarium.com/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+AOAO SAPPORO,北海道,札幌市,https://aoao-sapporo.blue/,0,43.057763,141.3535774,true,https://aoao-sapporo.blue/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+サケのふるさと千歳水族館,北海道,千歳市,https://chitose-aq.jp/,0,42.8329229,141.6591748,false,https://chitose-aq.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+おたる水族館,北海道,小樽市,https://otaru-aq.jp/,0,43.237007,141.0114018,true,https://otaru-aq.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+登別マリンパークニクス,北海道,小樽市,https://www.nixe.co.jp/,0,42.4550334,141.1827924,true,https://www.nixe.co.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+市立室蘭水族館,北海道,室蘭市,http://iburi.net/murosui/index.html,0,42.3398313,140.9439762,true,http://iburi.net/murosui/index.html,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+函館朝市ミニ水族館,北海道,函館市,https://event.hakobura.jp/6137,0,41.768793,140.729008,unknown,https://event.hakobura.jp/6137,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+標津サーモン科学館,北海道,標津町,http://s-salmon.com/,0,43.6592967,145.1151733,unknown,http://s-salmon.com/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+おんねゆ温泉「北の大地の水族館」（山の水族館）,北海道,北見市,https://onneyu-aq.com/,0,43.8029391,143.8946351,false,https://onneyu-aq.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+くしろ水族館　ぷくぷく,北海道,釧路市,https://www.sennosuke.net/pukupuku/,0,42.9849503,144.3820491,false,https://www.sennosuke.net/pukupuku/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+水族館プティ,北海道,厚岸町,https://www.conchiglie.net/facility,0,43.0518221,144.8476917,false,https://www.conchiglie.net/facility,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+氷海展望塔オホーツクタワー,北海道,紋別市,https://o-tower.co.jp/okhotsktower.html,0,44.3565151,143.3545224,false,https://o-tower.co.jp/okhotsktower.html,2026/2/26,unknown,false,true,false,false,2026-03-04,FALSE,
+わっかりうむ ノシャップ寒流水族館,北海道,稚内市,https://www.city.wakkanai.hokkaido.jp/suizokukan/,0,45.415737,141.6739836,true,https://www.city.wakkanai.hokkaido.jp/suizokukan/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+旭川市 旭山動物園,北海道,旭川市,https://www.city.asahikawa.hokkaido.jp/asahiyamazoo/,0,43.7686424,142.4792729,true,https://www.city.asahikawa.hokkaido.jp/asahiyamazoo/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+美深チョウザメ館,北海道,美深町,https://www.bifukaonsen.com/sturgeon/,0,44.5572161,142.3245838,false,https://www.bifukaonsen.com/sturgeon/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+青森県営浅虫水族館,青森県,青森市,http://asamushi-aqua.com/,0,40.8222833,140.7472027,false,http://asamushi-aqua.com/,2026/2/26,unknown,true,true,false,true,2026-03-04,FALSE,
+八戸市水産科学館マリエント,青森県,八戸市,http://www.marient.org/,0,40.5396437,141.5627763,unknown,http://www.marient.org/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+久慈地下水族科学館 もぐらんぴあ,岩手県,久慈市,http://www.moguranpia.com/,0,40.1904323,141.7756812,unknown,http://www.moguranpia.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+岩手県立水産科学館,岩手県,宮古市,https://www.city.miyako.iwate.jp/gyosei/soshiki/suisan/2/1/1/1759.html,0,39.6395835,141.9461177,false,https://www.city.miyako.iwate.jp/gyosei/soshiki/suisan/2/1/1/1759.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+男鹿水族館GAO,青森県,男鹿市,http://www.gao-aqua.jp/,0,39.9440945,139.7184133,true,http://www.gao-aqua.jp/,2026/2/26,unknown,false,true,false,false,2026-03-04,FALSE,
+アクアテラス錦ケ丘,宮城県,仙台市,https://aquaterrace.co.jp/,0,38.2677554,140.8691498,false,https://aquaterrace.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+仙台うみの杜水族館,宮城県,仙台市,http://www.uminomori.jp/umino/index.html,0,38.2710627,140.9804667,unknown,http://www.uminomori.jp/umino/index.html,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+仙台市八木山動物公園,宮城県,仙台市,http://www.city.sendai.jp/zoo/index.html,0,38.2457859,140.8460443,false,http://www.city.sendai.jp/zoo/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+登米市伊豆沼・内沼サンクチュアリセンター（淡水魚館）,宮城県,仙台市,http://izunuma.org/1_3.html,0,38.7139179,141.1221473,false,http://izunuma.org/1_3.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+鶴岡市立加茂水族館,山形県,鶴岡市,https://kamo-kurage.jp/,0,38.7616467,139.7246984,true,https://kamo-kurage.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+アクアマリンふくしま,福島県,いわき市,https://www.aquamarine.or.jp/,0,36.9425928,140.9010779,false,https://www.aquamarine.or.jp/,2026/2/26,unknown,false,true,false,false,2026-03-04,FALSE,
+アクアマリンいなわしろカワセミ水族館,福島県,猪苗代市,https://www.aquamarine.or.jp/kawasemi/,0,37.6759747,140.2423537,false,https://www.aquamarine.or.jp/kawasemi/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+栃木県なかがわ水遊園,栃木県,大田原市,https://tnap.jp/,0,36.7886682,140.1290051,false,https://tnap.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+道の駅 水紀行館 水産学習館,群馬県,みなかみ市,http://www9.wind.ne.jp/mizukikou/frame.htm,0,36.6916153,138.9833065,false,http://www9.wind.ne.jp/mizukikou/frame.htm,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+桐生が岡動物園,群馬県,桐生市,http://www.city.kiryu.lg.jp/zoo/index.html,0,36.4206189,139.3397621,unknown,http://www.city.kiryu.lg.jp/zoo/index.html,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+アクアワールド 茨城県大洗水族館,茨城県,大洗町,http://www.aquaworld-oarai.com/,0,36.3333185,140.593871,true,http://www.aquaworld-oarai.com/,2026/2/26,unknown,true,true,false,true,2026-03-04,FALSE,
+かすみがうら市水族館,茨城県,かすみがうら市,http://www.dane-kerry.com/aquarium/,0,36.0716321,140.3760291,true,http://www.dane-kerry.com/aquarium/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+さいたま水族館,埼玉県,羽生市,http://www.parks.or.jp/suizokukan/,0,36.1731966,139.5978047,false,http://www.parks.or.jp/suizokukan/,2026/2/26,,false,false,false,false,2026-03-05,FALSE,
+埼玉県立川の水族館,埼玉県,寄居町,https://www.river-museum.jp/,0,36.1182741,139.1927779,false,https://www.river-museum.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+鴨川シーワールド,千葉県,鴨川市,http://www.kamogawa-seaworld.jp/,0,35.1152464,140.1190315,true,http://www.kamogawa-seaworld.jp/,2026/2/26,unknown,true,true,true,true,2026-03-05,FALSE,
+みなとオアシス「渚の駅たてやま」海辺の広場,千葉県,館山市,https://www.city.tateyama.chiba.jp/minato/page100102.html,0,34.9965304,139.8699838,false,https://www.city.tateyama.chiba.jp/minato/page100102.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+板橋区立熱帯環境植物館,東京都,板橋区,https://www.seibu-la.co.jp/nettaikan/,0,35.7512814,139.7087794,false,https://www.seibu-la.co.jp/nettaikan/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+足立区生物園,東京都,足立区,https://seibutuen.jp/,0,35.7923576,139.8071899,false,https://seibutuen.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+しながわ水族館,東京都,品川区,https://www.aquarium.gr.jp/,0,35.5886394,139.7374728,true,https://www.aquarium.gr.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+マクセル アクアパーク品川,東京都,港区,http://www.aqua-park.jp/aqua/index.html,0,35.628389,139.7357544,true,http://www.aqua-park.jp/aqua/index.html,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+UWS AQUARIUM GA☆KYO,東京都,港区,https://uws-gakyo.com/,0,35.6580089,139.7515137,false,https://uws-gakyo.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+すみだ水族館,東京都,墨田区,https://www.sumida-aquarium.com/,0,35.7101011,139.8093338,true,https://www.sumida-aquarium.com/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+葛西臨海水族園,東京都,江戸川区,https://www.tokyo-zoo.net/zoo/kasai/,0,35.6406595,139.8620492,true,https://www.tokyo-zoo.net/zoo/kasai/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+サンシャイン水族館,東京都,豊島区,https://sunshinecity.jp/aquarium/,0,35.7291388,139.7202726,true,https://sunshinecity.jp/aquarium/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+上野動物園 両生爬虫類館,東京都,台東区,https://www.tokyo-zoo.net/zoo/ueno/,0,35.7152915,139.7738278,false,https://www.tokyo-zoo.net/zoo/ueno/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+井の頭公園自然文化園 水生物館,東京都,三鷹市,https://www.tokyo-zoo.net/zoo/ino/about.html,0,35.6833926,139.5592421,false,https://www.tokyo-zoo.net/zoo/ino/about.html,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+小笠原海洋センター,東京都,小笠原町,http://bonin-ocean.net/,0,27.0939245,142.2037854,false,http://bonin-ocean.net/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+小笠原水産センター 小さな水族館,東京都,小笠原町,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,0,27.0956,142.191,false,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+横浜・八景島シーパラダイス,神奈川県,横浜市,http://www.seaparadise.co.jp/,0,35.3365026,139.6457835,false,http://www.seaparadise.co.jp/,2026/2/26,unknown,true,true,false,false,2026-03-05,FALSE,
+横浜開運水族館 フォーチュンアクアリウム,神奈川県,横浜市,https://fortune-aquarium.com/,0,35.4503381,139.6343802,false,https://fortune-aquarium.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+新江ノ島水族館,神奈川県,藤沢市,https://www.enosui.com/,0,35.310075,139.4794388,true,https://www.enosui.com/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+観音崎自然博物館,神奈川県,横須賀市,https://kannonzaki-nature-museum.jimdofree.com/,0,35.251788,139.742333,unknown,https://kannonzaki-nature-museum.jimdofree.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+相模川ふれあい科学館 アクアリウムさがみはら,神奈川県,相模原市,https://sagamigawa-fureai.com/,0,35.5474136,139.3288881,false,https://sagamigawa-fureai.com/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+北里大学アクアリウムラボ,神奈川県,相模原市,http://kalsdiary.blog.fc2.com/,0,35.5714621,139.3731052,false,http://kalsdiary.blog.fc2.com/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+箱根園水族館,神奈川県,箱根町,https://www.princehotels.co.jp/amuse/hakone-en/suizokukan/,0,35.2122439,139.0093068,true,https://www.princehotels.co.jp/amuse/hakone-en/suizokukan/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+カワスイ 川崎水族館,神奈川県,川崎市,https://kawa-sui.com/,0,35.5292942,139.6968358,false,https://kawa-sui.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+よみうりランド,神奈川県,川崎市,https://www.yomiuriland.com/,0,35.6248943,139.5158633,false,https://www.yomiuriland.com/,2026/2/26,unknown,false,true,false,false,2026-03-04,FALSE,
+新潟市水族館 マリンピア日本海,新潟県,新潟市,https://www.marinepia.or.jp/,0,37.9163757,139.0365062,true,https://www.marinepia.or.jp/,2026/2/26,unknown,true,true,false,false,2026-03-04,FALSE,
+長岡市寺泊水族博物館,新潟県,長岡市,http://www.aquarium-teradomari.jp/,0,37.6338595,138.760273,unknown,http://www.aquarium-teradomari.jp/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+上越市立水族博物館 うみがたり,新潟県,上越市,https://www.umigatari.jp/joetsu/,0,37.1735213,138.2329915,unknown,https://www.umigatari.jp/joetsu/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+イヨボヤ会館,新潟県,村上市,https://www.iyoboya.jp/,0,38.2277764,139.4714764,false,https://www.iyoboya.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+小千谷市錦鯉の里,新潟県,小千谷市,https://www.city.ojiya.niigata.jp/site/kanko/nishikigoinosato.html,0,37.3110039,138.7954153,unknown,https://www.city.ojiya.niigata.jp/site/kanko/nishikigoinosato.html,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+魚津水族館,富山県,魚津市,https://www.uozu-aquarium.jp/,0,36.7983076,137.388119,true,https://www.uozu-aquarium.jp/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+ひみラボ水族館,富山県,氷見市,https://sites.google.com/site/himilab/5%E3%81%B2%E3%81%BF%E3%83%A9%E3%83%9C%E6%B0%B4%E6%97%8F%E9%A4%A8?authuser=0,0,36.8645966,136.9704027,true,https://sites.google.com/site/himilab/5%E3%81%B2%E3%81%BF%E3%83%A9%E3%83%9C%E6%B0%B4%E6%97%8F%E9%A4%A8?authuser=0,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+のとじま水族館,石川県,七尾市,https://www.notoaqua.jp/,0,37.148723,136.9821597,true,https://www.notoaqua.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+のと海洋ふれあいセンター,石川県,能登町,http://notomarine.jp/,0,37.304877,137.240809,false,http://notomarine.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+くにみクラゲ公民館,福井県,福井市,https://tjwcf52557.wixsite.com/kunimikurage,0,36.061751,136.2260542,false,https://tjwcf52557.wixsite.com/kunimikurage,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+越前松島水族館,福井県,坂井市,https://www.echizen-aquarium.com/,0,36.2526485,136.1466764,true,https://www.echizen-aquarium.com/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+越前がにミュージアム,福井県,越前町,https://www.town-echizen.jp/spot/spot05Detail.php?id=339,0,35.921722,135.997683,false,https://www.town-echizen.jp/spot/spot05Detail.php?id=339,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+福井県海浜自然センター,福井県,若狭町,https://fcnc.pref.fukui.lg.jp/,0,35.5644665,135.8414667,false,https://fcnc.pref.fukui.lg.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+岐阜県世界淡水魚園水族館 アクア・トトぎふ,岐阜県,各務原市,https://aquatotto.com/,0,35.3995831,136.8485648,false,https://aquatotto.com/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+民芸ミュージアム 匠の館 森の水族館,岐阜県,高山市,http://hida.net/aquarium.htm,0,36.1396246,137.2510322,false,http://hida.net/aquarium.htm,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+山梨県立富士湧水の里水族館,山梨県,忍野村,http://www.morinonakano-suizokukan.com/,0,35.4600722,138.8478637,false,http://www.morinonakano-suizokukan.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+蓼科アミューズメント水族館,長野県,茅野市,https://www.tateshina-aquarium.jp/,0,36.0662657,138.3028697,unknown,https://www.tateshina-aquarium.jp/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+国営アルプスあづみの公園 あづみの学校,長野県,安曇野市,http://www.azumino-koen.jp/horigane_hotaka/map/den-en/index.html,0,36.3044083,137.9054972,false,http://www.azumino-koen.jp/horigane_hotaka/map/den-en/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+SMART AQUARiUM SHIZUOKA（スマートアクアリウム静岡）,静岡県,静岡市,https://smartaqua-sz.jp/,0,34.9751974,138.3831697,false,https://smartaqua-sz.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+沼津港深海水族館,静岡県,沼津市,http://www.numazu-deepsea.com/,0,35.0840228,138.8581762,false,http://www.numazu-deepsea.com/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+伊豆・三津シーパラダイス,静岡県,沼津市,https://www.mitosea.com/,0,35.0196583,138.8961819,true,https://www.mitosea.com/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+下田海中水族館,静岡県,下田市,https://shimoda-aquarium.com/,0,34.6661667,138.9460634,true,https://shimoda-aquarium.com/,2026/2/26,unknown,true,true,false,false,2026-03-05,FALSE,
+体感型動物園 iZoo,静岡県,河津町,http://izoo.co.jp/,0,34.7570038,138.9875358,false,http://izoo.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+熱川バナナワニ園,静岡県,南伊豆町,http://bananawani.jp/,0,34.8164143,139.0679944,false,http://bananawani.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+ドルフィンファンタジー伊東,静岡県,伊東市,http://dolphin-fantasy.com/,0,34.973118,139.1082994,false,http://dolphin-fantasy.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+浜名湖体験学習施設 ウォット,静岡県,浜松市,https://ulotto.entetsuassist-dms.com/,0,34.697483,137.6058449,false,https://ulotto.entetsuassist-dms.com/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+幼魚水族館,静岡県,清水町,https://yo-sui.com/,0,35.0169,138.9163,true,https://yo-sui.com/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+時之栖水中楽園AQUARIUM,静岡県,御殿場市,https://www.tokinosumika.com/eventinfo/details.php?log=1427705462,0,35.308753,138.9349133,false,https://www.tokinosumika.com/eventinfo/details.php?log=1427705462,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+名古屋港水族館,愛知県,名古屋市,http://www.nagoyaaqua.jp/,0,35.09097,136.8780335,false,http://www.nagoyaaqua.jp/,2026/2/26,unknown,true,false,false,true,2026-03-05,FALSE,
+名古屋市東山動植物園 世界のメダカ館・自然動物館,愛知県,名古屋市,http://www.higashiyama.city.nagoya.jp/,0,35.1851045,136.8998438,false,http://www.higashiyama.city.nagoya.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+シーライフ名古屋,愛知県,名古屋市,https://www.legoland.jp/resort-guide/sealife-nagoya/,0,35.0796,136.8421,false,https://www.legoland.jp/resort-guide/sealife-nagoya/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+南知多ビーチランド,愛知県,美浜町,https://beachland.jp/,0,34.7868063,136.8547061,true,https://beachland.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+竹島水族館,愛知県,蒲郡市,https://www.city.gamagori.lg.jp/site/takesui/,0,34.8171414,137.2318491,false,https://www.city.gamagori.lg.jp/site/takesui/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+碧南海浜水族館,愛知県,碧南市,http://www.city.hekinan.lg.jp/aquarium/index.html,0,34.8628,136.9969,false,http://www.city.hekinan.lg.jp/aquarium/index.html,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+のんほいパーク 豊橋総合動植物公園,愛知県,豊橋市,https://www.nonhoi.jp/,0,34.769123,137.391461,false,https://www.nonhoi.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+赤塚山公園 淡水魚水族館 ぎょぎょランド,愛知県,豊橋市,http://www.akatsukayama.jp/,0,34.767,137.3825,false,http://www.akatsukayama.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+弥富金魚水族館,愛知県,弥富市,https://www.city.yatomi.lg.jp/event_info/1001259/1005653.html,0,35.1138,136.7322,true,https://www.city.yatomi.lg.jp/event_info/1001259/1005653.html,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+鳥羽水族館,三重県,鳥羽市,https://www.aquarium.co.jp/,0,34.4820148,136.8453304,false,https://www.aquarium.co.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+伊勢夫婦岩ふれあい水族館 シーパラダイス,三重県,伊勢市,https://ise-seaparadise.com/,0,34.4875944,136.7092334,true,https://ise-seaparadise.com/,2026/2/26,unknown,false,true,false,true,2026-03-04,FALSE,
+赤目滝水族館（旧：日本サンショウウオセンター）,三重県,名張市,https://www.akame48taki.com/,0,34.6279243,136.1086582,false,https://www.akame48taki.com/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+小さな水族館  びわこベース,滋賀県,大津市,https://www.biwako-base.com/,0,35.0177852,135.8548122,false,https://www.biwako-base.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+滋賀県立琵琶湖博物館,滋賀県,草津市,https://www.biwahaku.jp/,0,35.0738256,135.9347759,false,https://www.biwahaku.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+小さなびわ湖水族館,滋賀県,長浜市,https://ohmitsk.jimdofree.com/%E5%B0%8F%E3%81%95%E3%81%AA%E3%81%B3%E3%82%8F%E6%B9%96%E6%B0%B4%E6%97%8F%E9%A4%A8/,0,35.3789514,136.2660672,true,https://ohmitsk.jimdofree.com/%E5%B0%8F%E3%81%95%E3%81%AA%E3%81%B3%E3%82%8F%E6%B9%96%E6%B0%B4%E6%97%8F%E9%A4%A8/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+京都水族館,京都府,京都市,https://www.kyoto-aquarium.com/,0,34.9875543,135.7478778,true,https://www.kyoto-aquarium.com/,2026/2/26,unknown,true,false,false,true,2026-03-05,FALSE,
+花園教会水族館,京都府,京都市,https://www.kyotohanasui.com/,0,35.0109804,135.7694346,true,https://www.kyotohanasui.com/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+海遊館,大阪府,大阪市,https://www.kintetsu.co.jp/leisure/shimamarine/,0,34.6545464,135.4289211,true,https://www.kintetsu.co.jp/leisure/shimamarine/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+高槻市立自然博物館（あくあぴあ芥川）,大阪府,高槻市,http://www.aquapia.net/,0,34.8464785,135.6172204,false,http://www.aquapia.net/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+ニフレル,大阪府,吹田市,https://www.nifrel.jp/,0,34.8062757,135.5336456,false,https://www.nifrel.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+きんたい廃校博物館,大阪府,八尾市,https://www.satodukuri.jp/pages/4583172/page_202101262135,0,34.6269018,135.6008668,false,https://www.satodukuri.jp/pages/4583172/page_202101262135,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+プラネットアクア・ポート,大阪府,枚方市,https://www.hirakatapark.co.jp/attractions/aquarium/,0,34.8144363,135.6507278,false,https://www.hirakatapark.co.jp/attractions/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+神戸須磨シーワールド,兵庫県,神戸市,https://www.kobesuma-seaworld.jp/,0,34.6439517,135.12784,true,https://www.kobesuma-seaworld.jp/,2026/2/26,unknown,true,true,true,true,2026-03-05,FALSE,
+átoa（アトア）,兵庫県,神戸市,https://atoa-kobe.jp/,0,34.683244,135.1936099,false,https://atoa-kobe.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+みなとやま水族館,兵庫県,神戸市,https://minatoyama.jp/,0,34.6932379,135.1943764,false,https://minatoyama.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+姫路市立水族館,兵庫県,姫路市,https://www.city.himeji.lg.jp/aqua/,0,34.8226563,134.6763377,true,https://www.city.himeji.lg.jp/aqua/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+城崎マリンワールド,兵庫県,豊岡市,http://marineworld.hiyoriyama.co.jp/,0,35.6557822,134.8240505,true,http://marineworld.hiyoriyama.co.jp/,2026/2/26,unknown,true,true,false,false,2026-03-05,FALSE,
+アクア東条,兵庫県,加東市,https://www.hyoturi.or.jp/aqua/,0,34.817126,135.5615474,false,https://www.hyoturi.or.jp/aqua/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+淡路じゃのひれアウトドアリゾート,兵庫県,南あわじ市,http://janohire.co.jp/,0,34.2945545,134.7798281,false,http://janohire.co.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+金魚のふるさと 郡山金魚資料館,奈良県,大和郡山市,https://www.kingyoen.com/,0,34.6496181,135.7829497,false,https://www.kingyoen.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+和歌山県立自然博物館,和歌山県,海南市,https://www.shizenhaku.wakayama-c.ed.jp/,0,34.1586779,135.1920762,false,https://www.shizenhaku.wakayama-c.ed.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+京都大学白浜水族館,和歌山県,白浜町,http://www.seto.kyoto-u.ac.jp/aquarium/,0,33.693,135.3428,false,http://www.seto.kyoto-u.ac.jp/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+アドベンチャーワールド,和歌山県,白浜町,https://www.aws-s.com/,0,33.6658997,135.3724345,true,https://www.aws-s.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+串本海中公園,和歌山県,串本町,http://www.kushimoto.co.jp/,0,33.4761,135.773,false,http://www.kushimoto.co.jp/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+すさみ町立エビとカニの水族館,和歌山県,すさみ町,http://www.ebikani-aquarium.com/,0,33.5507649,135.4946824,false,http://www.ebikani-aquarium.com/,2026/2/26,unknown,false,true,false,false,2026-03-05,FALSE,
+太地町立くじらの博物館,和歌山県,太地町,http://www.kujirakan.jp/,0,33.6018725,135.9457777,unknown,http://www.kujirakan.jp/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+ドルフィンリゾート,和歌山県,太地町,https://www.dolphinresort2.net/,0,33.5987301,135.9370203,false,https://www.dolphinresort2.net/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+ドルフィンベェイス,和歌山県,太地町,https://dolphinbase.co.jp/,0,33.5920999,135.9444352,false,https://dolphinbase.co.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+とっとり賀露かにっこ館,鳥取県,鳥取市,https://www.kanikko.jp/,0,35.5345849,134.1789117,false,https://www.kanikko.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+島根県立しまね海洋館 アクアス,鳥取県,浜田市,https://aquas.or.jp/,0,34.959579,132.144636,true,https://aquas.or.jp/,2026/2/26,unknown,true,true,false,true,2026-03-04,FALSE,
+島根県立宍道湖自然館 ゴビウス,島根県,出雲市,http://www.gobius.jp/,0,35.3668891,132.7548827,false,http://www.gobius.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+笠岡市立カブトガニ博物館,島根県,笠岡市,https://www.city.kasaoka.okayama.jp/site/kabutogani/,0,34.4774642,133.5213699,false,https://www.city.kasaoka.okayama.jp/site/kabutogani/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+渋川マリン水族館（玉野海洋水族館）,鳥取県,玉野町,https://www.city.tamano.lg.jp/site/kaihaku/,0,34.4841,133.9408,true,https://www.city.tamano.lg.jp/site/kaihaku/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+広島もとまち水族館,広島県,広島市,https://aquarium-hiroshima.com/,0,34.3969496,132.4575305,false,https://aquarium-hiroshima.com/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+広島市水産振興センター 魚と漁業の資料展示室,広島県,広島市,https://www.haff.city.hiroshima.jp/info/suisansc/facility/exhibition/,0,34.3917241,132.4517589,unknown,https://www.haff.city.hiroshima.jp/info/suisansc/facility/exhibition/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+みやじマリン 宮島水族館,広島県,廿日市市,https://www.miyajima-aqua.jp/,0,34.3499239,132.3306058,true,https://www.miyajima-aqua.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+福山大学 マリンバイオセンター（水族館）,広島県,尾道市,https://www.fukuyama-u.ac.jp/marine-bio-center/,0,34.4088519,133.2051549,false,https://www.fukuyama-u.ac.jp/marine-bio-center/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+市立しものせき水族館「海響館」,山口県,下関市,http://www.kaikyokan.com/,0,33.9577116,130.9415455,true,http://www.kaikyokan.com/,2026/2/26,unknown,true,true,false,false,2026-03-04,FALSE,
+岩国市ミクロ生物館,山口県,岩国市,http://micro.shiokaze-kouen.net/index.html,0,34.1664995,132.2191163,false,http://micro.shiokaze-kouen.net/index.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+なぎさ水族館,山口県,周防大島町,https://nagisapark.jimdofree.com/%E3%81%AA%E3%81%8E%E3%81%95%E6%B0%B4%E6%97%8F%E9%A4%A8/,0,33.9246,132.3149,false,https://nagisapark.jimdofree.com/%E3%81%AA%E3%81%8E%E3%81%95%E6%B0%B4%E6%97%8F%E9%A4%A8/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+新屋島水族館,香川県,高松市,http://www.new-yashima-aq.com/newYAQ/home/home.html,0,34.3580735,134.0997137,true,http://www.new-yashima-aq.com/newYAQ/home/home.html,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+四国水族館,香川県,宇多津町,https://shikoku-aquarium.jp/,0,34.3123308,133.8077902,true,https://shikoku-aquarium.jp/,2026/2/26,unknown,false,true,false,true,2026-03-05,FALSE,
+日本ドルフィンセンター,香川県,さぬき市,https://www.j-dc2.net/,0,34.2875346,134.2676815,false,https://www.j-dc2.net/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+日和佐うみがめ博物館カレッタ,徳島県,美波町,http://caretta-hiwasa.com/,0,33.7348537,134.5409388,unknown,http://caretta-hiwasa.com/,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+海洋自然博物館マリンジャム 島のちいさな水族館,徳島県,海陽町,https://marine.kaiyo-kankou.jp/,0,33.5937388,134.3220808,false,https://marine.kaiyo-kankou.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+虹の森公園 おさかな館,愛媛県,松野町,https://morinokuni.or.jp/publics/index/27/,0,33.2271539,132.7104971,true,https://morinokuni.or.jp/publics/index/27/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+ドルフィンファームしまなみ,愛媛県,今治市,https://www.df-shimanami.com/,0,34.2006476,133.0760666,false,https://www.df-shimanami.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+長高水族館（愛媛県立長浜高等学校 高校内水族館）,愛媛県,大洲市,https://nagakoaquarium.wixsite.com/home,0,33.506488,132.5446842,false,https://nagakoaquarium.wixsite.com/home,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+桂浜水族館,高知県,高知市,https://katurahama-aq.jp/,0,33.4972686,133.573653,false,https://katurahama-aq.jp/,2026/2/26,unknown,false,false,false,true,2026-03-05,FALSE,
+高知県立足摺海洋館SATOUMI,高知県,土佐清水市,https://www.kaiyoukan.jp/,0,32.7816213,132.9548557,false,https://www.kaiyoukan.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+四万十川学遊館 あきついお,高知県,四万十市,https://www.shimanto-kankou.com/kanko/natural-park/akituio.html,0,32.9912232,132.9336984,false,https://www.shimanto-kankou.com/kanko/natural-park/akituio.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+むろと廃校水族館,高知県,室戸市,https://x.com/murosui_kochi,0,33.3257892,134.1950297,unknown,https://x.com/murosui_kochi,2026/2/26,unknown,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+室戸ドルフィンセンター,高知県,室戸市,https://muroto.j-dc.net/,0,33.2682346,134.1596277,unknown,https://muroto.j-dc.net/,2026/2/26,,unknown,unknown,unknown,unknown,2026-03-04,FALSE,
+マリンワールド海の中道,福岡県,福岡市,https://marine-world.jp/,0,33.661407,130.36335,true,https://marine-world.jp/,2026/2/26,unknown,true,true,false,true,2026-03-05,FALSE,
+北九州市水環境館,福岡県,北九州市,https://mizukankyokan.jp/,0,33.8843504,130.8776027,false,https://mizukankyokan.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+やながわ有明海水族館,福岡県,柳川市,https://www.spera-morisatoumi.com/,0,33.1630969,130.4058091,false,https://www.spera-morisatoumi.com/,2026/2/26,,false,false,false,false,2026-03-05,FALSE,
+鹿島市干潟交流館「なな海」,佐賀県,鹿島市,https://saga-kashima-kankou.com/spot/1138,0,33.1039529,130.0985169,false,https://saga-kashima-kankou.com/spot/1138,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+佐賀県立宇宙科学館 ゆめぎんが,佐賀県,武雄市,https://www.yumeginga.jp/,0,33.1935518,130.0194484,false,https://www.yumeginga.jp/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+大分マリーンパレス水族館「うみたまご」,大分県,大分市,https://www.umitamago.jp/,0,33.2589684,131.5356401,true,https://www.umitamago.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+道の駅やよい 番匠おさかな館,大分県,佐伯市,https://www.michinoeki-yayoi.com/banjou-osakanakan,0,32.9601732,131.8996704,false,https://www.michinoeki-yayoi.com/banjou-osakanakan,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+白池地獄,大分県,別府市,http://www.beppu-jigoku.com/shiraike/,0,33.3153269,131.4741443,false,http://www.beppu-jigoku.com/shiraike/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+つくみイルカ島,大分県,津久見市,http://www.tsukumi-irukajima.jp/,0,33.0722942,131.861347,true,http://www.tsukumi-irukajima.jp/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+大淀川学習館,宮崎県,宮崎市,http://oyodo.miyabunkyo.com/,0,31.9184,131.4264,false,http://oyodo.miyabunkyo.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+高千穂峡淡水魚水族館,宮崎県,高千穂町,https://takachiho-kanko.info/sightseeing/detail.php?log=1338291652,0,32.702147,131.3006739,false,https://takachiho-kanko.info/sightseeing/detail.php?log=1338291652,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+すみえファミリー水族館,宮崎県,延岡市,http://sunbeach-sumie.com/sumie_family_aquarium.html,0,32.661755,131.7680697,false,http://sunbeach-sumie.com/sumie_family_aquarium.html,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+出の山淡水魚水族館,宮崎県,小林市,http://kankou-kobayashi.jp/publics/index/37/,0,31.9966841,130.9731456,false,http://kankou-kobayashi.jp/publics/index/37/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+志布志湾大黒イルカランド,宮崎県,串間市,http://www.irukaland.com/,0,31.4649768,131.2282568,false,http://www.irukaland.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+海中水族館シードーナツ,熊本県,上天草市,https://amakusapearl.com/,0,32.5298573,130.4283611,false,https://amakusapearl.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+長崎ペンギン水族館,長崎県,長崎市,https://penguin-aqua.jp/,0,32.758177,129.946765,true,https://penguin-aqua.jp/,2026/2/26,unknown,false,false,false,true,2026-03-04,FALSE,
+九十九島水族館「海きらら」,長崎県,佐世保市,https://umikirara.jp/,0,33.1611395,129.6791481,false,https://umikirara.jp/,2026/2/26,unknown,true,false,false,true,2026-03-04,FALSE,
+諫早ゆうゆうランド 干拓の里 むつごろう水族館,長崎県,諫早市,http://www.kantakunosato.co.jp/learning/aquarium/,0,32.843426,130.0530537,false,http://www.kantakunosato.co.jp/learning/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+壱岐イルカパーク,長崎県,壱岐市,https://irukapark.com/,0,33.8607595,129.703766,false,https://irukapark.com/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+いおワールドかごしま水族館,鹿児島県,鹿児島市,http://hsmop.web.fc2.com/,0,31.5959379,130.5645832,false,http://hsmop.web.fc2.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+奄美海洋展示館,鹿児島県,奄美市,https://www.ohama.marutani-amami.com/ocean-exhibition-hall,0,28.4025796,129.455333,false,https://www.ohama.marutani-amami.com/ocean-exhibition-hall,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+沖縄美ら海水族館,沖縄県,本部町,https://churaumi.okinawa/,0,26.6943689,127.878038,false,https://churaumi.okinawa/,2026/2/26,unknown,true,false,false,false,2026-03-05,FALSE,
+DMMかりゆし水族館,沖縄県,豊見城町,https://kariyushi-aquarium.com/,0,26.1635,127.6716,true,https://kariyushi-aquarium.com/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+さんご畑,沖縄県,読谷村,https://seaseed.com/coral-farm/,0,26.3974,127.7607,false,https://seaseed.com/coral-farm/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,
+波左間海中公園,千葉県,館山市,http://hsmop.web.fc2.com/,0,34.9751188,139.7830763,false,http://hsmop.web.fc2.com/,2026/2/26,unknown,false,false,false,false,2026-03-05,FALSE,
+延岡マリンサービス,宮崎県,延岡市,https://marine.gr.jp/manbo/,0,32.5823063,131.6649034,false,https://marine.gr.jp/manbo/,2026/2/26,unknown,true,false,false,false,2026-03-04,FALSE,
+あげしま海のでじたる館,新潟県,佐渡市,https://sado-ageshima.com/aquarium/,0,38.0182578,138.3683995,false,https://sado-ageshima.com/aquarium/,2026/2/26,unknown,false,false,false,false,2026-03-04,FALSE,

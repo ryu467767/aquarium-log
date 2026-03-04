@@ -103,6 +103,7 @@ function passesFilter(item) {
 }
 
 function passesAnimalFilter(item) {
+  if (selectedAnimals.size > 0 && item.is_closed) return false;
   for (const animal of selectedAnimals) {
     if (!item[animal]) return false; // AND: 1つでもFalseならNG
   }
@@ -160,6 +161,41 @@ function showConfirm(title, body) {
 }
 
 function renderCard(it) {
+  // 閉館館は専用の簡易カードを返す
+  if (it.is_closed) {
+    const card = document.createElement("div");
+    card.id = "card-" + it.id;
+    card.className = "card closed";
+
+    const titleRow = document.createElement("div");
+    titleRow.className = "title";
+
+    if (it.url) {
+      const a = document.createElement("a");
+      a.href = it.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.className = "link-title";
+      a.textContent = it.name;
+      titleRow.appendChild(a);
+    } else {
+      titleRow.textContent = it.name;
+    }
+
+    const badge = document.createElement("span");
+    badge.className = "closed-badge";
+    badge.textContent = "閉館" + (it.closed_at ? " " + it.closed_at : "");
+    titleRow.appendChild(badge);
+    card.appendChild(titleRow);
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = `${it.prefecture}${it.city ? " / " + it.city : ""}`;
+    card.appendChild(meta);
+
+    return card;
+  }
+
   const card = document.createElement("div");
   card.id = "card-" + it.id;
   card.className = "card" + (it.visited ? " is-visited" : "");
@@ -664,7 +700,7 @@ function render() {
 async function load() {
   const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
 
-  let stats = { visited: 0, total: items.length };
+  let stats = { visited: 0, total: items.filter(x => !x.is_closed).length };
 
   if (state.loggedIn) {
     try {
@@ -924,7 +960,9 @@ function refreshMarker(it) {
   const marker = state.markerById[it.id];
   if (!marker) return;
   let markerHtml;
-  if (it.visited) {
+  if (it.is_closed) {
+    markerHtml = '<div class="marker closed"></div>';
+  } else if (it.visited) {
     markerHtml = '<div class="marker visited"></div>';
   } else if (it.want_to_go) {
     markerHtml = '<div class="marker want-to-go"></div>';
@@ -949,7 +987,10 @@ function updateMap(items, opts = { fit: true }) {
 
     const label = it.name;
     let badge, markerHtml;
-    if (it.visited) {
+    if (it.is_closed) {
+      badge = "🚫";
+      markerHtml = '<div class="marker closed"></div>';
+    } else if (it.visited) {
       badge = "✅";
       markerHtml = '<div class="marker visited"></div>';
     } else if (it.want_to_go) {
