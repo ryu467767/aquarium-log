@@ -916,8 +916,11 @@ function initMap() {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  // ★ここを差し替え
-  markersLayer = L.layerGroup().addTo(map);
+  markersLayer = L.markerClusterGroup({
+    maxClusterRadius: 40,       // この半径(px)内のマーカーをまとめる
+    disableClusteringAtZoom: 10, // ズーム10以上では個別表示
+    spiderfyOnMaxZoom: true,
+  }).addTo(map);
 }
 
 

@@ -44,11 +44,9 @@ section.panel {
   margin-bottom: 28px !important;
 }
 
-/* 地図は柱いっぱいに伸ばす・GPU合成で描画を滑らかに */
+/* 地図は柱いっぱいに伸ばす */
 #map{
   width: 100% !important;
-  transform: translateZ(0);
-  will-change: transform;
 }
 
 /* PCでは地図を少し大きく（バランス良く） */
