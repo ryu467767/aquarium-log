@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>マイ写真ギャラリー｜全国水族館スタンプラリー</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .gallery-wrap { max-width: 800px; margin: 24px auto; padding: 0 16px; }
+    .gallery-back { margin-bottom: 16px; }
+    .gallery-back a { text-decoration: none; color: #0077b6; }
+    .gallery-title { font-size: 22px; font-weight: bold; margin-bottom: 6px; }
+    .gallery-sub   { font-size: 13px; color: #666; margin-bottom: 20px; }
+    .gallery-login-msg { background: #f0f8ff; border: 1px solid #90e0ef; border-radius: 8px; padding: 14px 16px; font-size: 14px; text-align: center; }
+    .gallery-login-msg a { color: #0077b6; font-weight: bold; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 8px; }
+    .gallery-item { display: flex; flex-direction: column; align-items: center; }
+    .gallery-img  { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #eee; }
+    .gallery-label { font-size: 12px; color: #555; margin-top: 5px; text-align: center; line-height: 1.4; word-break: break-all; }
+    .gallery-date  { font-size: 11px; color: #aaa; margin-top: 1px; }
+    .gallery-empty { padding: 40px 0; text-align: center; color: #aaa; font-size: 15px; }
+    .loading { padding: 40px 0; text-align: center; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="gallery-wrap">
+    <div class="gallery-back"><a href="/">← トップへ戻る</a></div>
+    <div class="gallery-title">📷 マイ写真ギャラリー</div>
+    <div class="gallery-sub">投稿した写真がすべて表示されます</div>
+    <div id="content"><div class="loading">読み込み中...</div></div>
+  </div>
+
+  <script>
+  (async () => {
+    let loggedIn = false;
+    try {
+      const me = await fetch("/api/me", { credentials: "same-origin" }).then(r => r.json());
+      loggedIn = !!(me && me.user_id);
+    } catch (e) {}
+
+    const content = document.getElementById("content");
+
+    if (!loggedIn) {
+      content.innerHTML = `<div class="gallery-login-msg"><a href="/login">Googleでログイン</a>すると写真が表示されます</div>`;
+      return;
+    }
+
+    try {
+      const photos = await fetch("/api/user/photos", { credentials: "same-origin" }).then(r => r.json());
+      content.innerHTML = "";
+
+      if (!photos || photos.length === 0) {
+        content.innerHTML = `<div class="gallery-empty">まだ写真がありません<br><a href="/" style="color:#0077b6;">水族館を訪問して写真を追加しよう</a></div>`;
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "gallery-grid";
+
+      for (const p of photos) {
+        const item = document.createElement("div");
+        item.className = "gallery-item";
+
+        const img = document.createElement("img");
+        img.src = p.url;
+        img.loading = "lazy";
+        img.className = "gallery-img";
+        img.alt = p.aquarium_name;
+
+        const label = document.createElement("div");
+        label.className = "gallery-label";
+        label.textContent = p.aquarium_name;
+
+        const date = document.createElement("div");
+        date.className = "gallery-date";
+        date.textContent = p.created_at ? p.created_at.slice(0, 10) : "";
+
+        item.appendChild(img);
+        item.appendChild(label);
+        item.appendChild(date);
+        grid.appendChild(item);
+      }
+
+      const countEl = document.createElement("div");
+      countEl.style.cssText = "font-size:13px;color:#666;margin-bottom:12px;";
+      countEl.textContent = `${photos.length} 枚`;
+      content.appendChild(countEl);
+      content.appendChild(grid);
+    } catch (e) {
+      content.innerHTML = `<div class="gallery-empty">写真の読み込みに失敗しました</div>`;
+    }
+  })();
+  </script>
+</body>
+</html>

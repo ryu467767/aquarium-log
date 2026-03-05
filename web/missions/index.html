@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ミッション｜全国水族館スタンプラリー</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .missions-wrap { max-width: 700px; margin: 24px auto; padding: 0 16px; }
+    .missions-back { margin-bottom: 16px; }
+    .missions-back a { text-decoration: none; color: #0077b6; }
+    .missions-title { font-size: 22px; font-weight: bold; margin-bottom: 6px; }
+    .missions-sub  { font-size: 13px; color: #666; margin-bottom: 20px; }
+    .missions-login-msg { background: #f0f8ff; border: 1px solid #90e0ef; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; font-size: 14px; }
+    .missions-login-msg a { color: #0077b6; font-weight: bold; }
+    .missions-section { margin-bottom: 28px; }
+    .missions-section h2 { font-size: 15px; font-weight: bold; color: #444; border-bottom: 2px solid #90e0ef; padding-bottom: 4px; margin-bottom: 12px; }
+    .badge-list { display: flex; flex-direction: column; gap: 10px; }
+    .badge-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fafafa; }
+    .badge-row.earned { background: #fffde7; border-color: #e6c800; }
+    .badge-row.earned.pref { background: #f1f8e9; border-color: #66bb6a; }
+    .badge-icon { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; filter: grayscale(1); opacity: 0.4; }
+    .badge-row.earned .badge-icon { filter: none; opacity: 1; }
+    .badge-info { flex: 1; }
+    .badge-name { font-weight: bold; font-size: 14px; color: #333; }
+    .badge-row.earned .badge-name { color: #5a4a00; }
+    .badge-row.earned.pref .badge-name { color: #1b5e20; }
+    .badge-desc { font-size: 12px; color: #888; margin-top: 2px; }
+    .badge-status { font-size: 12px; font-weight: bold; color: #bbb; flex-shrink: 0; }
+    .badge-row.earned .badge-status { color: #e6c800; }
+    .badge-row.earned.pref .badge-status { color: #43a047; }
+    .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .pref-item { padding: 7px 10px; border-radius: 6px; border: 1px solid #e0e0e0; background: #fafafa; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+    .pref-item.earned { background: #f1f8e9; border-color: #66bb6a; }
+    .pref-item.earned .pref-name { font-weight: bold; color: #1b5e20; }
+    .pref-progress { font-size: 11px; color: #999; }
+    .pref-item.earned .pref-progress { color: #43a047; font-weight: bold; }
+    .loading { padding: 24px; text-align: center; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="missions-wrap">
+    <div class="missions-back"><a href="/">← トップへ戻る</a></div>
+    <div class="missions-title">🏆 ミッション</div>
+    <div class="missions-sub">達成バッジと都道府県制覇の進捗を確認できます</div>
+
+    <div id="loginMsg" class="missions-login-msg" style="display:none;">
+      <a href="/login">Googleでログイン</a>すると訪問記録に基づいた達成状況が表示されます
+    </div>
+
+    <div id="content"><div class="loading">読み込み中...</div></div>
+  </div>
+
+  <script>
+  (async () => {
+    const BADGES = [
+      { id: "v10",  label: "10館達成",  icon: "🥉", req: "10館訪問",  check: (v) => v >= 10 },
+      { id: "v30",  label: "30館達成",  icon: "🥈", req: "30館訪問",  check: (v) => v >= 30 },
+      { id: "v50",  label: "50館達成",  icon: "🥇", req: "50館訪問",  check: (v) => v >= 50 },
+      { id: "v100", label: "100館達成", icon: "🏆", req: "100館訪問", check: (v) => v >= 100 },
+      { id: "all",  label: "全館制覇",  icon: "👑", req: "全水族館を制覇", check: (v, t) => t > 0 && v >= t },
+    ];
+
+    let loggedIn = false;
+    let items = [];
+    let visitedCount = 0;
+
+    try {
+      const me = await fetch("/api/me", { credentials: "same-origin" }).then(r => r.json());
+      loggedIn = !!(me && me.user_id);
+    } catch (e) {}
+
+    if (!loggedIn) {
+      document.getElementById("loginMsg").style.display = "";
+    }
+
+    try {
+      const url = loggedIn ? "/api/aquariums" : "/api/public/aquariums";
+      items = await fetch(url, { credentials: "same-origin" }).then(r => r.json());
+    } catch (e) {
+      document.getElementById("content").innerHTML = "<div class='loading'>データの取得に失敗しました</div>";
+      return;
+    }
+
+    const openItems = items.filter(x => !x.is_closed);
+    const total = openItems.length;
+    visitedCount = loggedIn ? openItems.filter(x => x.visited).length : 0;
+
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+
+    // --- 訪問数バッジ ---
+    const sec1 = document.createElement("div");
+    sec1.className = "missions-section";
+    sec1.innerHTML = `<h2>訪問数バッジ（${loggedIn ? visitedCount + " / " + total + " 館達成" : "ログインで表示"}）</h2>`;
+    const list1 = document.createElement("div");
+    list1.className = "badge-list";
+    for (const b of BADGES) {
+      const earned = loggedIn && b.check(visitedCount, total);
+      const row = document.createElement("div");
+      row.className = "badge-row" + (earned ? " earned" : "");
+      row.innerHTML = `
+        <div class="badge-icon">${b.icon}</div>
+        <div class="badge-info">
+          <div class="badge-name">${b.label}</div>
+          <div class="badge-desc">${b.req}</div>
+        </div>
+        <div class="badge-status">${earned ? "✅ 達成" : (loggedIn ? "未達成" : "-")}</div>
+      `;
+      list1.appendChild(row);
+    }
+    sec1.appendChild(list1);
+    content.appendChild(sec1);
+
+    // --- 都道府県制覇 ---
+    const sec2 = document.createElement("div");
+    sec2.className = "missions-section";
+    const prefs = [...new Set(openItems.map(x => x.prefecture))].sort((a, b) => a.localeCompare(b, "ja"));
+    const completedCount = loggedIn ? prefs.filter(p => {
+      const inPref = openItems.filter(x => x.prefecture === p);
+      return inPref.length > 0 && inPref.every(x => x.visited);
+    }).length : 0;
+    sec2.innerHTML = `<h2>都道府県制覇（${loggedIn ? completedCount + " / " + prefs.length + " 県達成" : "ログインで表示"}）</h2>`;
+    const grid = document.createElement("div");
+    grid.className = "pref-grid";
+    for (const p of prefs) {
+      const inPref = openItems.filter(x => x.prefecture === p);
+      const visitedInPref = loggedIn ? inPref.filter(x => x.visited).length : 0;
+      const earned = loggedIn && inPref.length > 0 && inPref.every(x => x.visited);
+      const item = document.createElement("div");
+      item.className = "pref-item" + (earned ? " earned" : "");
+      item.innerHTML = `
+        <span class="pref-name">${earned ? "📍 " : ""}${p}</span>
+        <span class="pref-progress">${loggedIn ? visitedInPref + "/" + inPref.length : inPref.length + "館"}</span>
+      `;
+      grid.appendChild(item);
+    }
+    sec2.appendChild(grid);
+    content.appendChild(sec2);
+  })();
+  </script>
+</body>
+</html>

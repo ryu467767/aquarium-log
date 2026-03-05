@@ -293,6 +293,8 @@ btn.dataset.lastClick = String(now);
           it.visit_count = res.visit_count;
           if (countDisplay) countDisplay.textContent = String(res.visit_count);
         }
+        // バッジをリアルタイム更新
+        updateBadgesFromState();
       } catch (e) {
         // 失敗したら元に戻す
         it.visited = !newVisited;
@@ -680,19 +682,19 @@ const BADGES = [
 function renderBadges(items, visitedCount, totalCount) {
   const el = document.getElementById("badgeContainer");
   if (!el || !state.loggedIn) return;
-  el.style.display = "";
   el.innerHTML = "";
 
+  // 達成済みバッジのみ表示
   for (const b of BADGES) {
-    const earned = b.check(visitedCount, totalCount);
+    if (!b.check(visitedCount, totalCount)) continue;
     const div = document.createElement("div");
-    div.className = "badge" + (earned ? " earned" : "");
+    div.className = "badge earned";
     div.title = b.label;
     div.textContent = b.icon + " " + b.label;
     el.appendChild(div);
   }
 
-  // 都道府県制覇バッジ
+  // 都道府県制覇バッジ（達成済みのみ）
   const prefs = [...new Set(items.filter(x => !x.is_closed).map(x => x.prefecture))];
   const completedPrefs = prefs.filter(p => {
     const inPref = items.filter(x => x.prefecture === p && !x.is_closed);
@@ -706,39 +708,13 @@ function renderBadges(items, visitedCount, totalCount) {
   }
 }
 
-// ===== 写真ギャラリー =====
-async function openGallery() {
-  if (!state.loggedIn) return;
-  const modal = document.getElementById("galleryModal");
-  if (!modal) return;
-  modal.style.display = "flex";
-  const grid = document.getElementById("galleryGrid");
-  grid.innerHTML = "<div style='padding:16px;color:#666;'>読み込み中...</div>";
-  try {
-    const photos = await apiGet("/api/user/photos");
-    grid.innerHTML = "";
-    if (photos.length === 0) {
-      grid.innerHTML = "<div style='padding:16px;color:#888;'>まだ写真がありません</div>";
-      return;
-    }
-    for (const p of photos) {
-      const item = document.createElement("div");
-      item.className = "gallery-item";
-      const img = document.createElement("img");
-      img.src = p.url;
-      img.loading = "lazy";
-      img.className = "gallery-img";
-      img.alt = p.aquarium_name;
-      const label = document.createElement("div");
-      label.className = "gallery-label";
-      label.textContent = p.aquarium_name;
-      item.appendChild(img);
-      item.appendChild(label);
-      grid.appendChild(item);
-    }
-  } catch (e) {
-    grid.innerHTML = "<div style='padding:16px;color:#c00;'>読み込みに失敗しました</div>";
-  }
+// 訪問ボタン押下後にバッジをリアルタイム更新する
+function updateBadgesFromState() {
+  if (!state.loggedIn || !state.items.length) return;
+  const openItems = state.items.filter(x => !x.is_closed);
+  const total = openItems.length;
+  const visited = openItems.filter(x => x.visited).length;
+  renderBadges(state.items, visited, total);
 }
 
 // ===== SNSシェア =====
@@ -791,7 +767,7 @@ function generateShareImage(visited, total) {
   return canvas.toDataURL("image/png");
 }
 
-async function handleShare() {
+function handleShare() {
   const statsText = document.getElementById("statsText");
   const text = statsText ? statsText.textContent : "0 / 0";
   const parts = text.split("/").map(s => parseInt(s.trim()) || 0);
@@ -800,21 +776,41 @@ async function handleShare() {
 
   const dataUrl = generateShareImage(visited, total);
 
-  try {
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
-    const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: "水族館スタンプラリー", text: `${visited}館訪問達成！` });
-      return;
-    }
-  } catch (e) { /* fallthrough */ }
+  // プレビュー画像をセットしてモーダルを開く
+  const previewImg = document.getElementById("sharePreviewImg");
+  const shareModal = document.getElementById("shareModal");
+  if (previewImg) previewImg.src = dataUrl;
+  if (shareModal) shareModal.style.display = "flex";
 
-  // フォールバック：PNG ダウンロード
-  const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = "aquarium_stamp.png";
-  a.click();
+  // 「シェアする」ボタン（Web Share API）
+  const shareApiBtn = document.getElementById("shareApiBtn");
+  if (shareApiBtn) {
+    shareApiBtn.onclick = async () => {
+      try {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: "水族館スタンプラリー", text: `${visited}館訪問達成！` });
+        } else {
+          alert("このブラウザではシェア機能が使えません。「画像を保存」からダウンロードしてください。");
+        }
+      } catch (e) {
+        if (e.name !== "AbortError") alert("シェアに失敗しました: " + e.message);
+      }
+    };
+  }
+
+  // 「画像を保存」ボタン
+  const shareDownloadBtn = document.getElementById("shareDownloadBtn");
+  if (shareDownloadBtn) {
+    shareDownloadBtn.onclick = () => {
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "aquarium_stamp.png";
+      a.click();
+    };
+  }
 }
 
 async function load() {
@@ -1026,17 +1022,15 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
   if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
 
-  // ギャラリー
-  const galleryBtnEl = document.getElementById("galleryBtn");
-  if (galleryBtnEl) galleryBtnEl.addEventListener("click", () => { closeDrawer(); openGallery(); });
-  const galleryModal = document.getElementById("galleryModal");
-  const galleryClose = document.getElementById("galleryClose");
-  if (galleryClose) galleryClose.addEventListener("click", () => { if (galleryModal) galleryModal.style.display = "none"; });
-  if (galleryModal) galleryModal.addEventListener("click", (e) => { if (e.target === galleryModal) galleryModal.style.display = "none"; });
-
   // シェア
   const shareBtnEl = document.getElementById("shareBtn");
   if (shareBtnEl) shareBtnEl.addEventListener("click", handleShare);
+
+  // シェアモーダルのクローズ
+  const shareModal = document.getElementById("shareModal");
+  const shareModalClose = document.getElementById("shareModalClose");
+  if (shareModalClose) shareModalClose.addEventListener("click", () => { if (shareModal) shareModal.style.display = "none"; });
+  if (shareModal) shareModal.addEventListener("click", (e) => { if (e.target === shareModal) shareModal.style.display = "none"; });
 }
 
 wireUI();
