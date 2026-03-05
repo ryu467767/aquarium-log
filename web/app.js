@@ -672,23 +672,48 @@ function render() {
 
 // ===== 達成バッジ =====
 const BADGES = [
-  { id: "v10",  label: "10館達成",  icon: "🥉", check: (v) => v >= 10 },
-  { id: "v30",  label: "30館達成",  icon: "🥈", check: (v) => v >= 30 },
-  { id: "v50",  label: "50館達成",  icon: "🥇", check: (v) => v >= 50 },
-  { id: "v100", label: "100館達成", icon: "🏆", check: (v) => v >= 100 },
-  { id: "all",  label: "全館制覇",  icon: "👑", check: (v, t) => t > 0 && v >= t },
+  { id: "v10",  label: "10館達成",  icon: "🥉", cat: "visit",
+    check: (items) => items.filter(x => !x.is_closed && x.visited).length >= 10 },
+  { id: "v30",  label: "30館達成",  icon: "🥈", cat: "visit",
+    check: (items) => items.filter(x => !x.is_closed && x.visited).length >= 30 },
+  { id: "v50",  label: "50館達成",  icon: "🥇", cat: "visit",
+    check: (items) => items.filter(x => !x.is_closed && x.visited).length >= 50 },
+  { id: "v100", label: "100館達成", icon: "🏆", cat: "visit",
+    check: (items) => items.filter(x => !x.is_closed && x.visited).length >= 100 },
+  { id: "all",  label: "全館制覇",  icon: "👑", cat: "visit",
+    check: (items) => { const o = items.filter(x => !x.is_closed); return o.length > 0 && o.every(x => x.visited); } },
+  ...REGION_ORDER.map(r => ({
+    id: "r_" + r, label: r + "制覇", icon: "🗾", cat: "region",
+    check: (items) => {
+      const rr = items.filter(x => !x.is_closed && regionOf(x.prefecture) === r);
+      return rr.length > 0 && rr.every(x => x.visited);
+    }
+  })),
+  { id: "a_penguin",   label: "ペンギン好き", icon: "🐧", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_penguin).length >= 3 },
+  { id: "a_dolphin",   label: "イルカ好き",   icon: "🐬", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_dolphin).length >= 3 },
+  { id: "a_sealion",   label: "アシカ好き",   icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_sealion).length >= 3 },
+  { id: "a_orca",      label: "シャチ制覇",   icon: "🐋", cat: "animal",
+    check: (items) => { const w = items.filter(x => !x.is_closed && x.has_orca); return w.length > 0 && w.every(x => x.visited); } },
+  { id: "a_jellyfish", label: "クラゲ好き",   icon: "🪼", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_jellyfish).length >= 3 },
 ];
 
-function renderBadges(items, visitedCount, totalCount) {
+function renderBadges(items) {
   const el = document.getElementById("badgeContainer");
   if (!el || !state.loggedIn) return;
   el.innerHTML = "";
 
   // 達成済みバッジのみ表示
   for (const b of BADGES) {
-    if (!b.check(visitedCount, totalCount)) continue;
+    if (!b.check(items)) continue;
     const div = document.createElement("div");
-    div.className = "badge earned";
+    let cls = "badge earned";
+    if (b.cat === "region") cls += " region-badge";
+    if (b.cat === "animal") cls += " animal-badge";
+    div.className = cls;
     div.title = b.label;
     div.textContent = b.icon + " " + b.label;
     el.appendChild(div);
@@ -711,10 +736,7 @@ function renderBadges(items, visitedCount, totalCount) {
 // 訪問ボタン押下後にバッジをリアルタイム更新する
 function updateBadgesFromState() {
   if (!state.loggedIn || !state.items.length) return;
-  const openItems = state.items.filter(x => !x.is_closed);
-  const total = openItems.length;
-  const visited = openItems.filter(x => x.visited).length;
-  renderBadges(state.items, visited, total);
+  renderBadges(state.items);
 }
 
 // ===== SNSシェア =====
@@ -855,7 +877,7 @@ async function load() {
   if (galleryBtnEl) galleryBtnEl.style.display = state.loggedIn ? "" : "none";
 
   // 達成バッジ
-  renderBadges(items, visited, total);
+  renderBadges(items);
 
   render();
 }

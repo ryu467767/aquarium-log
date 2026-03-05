@@ -23,8 +23,32 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1><a href="/" style="color:inherit;text-decoration:none;">全国水族館スタンプラリー</a></h1>
+    <div class="userbox" id="userbox">
+      <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
+    </div>
+  </header>
+
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <nav id="drawer" class="drawer" aria-hidden="true">
+    <button id="drawerClose" class="drawer-close" aria-label="閉じる">×</button>
+    <div class="drawer__login">
+      <span id="loginStatus" class="drawer-login-status"></span>
+      <button class="linklike" id="googleLogin" type="button">Googleでログイン</button>
+      <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
+    </div>
+    <div class="drawer__inner">
+      <a href="/" class="drawer-link">トップページ</a>
+      <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
+      <a href="/missions/" class="drawer-link">🏆 ミッション</a>
+      <a href="/about/" class="drawer-link">このアプリについて</a>
+      <a href="/contact/" class="drawer-link">お問い合わせ</a>
+      <a href="/privacy/" class="drawer-link">プライバシーポリシー</a>
+    </div>
+  </nav>
+
   <div class="gallery-wrap">
-    <div class="gallery-back"><a href="/">← トップへ戻る</a></div>
     <div class="gallery-title">📷 マイ写真ギャラリー</div>
     <div class="gallery-sub">投稿した写真がすべて表示されます</div>
     <div id="content"><div class="loading">読み込み中...</div></div>
@@ -91,5 +115,15 @@
     }
   })();
   </script>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="/contact/">お問い合わせ</a>
+      <a href="/privacy/">プライバシーポリシー</a>
+      <span>© 2025 全国水族館スタンプラリー</span>
+    </div>
+  </footer>
+
+  <script src="/nav.js?v=20260305-1"></script>
 </body>
 </html>

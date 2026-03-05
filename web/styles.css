@@ -281,6 +281,18 @@ input {
   color: #1b5e20;
   border-color: #66bb6a;
 }
+.badge.region-badge.earned {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border-color: #42a5f5;
+  font-weight: bold;
+}
+.badge.animal-badge.earned {
+  background: #fce4ec;
+  color: #880e4f;
+  border-color: #f48fb1;
+  font-weight: bold;
+}
 
 /* === シェアボタン === */
 .share-btn {
@@ -298,14 +310,14 @@ input {
 
 /* === シェアプレビューモーダル === */
 .share-preview-box {
-  max-width: 560px;
+  max-width: 680px;
   width: 95vw;
 }
 .share-preview-img {
   display: block;
   width: 100%;
   border-radius: 8px;
-  margin: 8px 0 4px;
+  margin: 8px 0 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 .modal-btn--primary {
@@ -1230,13 +1242,14 @@ main{
 
 .modal-btn {
   flex: 1;
-  padding: 9px 0;
+  padding: 9px 12px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 700;
   transition: background 0.15s;
+  white-space: nowrap;
 }
 
 .modal-btn--danger {
