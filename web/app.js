@@ -10,6 +10,7 @@ let state = {
 };
 state.loggedIn = false;
 state.markerById = {};
+state.showClosed = false;
 const selectedAnimals = new Set();
 const PREF_ORDER = [
   "北海道",
@@ -92,6 +93,8 @@ function match(item, q) {
 }
 
 function passesFilter(item) {
+  // 閉館館は showClosed が true の時だけ表示
+  if (!state.showClosed && item.is_closed) return false;
   // 都道府県順のときだけ都道府県フィルタを効かせる
   if (state.sort === "pref" && state.pref && item.prefecture !== state.pref) return false;
   if (state.filter === "all") return true;
@@ -322,8 +325,8 @@ btn.dataset.lastClick = String(now);
 
   row.appendChild(btn);
 
-  // 「行きたい」ボタン（ログイン中のみ）
-  if (state.loggedIn) {
+  // 「行きたい」ボタン（ログイン中のみ、閉館館は除外）
+  if (state.loggedIn && !it.is_closed) {
     const wantBtn = document.createElement("button");
     wantBtn.type = "button";
     wantBtn.className = it.want_to_go ? "btn-want active" : "btn-want";
@@ -534,10 +537,6 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     up.click();
   };
 
-  const hint = document.createElement("div");
-  hint.className = "photo-hint";
-  hint.textContent = "JPG / PNG / WEBP";
-
   up.onchange = async () => {
     if (!state.loggedIn) return;
     const file = up.files && up.files[0];
@@ -562,7 +561,6 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
   };
 
   photosWrap.appendChild(pickBtn);
-  photosWrap.appendChild(hint);
   photosWrap.appendChild(up);
     card.appendChild(photosWrap);
   
@@ -670,6 +668,155 @@ function render() {
   updateMap(items, { fit: shouldFit });
 }
 
+// ===== 達成バッジ =====
+const BADGES = [
+  { id: "v10",  label: "10館達成",  icon: "🥉", check: (v) => v >= 10 },
+  { id: "v30",  label: "30館達成",  icon: "🥈", check: (v) => v >= 30 },
+  { id: "v50",  label: "50館達成",  icon: "🥇", check: (v) => v >= 50 },
+  { id: "v100", label: "100館達成", icon: "🏆", check: (v) => v >= 100 },
+  { id: "all",  label: "全館制覇",  icon: "👑", check: (v, t) => t > 0 && v >= t },
+];
+
+function renderBadges(items, visitedCount, totalCount) {
+  const el = document.getElementById("badgeContainer");
+  if (!el || !state.loggedIn) return;
+  el.style.display = "";
+  el.innerHTML = "";
+
+  for (const b of BADGES) {
+    const earned = b.check(visitedCount, totalCount);
+    const div = document.createElement("div");
+    div.className = "badge" + (earned ? " earned" : "");
+    div.title = b.label;
+    div.textContent = b.icon + " " + b.label;
+    el.appendChild(div);
+  }
+
+  // 都道府県制覇バッジ
+  const prefs = [...new Set(items.filter(x => !x.is_closed).map(x => x.prefecture))];
+  const completedPrefs = prefs.filter(p => {
+    const inPref = items.filter(x => x.prefecture === p && !x.is_closed);
+    return inPref.length > 0 && inPref.every(x => x.visited);
+  });
+  for (const p of completedPrefs) {
+    const div = document.createElement("div");
+    div.className = "badge earned pref-badge";
+    div.textContent = "📍 " + p + "制覇";
+    el.appendChild(div);
+  }
+}
+
+// ===== 写真ギャラリー =====
+async function openGallery() {
+  if (!state.loggedIn) return;
+  const modal = document.getElementById("galleryModal");
+  if (!modal) return;
+  modal.style.display = "flex";
+  const grid = document.getElementById("galleryGrid");
+  grid.innerHTML = "<div style='padding:16px;color:#666;'>読み込み中...</div>";
+  try {
+    const photos = await apiGet("/api/user/photos");
+    grid.innerHTML = "";
+    if (photos.length === 0) {
+      grid.innerHTML = "<div style='padding:16px;color:#888;'>まだ写真がありません</div>";
+      return;
+    }
+    for (const p of photos) {
+      const item = document.createElement("div");
+      item.className = "gallery-item";
+      const img = document.createElement("img");
+      img.src = p.url;
+      img.loading = "lazy";
+      img.className = "gallery-img";
+      img.alt = p.aquarium_name;
+      const label = document.createElement("div");
+      label.className = "gallery-label";
+      label.textContent = p.aquarium_name;
+      item.appendChild(img);
+      item.appendChild(label);
+      grid.appendChild(item);
+    }
+  } catch (e) {
+    grid.innerHTML = "<div style='padding:16px;color:#c00;'>読み込みに失敗しました</div>";
+  }
+}
+
+// ===== SNSシェア =====
+function generateShareImage(visited, total) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 450;
+  const ctx = canvas.getContext("2d");
+
+  const grad = ctx.createLinearGradient(0, 0, 800, 450);
+  grad.addColorStop(0, "#003d5c");
+  grad.addColorStop(1, "#0077b6");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 800, 450);
+
+  ctx.beginPath();
+  ctx.arc(680, 80, 130, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,255,255,0.05)";
+  ctx.fill();
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 28px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("🐠 水族館スタンプラリー", 400, 90);
+
+  ctx.beginPath();
+  ctx.moveTo(150, 115);
+  ctx.lineTo(650, 115);
+  ctx.strokeStyle = "rgba(255,255,255,0.3)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 110px sans-serif";
+  ctx.fillText(`${visited}館`, 400, 265);
+
+  ctx.font = "bold 30px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.fillText(`訪問達成！（全${total}館中）`, 400, 330);
+
+  const pct = total > 0 ? Math.round(visited / total * 100) : 0;
+  ctx.font = "bold 26px sans-serif";
+  ctx.fillStyle = "#ffe066";
+  ctx.fillText(`達成率 ${pct}%`, 400, 390);
+
+  ctx.font = "15px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.45)";
+  ctx.fillText("aquarium-log.onrender.com", 400, 435);
+
+  return canvas.toDataURL("image/png");
+}
+
+async function handleShare() {
+  const statsText = document.getElementById("statsText");
+  const text = statsText ? statsText.textContent : "0 / 0";
+  const parts = text.split("/").map(s => parseInt(s.trim()) || 0);
+  const visited = parts[0] || 0;
+  const total = parts[1] || 0;
+
+  const dataUrl = generateShareImage(visited, total);
+
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: "水族館スタンプラリー", text: `${visited}館訪問達成！` });
+      return;
+    }
+  } catch (e) { /* fallthrough */ }
+
+  // フォールバック：PNG ダウンロード
+  const a = document.createElement("a");
+  a.href = dataUrl;
+  a.download = "aquarium_stamp.png";
+  a.click();
+}
+
 async function load() {
   const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
 
@@ -704,6 +851,15 @@ async function load() {
   // stats dashboard の表示制御（ログイン時のみ表示）
   const dashboardEl = document.getElementById('statsDashboard');
   if (dashboardEl) dashboardEl.style.display = state.loggedIn ? '' : 'none';
+
+  // シェアボタン・ギャラリーボタン（ログイン時のみ表示）
+  const shareBtnEl = document.getElementById("shareBtn");
+  if (shareBtnEl) shareBtnEl.style.display = state.loggedIn ? "" : "none";
+  const galleryBtnEl = document.getElementById("galleryBtn");
+  if (galleryBtnEl) galleryBtnEl.style.display = state.loggedIn ? "" : "none";
+
+  // 達成バッジ
+  renderBadges(items, visited, total);
 
   render();
 }
@@ -809,6 +965,15 @@ if (logoutBtn) logoutBtn.onclick = async () => {
     };
   }
 
+  const closedToggle = document.getElementById("showClosedToggle");
+  if (closedToggle) {
+    closedToggle.checked = state.showClosed;
+    closedToggle.onchange = () => {
+      state.showClosed = closedToggle.checked;
+      render();
+    };
+  }
+
   document.querySelectorAll(".chip").forEach((btn) => {
     btn.onclick = () => {
       state.filter = btn.dataset.filter;
@@ -860,6 +1025,18 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   if (menuBtn) menuBtn.addEventListener('click', openDrawer);
   if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
   if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+  // ギャラリー
+  const galleryBtnEl = document.getElementById("galleryBtn");
+  if (galleryBtnEl) galleryBtnEl.addEventListener("click", () => { closeDrawer(); openGallery(); });
+  const galleryModal = document.getElementById("galleryModal");
+  const galleryClose = document.getElementById("galleryClose");
+  if (galleryClose) galleryClose.addEventListener("click", () => { if (galleryModal) galleryModal.style.display = "none"; });
+  if (galleryModal) galleryModal.addEventListener("click", (e) => { if (e.target === galleryModal) galleryModal.style.display = "none"; });
+
+  // シェア
+  const shareBtnEl = document.getElementById("shareBtn");
+  if (shareBtnEl) shareBtnEl.addEventListener("click", handleShare);
 }
 
 wireUI();

@@ -231,9 +231,111 @@ input {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #d8d8d8;
-  border: 1px solid #bbb;
-  opacity: 0.7;
+  background: #c0c0c0;
+  border: 1px solid #aaa;
+  opacity: 0.75;
+}
+
+/* === 閉館トグル === */
+.closed-toggle-row {
+  margin: 8px 0 4px;
+  font-size: 13px;
+  color: #555;
+}
+.closed-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* === 達成バッジ === */
+.badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+  padding: 0 4px;
+}
+.badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #e8e8e8;
+  color: #bbb;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+.badge.earned {
+  background: #fff8dc;
+  color: #5a4a00;
+  border-color: #e6c800;
+  font-weight: bold;
+}
+.badge.pref-badge.earned {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border-color: #66bb6a;
+}
+
+/* === シェアボタン === */
+.share-btn {
+  margin: 10px 0 2px;
+  padding: 6px 16px;
+  background: #0077b6;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.share-btn:hover { background: #005f8e; }
+
+/* === ドロワーのボタン型リンク === */
+.drawer-link--btn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+}
+
+/* === ギャラリーモーダル === */
+.gallery-box {
+  max-width: 700px;
+  width: 95vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+.gallery-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.gallery-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #eee;
+}
+.gallery-label {
+  font-size: 11px;
+  color: #555;
+  margin-top: 4px;
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-all;
 }
 
 /* === Filter chips（全部 / 行った / 未訪問 / ★のみ）を明るい背景でも見えるように === */

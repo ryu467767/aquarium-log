@@ -549,6 +549,28 @@ def sitemap():
     path = WEB_DIR / "sitemap.xml"
     return FileResponse(path, media_type="application/xml")
 
+@app.get("/api/user/photos")
+def user_all_photos(request: Request):
+    """ログインユーザーが投稿した全写真（館名付き）"""
+    uid = get_user_id(request)
+    with session() as db:
+        rows = db.exec(
+            select(Photo, Aquarium)
+            .join(Aquarium, Photo.aquarium_id == Aquarium.id)
+            .where(Photo.user_id == uid)
+            .order_by(Photo.created_at.desc())
+        ).all()
+        return [
+            {
+                "id": p.id,
+                "url": "/uploads/" + p.path,
+                "aquarium_id": p.aquarium_id,
+                "aquarium_name": a.name,
+                "created_at": p.created_at.isoformat(),
+            }
+            for p, a in rows
+        ]
+
 @app.get("/api/aquariums/{aquarium_id}/photos")
 def list_photos(aquarium_id: int, request: Request):
     uid = get_user_id(request)

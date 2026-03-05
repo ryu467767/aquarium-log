@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260305-22">
+  <link rel="stylesheet" href="styles.css?v=20260305-23">
   <link rel="stylesheet" href="styles.layout.css?v=20260305-19">
   <link
   rel="stylesheet"
@@ -56,6 +56,7 @@
 
     <div class="drawer__inner">
       <a href="/" class="drawer-link drawer-link--active">トップページ</a>
+      <button id="galleryBtn" class="drawer-link drawer-link--btn" style="display:none;">📷 マイ写真ギャラリー</button>
       <a href="/about/" class="drawer-link">このアプリについて</a>
       <a href="/contact/" class="drawer-link">お問い合わせ</a>
       <a href="/privacy/" class="drawer-link">プライバシーポリシー</a>
@@ -72,7 +73,11 @@
     <div class="progress">
       <div class="bar" id="progressBar"></div>
     </div>
+    <button id="shareBtn" class="share-btn" style="display:none;">📸 成績をシェア</button>
   </div>
+
+  <!-- 達成バッジ（ログイン時のみ表示） -->
+  <div id="badgeContainer" class="badge-container" style="display:none;"></div>
 
   <!-- Login CTA（未ログイン時のみ表示） -->
   <div id="loginCta" class="login-cta" style="display:none;">
@@ -121,6 +126,13 @@
         <button class="animal-chip" data-animal="has_jellyfish">🪼 クラゲ</button>
       </div>
     </div>
+
+    <div class="closed-toggle-row">
+      <label class="closed-toggle-label">
+        <input type="checkbox" id="showClosedToggle">
+        閉館館を表示する
+      </label>
+    </div>
   </section>
 
   <section class="mapwrap">
@@ -150,6 +162,17 @@
     </div>
   </footer>
 
+  <!-- ギャラリーモーダル -->
+  <div id="galleryModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box gallery-box">
+      <p class="modal-title">📷 マイ写真ギャラリー</p>
+      <div id="galleryGrid" class="gallery-grid"></div>
+      <div class="modal-actions">
+        <button id="galleryClose" class="modal-btn modal-btn--cancel">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- カスタム確認モーダル -->
   <div id="confirmModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
     <div class="modal-box">
@@ -163,6 +186,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260305-14"></script>
+  <script src="app.js?v=20260305-15"></script>
 </body>
 </html>
