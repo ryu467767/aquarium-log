@@ -309,9 +309,10 @@ input {
 .share-btn:hover { background: #005f8e; }
 
 /* === シェアプレビューモーダル === */
+/* .modal-box { max-width:320px } より後に書かれているので !important で上書き */
 .share-preview-box {
-  max-width: 540px;
-  width: 95vw;
+  max-width: 540px !important;
+  width: 95vw !important;
 }
 .share-preview-img {
   display: block;
