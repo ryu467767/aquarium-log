@@ -1273,6 +1273,54 @@ main{
   background: #cce8f4;
 }
 
+/* ===== App Intro（未ログイン時のみ表示） ===== */
+.app-intro {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px 14px;
+  box-shadow: 0 2px 10px rgba(0, 51, 70, 0.08);
+}
+.app-intro__headline {
+  font-size: 14px;
+  color: #444;
+  margin: 0 0 12px;
+  line-height: 1.7;
+}
+.app-intro__headline strong { color: #0077b6; }
+.app-intro__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+.app-intro__list li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #333;
+}
+.app-intro__list li span { font-size: 17px; flex-shrink: 0; }
+.app-intro__link {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #0077b6;
+  text-decoration: none;
+  padding: 9px;
+  border-radius: 10px;
+  background: #f0f9ff;
+  border: 1px solid #caf0f8;
+  transition: background 0.15s;
+}
+.app-intro__link:hover { background: #e0f4ff; }
+@media (max-width: 520px) {
+  .app-intro__list { grid-template-columns: 1fr; }
+}
+
 /* ===== ① 背景の魚・ヘッダー装飾を削除 ===== */
 body::before {
   opacity: 0 !important;

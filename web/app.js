@@ -1050,6 +1050,10 @@ function updateLoginCta(me) {
 
   cta.style.display = loggedIn ? "none" : "";
 
+  // アプリ紹介（未ログイン時のみ表示）
+  const intro = document.getElementById("appIntro");
+  if (intro) intro.style.display = loggedIn ? "none" : "";
+
   // ログアウト時はダッシュボードも非表示（load()でも制御するが念のため）
   if (!loggedIn) {
     const dashboard = document.getElementById('statsDashboard');

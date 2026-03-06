@@ -75,9 +75,10 @@ header h1 {
   flex-shrink: 0 !important;
 }
 
-/* ===== Stats dashboard / Login CTA centering ===== */
+/* ===== Stats dashboard / Login CTA / App Intro centering ===== */
 .stats-dashboard,
-.login-cta {
+.login-cta,
+.app-intro {
   width: min(var(--page-max), calc(100% - (var(--page-pad) * 2)));
   margin-left: auto !important;
   margin-right: auto !important;

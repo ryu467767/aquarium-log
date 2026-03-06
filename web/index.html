@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260306-4">
-  <link rel="stylesheet" href="styles.layout.css?v=20260306-1">
+  <link rel="stylesheet" href="styles.css?v=20260306-5">
+  <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -108,6 +108,21 @@
     </div>
   </div>
 
+  <!-- アプリ紹介（未ログイン時のみ表示） -->
+  <div id="appIntro" class="app-intro" style="display:none;">
+    <p class="app-intro__headline">
+      訪れた水族館を地図・一覧で記録できる<strong>無料Webアプリ</strong>です。<br>
+      Googleアカウントだけで今すぐ無料で始められます。
+    </p>
+    <ul class="app-intro__list">
+      <li><span>📍</span>全国の水族館を地図・一覧で確認</li>
+      <li><span>✅</span>訪問済マーク・訪問日・訪問回数を記録</li>
+      <li><span>📷</span>写真・メモを水族館ごとに保存</li>
+      <li><span>🏆</span>ミッション達成・バッジで制覇を目指せる</li>
+    </ul>
+    <a href="/about/" class="app-intro__link">このアプリについて詳しく →</a>
+  </div>
+
   <section class="panel">
     <label class="row">
       <span>検索</span>
@@ -201,6 +216,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260306-3"></script>
+  <script src="app.js?v=20260306-4"></script>
 </body>
 </html>
