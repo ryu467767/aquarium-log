@@ -730,9 +730,27 @@ function renderBadges(items) {
   if (!el || !state.loggedIn) return;
   el.innerHTML = "";
 
-  // 達成済みバッジのみ表示
+  // 動物バッジ：種別ごとに最高達成ティアのみ表示
+  const earnedAnimalIds = new Set(
+    BADGES.filter(b => b.cat === "animal" && b.check(items)).map(b => b.id)
+  );
+  const animalTierSuffixes = ["_3", "_5", "_10", "_all"];
+  const animalKeys = [...new Set(
+    BADGES.filter(b => b.cat === "animal").map(b => b.id.replace(/_(?:3|5|10|all)$/, ""))
+  )];
+  const showAnimalIds = new Set();
+  for (const key of animalKeys) {
+    let highest = null;
+    for (const sfx of animalTierSuffixes) {
+      if (earnedAnimalIds.has(key + sfx)) highest = key + sfx;
+    }
+    if (highest) showAnimalIds.add(highest);
+  }
+
+  // 達成済みバッジのみ表示（動物バッジは最高ティアのみ）
   for (const b of BADGES) {
     if (!b.check(items)) continue;
+    if (b.cat === "animal" && !showAnimalIds.has(b.id)) continue;
     const div = document.createElement("div");
     let cls = "badge earned";
     if (b.cat === "region") cls += " region-badge";

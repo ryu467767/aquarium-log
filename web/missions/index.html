@@ -42,6 +42,42 @@
     .pref-progress { font-size: 11px; color: #999; }
     .pref-item.earned .pref-progress { color: #43a047; font-weight: bold; }
     .loading { padding: 24px; text-align: center; color: #888; }
+
+    /* ===== Badge design improvements ===== */
+    .badge-row { border-left: 4px solid #e0e0e0; }
+    .badge-row.earned { border-left-color: #e6c800; }
+    .badge-row.earned.pref { border-left-color: #66bb6a; }
+    .badge-row.earned.region { border-left-color: #42a5f5; }
+    .badge-row.earned.animal { border-left-color: #f48fb1; }
+    .badge-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #f0f0f0; display: flex; align-items: center; justify-content: center;
+    }
+    .badge-row.earned .badge-icon { background: rgba(255,215,0,0.18); }
+    .badge-row.earned.pref .badge-icon { background: rgba(102,187,106,0.18); }
+    .badge-row.earned.region .badge-icon { background: rgba(66,165,245,0.18); }
+    .badge-row.earned.animal .badge-icon { background: rgba(244,143,177,0.18); }
+
+    /* ===== Animal badge grouping ===== */
+    .animal-group { border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .animal-group-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #fafafa; cursor: default; }
+    .animal-group.has-earned .animal-group-header { background: #fce4ec; }
+    .animal-group-icon { font-size: 22px; flex-shrink: 0; }
+    .animal-group-name { font-weight: bold; font-size: 14px; flex: 1; color: #555; }
+    .animal-group.has-earned .animal-group-name { color: #880e4f; }
+    .animal-stars { letter-spacing: 1px; font-size: 14px; color: #e91e63; flex-shrink: 0; }
+    .animal-current { font-size: 12px; color: #bbb; flex-shrink: 0; }
+    .animal-group.has-earned .animal-current { color: #ad1457; font-weight: bold; }
+    .animal-tier-list { background: #fff; padding: 4px 12px 8px; }
+    .animal-tier-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; border-top: 1px solid #f5f5f5; color: #bbb; }
+    .animal-tier-item.earned { color: #880e4f; }
+    .tier-dot { width: 8px; height: 8px; border-radius: 50%; background: #e0e0e0; flex-shrink: 0; }
+    .animal-tier-item.earned .tier-dot { background: #f48fb1; }
+    .tier-name { font-weight: bold; min-width: 90px; }
+    .tier-req-text { font-size: 11px; opacity: 0.75; }
+
+    /* ===== Progress bar for pref items ===== */
+    .pref-item { overflow: hidden; }
   </style>
 </head>
 <body>
@@ -195,13 +231,17 @@
       var content = document.getElementById("content");
       content.innerHTML = "";
 
-      function makeRow(icon, label, req, earned, cls) {
+      function makeRow(icon, label, req, earned, cls, pct) {
         var row = document.createElement("div");
         row.className = "badge-row" + (earned ? " earned" + (cls ? " " + cls : "") : "");
+        if (pct !== undefined && loggedIn && !earned && pct > 0) {
+          var fillColor = cls === "region" ? "#bbdefb" : "#c8e6c9";
+          row.style.background = "linear-gradient(to right, " + fillColor + " " + pct + "%, #fafafa " + pct + "%)";
+        }
         row.innerHTML =
           '<div class="badge-icon">' + icon + '</div>' +
           '<div class="badge-info"><div class="badge-name">' + label + '</div><div class="badge-desc">' + req + '</div></div>' +
-          '<div class="badge-status">' + (earned ? "✅ 達成" : (loggedIn ? "未達成" : "-")) + '</div>';
+          '<div class="badge-status">' + (earned ? "✅ 達成" : (loggedIn ? pct !== undefined ? pct + "%" : "未達成" : "-")) + '</div>';
         return row;
       }
 
@@ -217,15 +257,62 @@
       sec1.appendChild(list1);
       content.appendChild(sec1);
 
-      // --- 生き物バッジ ---
+      // --- 生き物バッジ（種別グループ表示） ---
       var sec4 = document.createElement("div");
       sec4.className = "missions-section";
       sec4.innerHTML = '<h2>生き物バッジ</h2>';
       var list4 = document.createElement("div");
       list4.className = "badge-list";
-      ANIMAL_BADGES.forEach(function(b) {
-        list4.appendChild(makeRow(b.icon, b.label, b.req, loggedIn && b.check(items), "animal"));
+
+      var ANIMAL_GROUPS = [
+        { name: "ペンギン", icon: "🐧" },
+        { name: "イルカ",   icon: "🐬" },
+        { name: "アシカ",   icon: "🦭" },
+        { name: "シャチ",   icon: "🐋" },
+        { name: "クラゲ",   icon: "🪼" },
+      ];
+
+      ANIMAL_GROUPS.forEach(function(group) {
+        var tiers = ANIMAL_BADGES.filter(function(b) { return b.label.indexOf(group.name) === 0; });
+        if (!tiers.length) return;
+
+        var earnedTiers = tiers.filter(function(b) { return loggedIn && b.check(items); });
+        var highestEarned = earnedTiers.length ? earnedTiers[earnedTiers.length - 1] : null;
+        var hasEarned = earnedTiers.length > 0;
+
+        // Star rating: ★★☆☆
+        var stars = "";
+        for (var i = 0; i < tiers.length; i++) {
+          stars += (i < earnedTiers.length) ? "★" : "☆";
+        }
+
+        var groupDiv = document.createElement("div");
+        groupDiv.className = "animal-group" + (hasEarned ? " has-earned" : "");
+        groupDiv.innerHTML =
+          '<div class="animal-group-header">' +
+            '<span class="animal-group-icon">' + group.icon + '</span>' +
+            '<span class="animal-group-name">' + group.name + '</span>' +
+            '<span class="animal-stars">' + stars + '</span>' +
+            '<span class="animal-current">' + (hasEarned ? highestEarned.label : (loggedIn ? "未達成" : "-")) + '</span>' +
+          '</div>' +
+          '<div class="animal-tier-list"></div>';
+
+        var tierList = groupDiv.querySelector(".animal-tier-list");
+        tiers.forEach(function(b) {
+          var earned = loggedIn && b.check(items);
+          var item = document.createElement("div");
+          item.className = "animal-tier-item" + (earned ? " earned" : "");
+          item.innerHTML =
+            '<span class="tier-dot"></span>' +
+            '<span class="tier-name">' + b.label + '</span>' +
+            '<span class="tier-req-text">' + b.req + '</span>' +
+            (earned ? '<span style="margin-left:auto;font-size:12px;">✅</span>' : '');
+          tierList.appendChild(item);
+        });
+
+        list4.appendChild(groupDiv);
       });
+
       sec4.appendChild(list4);
       content.appendChild(sec4);
 
@@ -244,7 +331,8 @@
         var visitedInR = loggedIn ? inR.filter(function(x) { return x.visited; }).length : 0;
         var earned = loggedIn && inR.length > 0 && inR.every(function(x) { return x.visited; });
         var req = loggedIn ? visitedInR + " / " + inR.length + " 館" : inR.length + " 館";
-        list3.appendChild(makeRow("🗾", r + "制覇", req, earned, "region"));
+        var pct = inR.length > 0 ? Math.round(visitedInR / inR.length * 100) : 0;
+        list3.appendChild(makeRow("🗾", r + "制覇", req, earned, "region", pct));
       });
       sec3.appendChild(list3);
       content.appendChild(sec3);
@@ -269,8 +357,12 @@
         var inPref = openItems.filter(function(x) { return x.prefecture === p; });
         var visitedInPref = loggedIn ? inPref.filter(function(x) { return x.visited; }).length : 0;
         var earned = loggedIn && inPref.length > 0 && inPref.every(function(x) { return x.visited; });
+        var pct = inPref.length > 0 ? Math.round(visitedInPref / inPref.length * 100) : 0;
         var item = document.createElement("div");
         item.className = "pref-item" + (earned ? " earned" : "");
+        if (loggedIn && !earned && pct > 0) {
+          item.style.background = "linear-gradient(to right, #c8e6c9 " + pct + "%, #fafafa " + pct + "%)";
+        }
         item.innerHTML =
           '<span class="pref-name">' + (earned ? "📍 " : "") + p + '</span>' +
           '<span class="pref-progress">' + (loggedIn ? visitedInPref + "/" + inPref.length : inPref.length + "館") + '</span>';

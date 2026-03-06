@@ -312,6 +312,8 @@ input {
 .share-preview-box {
   max-width: 680px;
   width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 .share-preview-img {
   display: block;
@@ -631,23 +633,26 @@ header, .panel, main, .card{
     transition: min-height .2s ease;
   }
   
-  /* ヘッダー右上：ログイン表示（小さく/目立たせない） */
+  /* ヘッダー：全ページで flex レイアウト（高さを統一） */
 header {
-    position: relative; /* 右上配置の基準 */
-  }
-  
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+header h1 { margin: 0; }
+
   .userbox {
-    position: absolute;
-    top: 10px;
-    right: 14px;
+    position: static;
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 12px;
     opacity: 0.95;
-  
-    z-index: 20;          /* 追加：前面に出す */
-    pointer-events: auto; /* 追加：クリックを通す */
+    flex-shrink: 0;
+    z-index: 20;
+    pointer-events: auto;
   }
   
   
@@ -751,11 +756,8 @@ header {
   .chips-row .chip {
     width: 100%;
   }
-    /* 右上ログイン表示が被るので、下に落とす */
     .userbox{
-      position: static;
       justify-content: flex-end;
-      margin-top: 8px;
     }
   
     /* 検索行（検索/入力/ボタン）を縦積みにする */
