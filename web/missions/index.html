@@ -62,9 +62,9 @@
     </div>
     <div class="drawer__inner">
       <a href="/" class="drawer-link">トップページ</a>
-      <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
-      <a href="/missions/" class="drawer-link">🏆 ミッション</a>
       <a href="/about/" class="drawer-link">このアプリについて</a>
+      <a href="/missions/" class="drawer-link">🏆 ミッション</a>
+      <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
       <a href="/contact/" class="drawer-link">お問い合わせ</a>
       <a href="/privacy/" class="drawer-link">プライバシーポリシー</a>
     </div>
@@ -105,25 +105,66 @@
     };
     function regionOf(pref) { return REGION_BY_PREF[pref] || "その他"; }
 
+    var PREF_ORDER = [
+      "北海道",
+      "青森県","岩手県","宮城県","秋田県","山形県","福島県",
+      "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県",
+      "新潟県","富山県","石川県","福井県","山梨県","長野県",
+      "岐阜県","静岡県","愛知県","三重県",
+      "滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+      "鳥取県","島根県","岡山県","広島県","山口県",
+      "徳島県","香川県","愛媛県","高知県",
+      "福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"
+    ];
+
     var VISIT_BADGES = [
-      { id: "v10",  label: "10館達成",  icon: "🥉", req: "10館訪問",      check: function(v) { return v >= 10; } },
-      { id: "v30",  label: "30館達成",  icon: "🥈", req: "30館訪問",      check: function(v) { return v >= 30; } },
-      { id: "v50",  label: "50館達成",  icon: "🥇", req: "50館訪問",      check: function(v) { return v >= 50; } },
-      { id: "v100", label: "100館達成", icon: "🏆", req: "100館訪問",     check: function(v) { return v >= 100; } },
+      { id: "v10",  label: "10館達成",  icon: "🥉", req: "10館訪問",       check: function(v) { return v >= 10; } },
+      { id: "v30",  label: "30館達成",  icon: "🥈", req: "30館訪問",       check: function(v) { return v >= 30; } },
+      { id: "v50",  label: "50館達成",  icon: "🥇", req: "50館訪問",       check: function(v) { return v >= 50; } },
+      { id: "v100", label: "100館達成", icon: "🏆", req: "100館訪問",      check: function(v) { return v >= 100; } },
       { id: "all",  label: "全館制覇",  icon: "👑", req: "全水族館を制覇", check: function(v, t) { return t > 0 && v >= t; } },
     ];
 
     var ANIMAL_BADGES = [
-      { id: "a_penguin",   label: "ペンギン好き", icon: "🐧", req: "ペンギンのいる水族館を3館訪問",
+      // ペンギン
+      { icon: "🐧", label: "ペンギン好き",     req: "ペンギンのいる水族館を3館訪問",
         check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_penguin; }).length >= 3; } },
-      { id: "a_dolphin",   label: "イルカ好き",   icon: "🐬", req: "イルカのいる水族館を3館訪問",
+      { icon: "🐧", label: "ペンギン大好き",   req: "ペンギンのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_penguin; }).length >= 5; } },
+      { icon: "🐧", label: "ペンギンマスター", req: "ペンギンのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_penguin; }).length >= 10; } },
+      { icon: "🐧", label: "ペンギン制覇",     req: "ペンギンのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_penguin; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // イルカ
+      { icon: "🐬", label: "イルカ好き",       req: "イルカのいる水族館を3館訪問",
         check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_dolphin; }).length >= 3; } },
-      { id: "a_sealion",   label: "アシカ好き",   icon: "🦭", req: "アシカのいる水族館を3館訪問",
+      { icon: "🐬", label: "イルカ大好き",     req: "イルカのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_dolphin; }).length >= 5; } },
+      { icon: "🐬", label: "イルカマスター",   req: "イルカのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_dolphin; }).length >= 10; } },
+      { icon: "🐬", label: "イルカ制覇",       req: "イルカのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_dolphin; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // アシカ
+      { icon: "🦭", label: "アシカ好き",       req: "アシカのいる水族館を3館訪問",
         check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_sealion; }).length >= 3; } },
-      { id: "a_orca",      label: "シャチ制覇",   icon: "🐋", req: "シャチのいる全水族館を制覇",
+      { icon: "🦭", label: "アシカ大好き",     req: "アシカのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_sealion; }).length >= 5; } },
+      { icon: "🦭", label: "アシカマスター",   req: "アシカのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_sealion; }).length >= 10; } },
+      { icon: "🦭", label: "アシカ制覇",       req: "アシカのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_sealion; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // シャチ
+      { icon: "🐋", label: "シャチ制覇",       req: "シャチのいる全水族館を制覇",
         check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_orca; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
-      { id: "a_jellyfish", label: "クラゲ好き",   icon: "🪼", req: "クラゲのいる水族館を3館訪問",
+      // クラゲ
+      { icon: "🪼", label: "クラゲ好き",       req: "クラゲのいる水族館を3館訪問",
         check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_jellyfish; }).length >= 3; } },
+      { icon: "🪼", label: "クラゲ大好き",     req: "クラゲのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_jellyfish; }).length >= 5; } },
+      { icon: "🪼", label: "クラゲマスター",   req: "クラゲのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_jellyfish; }).length >= 10; } },
+      { icon: "🪼", label: "クラゲ制覇",       req: "クラゲのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_jellyfish; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
     ];
 
     (async function() {
@@ -208,10 +249,15 @@
       sec3.appendChild(list3);
       content.appendChild(sec3);
 
-      // --- 都道府県制覇 ---
+      // --- 都道府県制覇（PREF_ORDER順） ---
       var sec2 = document.createElement("div");
       sec2.className = "missions-section";
-      var prefs = [...new Set(openItems.map(function(x) { return x.prefecture; }))].sort(function(a, b) { return a.localeCompare(b, "ja"); });
+      var allPrefs = [...new Set(openItems.map(function(x) { return x.prefecture; }))];
+      var prefs = allPrefs.sort(function(a, b) {
+        var ai = PREF_ORDER.indexOf(a), bi = PREF_ORDER.indexOf(b);
+        if (ai === -1) ai = 99; if (bi === -1) bi = 99;
+        return ai - bi;
+      });
       var completedCount = loggedIn ? prefs.filter(function(p) {
         var inPref = openItems.filter(function(x) { return x.prefecture === p; });
         return inPref.length > 0 && inPref.every(function(x) { return x.visited; });

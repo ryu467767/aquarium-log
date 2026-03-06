@@ -551,12 +551,13 @@ def sitemap():
 
 @app.get("/api/user/photos")
 def user_all_photos(request: Request):
-    """ログインユーザーが投稿した全写真（館名付き）"""
+    """ログインユーザーが投稿した全写真（館名・訪問日付き）"""
     uid = get_user_id(request)
     with session() as db:
         rows = db.exec(
-            select(Photo, Aquarium)
+            select(Photo, Aquarium, Visit)
             .join(Aquarium, Photo.aquarium_id == Aquarium.id)
+            .outerjoin(Visit, (Visit.aquarium_id == Photo.aquarium_id) & (Visit.user_id == uid))
             .where(Photo.user_id == uid)
             .order_by(Photo.created_at.desc())
         ).all()
@@ -566,9 +567,10 @@ def user_all_photos(request: Request):
                 "url": "/uploads/" + p.path,
                 "aquarium_id": p.aquarium_id,
                 "aquarium_name": a.name,
+                "visited_at": v.visited_at.strftime("%Y-%m-%d") if v and v.visited_at else None,
                 "created_at": p.created_at.isoformat(),
             }
-            for p, a in rows
+            for p, a, v in rows
         ]
 
 @app.get("/api/aquariums/{aquarium_id}/photos")
