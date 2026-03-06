@@ -310,16 +310,16 @@ input {
 
 /* === シェアプレビューモーダル === */
 .share-preview-box {
-  max-width: 680px;
+  max-width: 540px;
   width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 .share-preview-img {
   display: block;
-  width: 100%;
+  max-height: 220px;
+  width: auto;
+  max-width: 100%;
   border-radius: 8px;
-  margin: 8px 0 20px;
+  margin: 8px auto 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 .modal-btn--primary {

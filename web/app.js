@@ -782,12 +782,13 @@ function updateBadgesFromState() {
 }
 
 // ===== SNSシェア =====
-function generateShareImage(visited, total) {
+function generateShareImage(visited, total, items) {
   const canvas = document.createElement("canvas");
   canvas.width = 800;
   canvas.height = 450;
   const ctx = canvas.getContext("2d");
 
+  // 背景グラデーション
   const grad = ctx.createLinearGradient(0, 0, 800, 450);
   grad.addColorStop(0, "#003d5c");
   grad.addColorStop(1, "#0077b6");
@@ -795,38 +796,110 @@ function generateShareImage(visited, total) {
   ctx.fillRect(0, 0, 800, 450);
 
   ctx.beginPath();
-  ctx.arc(680, 80, 130, 0, Math.PI * 2);
+  ctx.arc(680, 70, 120, 0, Math.PI * 2);
   ctx.fillStyle = "rgba(255,255,255,0.05)";
   ctx.fill();
 
+  // タイトル
   ctx.fillStyle = "white";
-  ctx.font = "bold 28px sans-serif";
+  ctx.font = "bold 25px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("🐠 水族館スタンプラリー", 400, 90);
+  ctx.fillText("🐠 全国水族館スタンプラリー", 400, 70);
 
+  // 区切り線
   ctx.beginPath();
-  ctx.moveTo(150, 115);
-  ctx.lineTo(650, 115);
+  ctx.moveTo(150, 95);
+  ctx.lineTo(650, 95);
   ctx.strokeStyle = "rgba(255,255,255,0.3)";
   ctx.lineWidth = 1;
   ctx.stroke();
 
+  // 訪問数（大きい数字）
   ctx.fillStyle = "white";
-  ctx.font = "bold 110px sans-serif";
-  ctx.fillText(`${visited}館`, 400, 265);
+  ctx.font = "bold 105px sans-serif";
+  ctx.fillText(`${visited}館`, 400, 232);
 
-  ctx.font = "bold 30px sans-serif";
+  // サブテキスト
+  ctx.font = "bold 27px sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(`訪問達成！（全${total}館中）`, 400, 330);
+  ctx.fillText(`訪問達成！（全${total}館中）`, 400, 284);
 
+  // 達成率
   const pct = total > 0 ? Math.round(visited / total * 100) : 0;
-  ctx.font = "bold 26px sans-serif";
+  ctx.font = "bold 24px sans-serif";
   ctx.fillStyle = "#ffe066";
-  ctx.fillText(`達成率 ${pct}%`, 400, 390);
+  ctx.fillText(`達成率 ${pct}%`, 400, 322);
 
-  ctx.font = "15px sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.45)";
-  ctx.fillText("aquarium-log.onrender.com", 400, 435);
+  // ===== 達成バッジを描画 =====
+  const earnedBadges = [];
+  if (items && items.length) {
+    // 動物バッジは最高ティアのみ
+    const animalTierSuffixes = ["_3", "_5", "_10", "_all"];
+    const animalKeys = [...new Set(
+      BADGES.filter(b => b.cat === "animal").map(b => b.id.replace(/_(?:3|5|10|all)$/, ""))
+    )];
+    const showAnimalIds = new Set();
+    for (const key of animalKeys) {
+      let highest = null;
+      for (const sfx of animalTierSuffixes) {
+        const found = BADGES.find(bb => bb.id === key + sfx);
+        if (found && found.check(items)) highest = key + sfx;
+      }
+      if (highest) showAnimalIds.add(highest);
+    }
+    for (const b of BADGES) {
+      if (!b.check(items)) continue;
+      if (b.cat === "animal" && !showAnimalIds.has(b.id)) continue;
+      earnedBadges.push(b);
+    }
+  }
+
+  if (earnedBadges.length > 0) {
+    ctx.font = "15px sans-serif";
+    const maxShow = Math.min(earnedBadges.length, 8);
+    const perRow = Math.min(4, maxShow);
+    const pillH = 26;
+    const pillPad = 12;
+    const gap = 8;
+
+    for (let rowStart = 0; rowStart < maxShow; rowStart += perRow) {
+      const row = earnedBadges.slice(rowStart, rowStart + perRow);
+      const labels = row.map(b => b.icon + " " + b.label);
+      const pillWidths = labels.map(t => ctx.measureText(t).width + pillPad * 2);
+      const totalW = pillWidths.reduce((a, c) => a + c, 0) + gap * (row.length - 1);
+      let x = 400 - totalW / 2;
+      const rowY = 355 + Math.floor(rowStart / perRow) * 34;
+
+      labels.forEach((label, i) => {
+        const pw = pillWidths[i];
+        // 丸角背景
+        const r = 13;
+        ctx.fillStyle = "rgba(255,255,255,0.18)";
+        ctx.beginPath();
+        ctx.moveTo(x + r, rowY);
+        ctx.lineTo(x + pw - r, rowY);
+        ctx.quadraticCurveTo(x + pw, rowY, x + pw, rowY + r);
+        ctx.lineTo(x + pw, rowY + pillH - r);
+        ctx.quadraticCurveTo(x + pw, rowY + pillH, x + pw - r, rowY + pillH);
+        ctx.lineTo(x + r, rowY + pillH);
+        ctx.quadraticCurveTo(x, rowY + pillH, x, rowY + pillH - r);
+        ctx.lineTo(x, rowY + r);
+        ctx.quadraticCurveTo(x, rowY, x + r, rowY);
+        ctx.fill();
+        // テキスト
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.textAlign = "left";
+        ctx.fillText(label, x + pillPad, rowY + pillH - 7);
+        x += pw + gap;
+      });
+    }
+  }
+
+  // URL
+  ctx.textAlign = "center";
+  ctx.font = "14px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  ctx.fillText("aquarium-log.onrender.com", 400, 440);
 
   return canvas.toDataURL("image/png");
 }
@@ -838,7 +911,7 @@ function handleShare() {
   const visited = parts[0] || 0;
   const total = parts[1] || 0;
 
-  const dataUrl = generateShareImage(visited, total);
+  const dataUrl = generateShareImage(visited, total, state.items);
 
   // プレビュー画像をセットしてモーダルを開く
   const previewImg = document.getElementById("sharePreviewImg");
@@ -855,7 +928,7 @@ function handleShare() {
         const blob = await res.blob();
         const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: "水族館スタンプラリー", text: `${visited}館訪問達成！` });
+          await navigator.share({ files: [file], title: "全国水族館スタンプラリー", text: `${visited}館訪問達成！` });
         } else {
           alert("このブラウザではシェア機能が使えません。「画像を保存」からダウンロードしてください。");
         }
