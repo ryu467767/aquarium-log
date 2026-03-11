@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260311-1">
+  <link rel="stylesheet" href="styles.css?v=20260311-2">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -133,26 +133,9 @@
       <button id="searchBtn">検索</button>
     </label>
 
-    <select id="pref-filter">
-      <option value="">都道府県（すべて）</option>
-    </select>
-
-    <div class="chips-row">
-      <button class="chip" data-filter="all">全部</button>
-      <button class="chip" data-filter="visited">行った</button>
-      <button class="chip" data-filter="want_to_go">行きたい</button>
-      <button class="chip" data-filter="unvisited">未訪問</button>
-    </div>
-
-    <div class="animal-filter">
-      <span class="animal-filter__label">生き物で絞り込み</span>
-      <div class="animal-chips-row">
-        <button class="animal-chip" data-animal="has_penguin">🐧 ペンギン</button>
-        <button class="animal-chip" data-animal="has_dolphin">🐬 イルカ</button>
-        <button class="animal-chip" data-animal="has_sealion">🦭 アシカ</button>
-        <button class="animal-chip" data-animal="has_orca">🐋 シャチ</button>
-        <button class="animal-chip" data-animal="has_jellyfish">🪼 クラゲ</button>
-      </div>
+    <div class="search-action-row">
+      <button id="areaSearchBtn" class="search-action-btn" type="button">📍 エリアから探す</button>
+      <button id="animalSearchBtn" class="search-action-btn" type="button">🐟 生き物から探す</button>
     </div>
 
     <div class="closed-toggle-row">
@@ -178,6 +161,7 @@
         <option value="visited_at">訪問日順</option>
       </select>
     </label>
+    <button id="filterBtn" class="filter-btn" type="button">絞り込み ▼</button>
   </div>
 
   <main id="list"></main>
@@ -217,6 +201,49 @@
     </div>
   </div>
 
+  <!-- エリア検索モーダル -->
+  <div id="areaModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box area-modal-box">
+      <p class="modal-title">📍 エリアから探す</p>
+      <div id="areaModalContent" class="area-modal-content"></div>
+      <div class="modal-actions">
+        <button id="areaModalClear" class="modal-btn modal-btn--secondary">すべてのエリア</button>
+        <button id="areaModalClose" class="modal-btn modal-btn--cancel">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 絞り込みモーダル -->
+  <div id="filterModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box filter-modal-box">
+      <p class="modal-title">🔍 絞り込み</p>
+      <div class="filter-section">
+        <div class="filter-section-title">訪問状況</div>
+        <div class="filter-radio-group">
+          <label class="filter-radio-label"><input type="radio" name="visitFilter" value="all"> 全部</label>
+          <label class="filter-radio-label"><input type="radio" name="visitFilter" value="visited"> 訪問済</label>
+          <label class="filter-radio-label"><input type="radio" name="visitFilter" value="want_to_go"> 行きたい</label>
+          <label class="filter-radio-label"><input type="radio" name="visitFilter" value="unvisited"> 未訪問</label>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-section-title">生き物</div>
+        <div class="filter-animal-grid">
+          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_penguin"> 🐧 ペンギン</label>
+          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_dolphin"> 🐬 イルカ</label>
+          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_sealion"> 🦭 アシカ</label>
+          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_orca"> 🐋 シャチ</label>
+          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_jellyfish"> 🪼 クラゲ</label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="filterApplyBtn" class="modal-btn modal-btn--primary">絞り込む</button>
+        <button id="filterResetBtn" class="modal-btn modal-btn--secondary">リセット</button>
+        <button id="filterModalClose" class="modal-btn modal-btn--cancel">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
   <!-- カスタム確認モーダル -->
   <div id="confirmModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
     <div class="modal-box">
@@ -230,6 +257,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260311-1"></script>
+  <script src="app.js?v=20260311-2"></script>
 </body>
 </html>

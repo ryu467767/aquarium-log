@@ -95,8 +95,8 @@ function match(item, q) {
 function passesFilter(item) {
   // 閉館館は showClosed が true の時だけ表示
   if (!state.showClosed && item.is_closed) return false;
-  // 都道府県順のときだけ都道府県フィルタを効かせる
-  if (state.sort === "pref" && state.pref && item.prefecture !== state.pref) return false;
+  // エリアフィルタ（常時有効）
+  if (state.pref && item.prefecture !== state.pref) return false;
   if (state.filter === "all") return true;
   if (state.filter === "visited") return item.visited;
   if (state.filter === "want_to_go") return item.want_to_go;
@@ -1093,15 +1093,6 @@ if (logoutBtn) logoutBtn.onclick = async () => {
 };
 
 
-  // ★追加：都道府県フィルター変更
-  const prefSel = $("pref-filter");
-  if (prefSel) {
-    prefSel.onchange = () => {
-      state.pref = prefSel.value || "";
-      render();
-    };
-  }
-
   const closedToggle = document.getElementById("showClosedToggle");
   if (closedToggle) {
     closedToggle.checked = state.showClosed;
@@ -1111,32 +1102,17 @@ if (logoutBtn) logoutBtn.onclick = async () => {
     };
   }
 
-  document.querySelectorAll(".chip").forEach((btn) => {
-    btn.onclick = () => {
-      state.filter = btn.dataset.filter;
-      document.querySelectorAll(".chip").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      render();
-    };
-  });
+  // エリア検索ボタン
+  const areaSearchBtn = document.getElementById("areaSearchBtn");
+  if (areaSearchBtn) areaSearchBtn.addEventListener("click", openAreaModal);
 
-  // 初期フィルタ
-  document.querySelector('.chip[data-filter="all"]').classList.add("active");
+  // 生き物から探すボタン → 絞り込みモーダル（生き物セクションへ）
+  const animalSearchBtn = document.getElementById("animalSearchBtn");
+  if (animalSearchBtn) animalSearchBtn.addEventListener("click", () => openFilterModal(true));
 
-  // 生き物チップ（AND フィルター）
-  document.querySelectorAll(".animal-chip").forEach((btn) => {
-    btn.onclick = () => {
-      const animal = btn.dataset.animal;
-      if (selectedAnimals.has(animal)) {
-        selectedAnimals.delete(animal);
-        btn.classList.remove("active");
-      } else {
-        selectedAnimals.add(animal);
-        btn.classList.add("active");
-      }
-      render();
-    };
-  });
+  // 絞り込みボタン
+  const filterBtnEl = document.getElementById("filterBtn");
+  if (filterBtnEl) filterBtnEl.addEventListener("click", () => openFilterModal(false));
 
   initSuggestions();
 
@@ -1181,6 +1157,140 @@ if (logoutBtn) logoutBtn.onclick = async () => {
 }
 
 wireUI();
+
+// ===== エリアモーダル =====
+function openAreaModal() {
+  const modal = document.getElementById('areaModal');
+  const content = document.getElementById('areaModalContent');
+  if (!modal || !content) return;
+
+  // リージョンごとに都道府県ボタンを生成
+  content.innerHTML = '';
+  // PREF_ORDER から地域ごとのpref一覧を構築
+  const regionPrefs = {};
+  for (const region of REGION_ORDER) regionPrefs[region] = [];
+  for (const pref of PREF_ORDER) {
+    const region = REGION_BY_PREF[pref] || 'その他';
+    if (!regionPrefs[region]) regionPrefs[region] = [];
+    regionPrefs[region].push(pref);
+  }
+
+  for (const region of REGION_ORDER) {
+    const prefs = regionPrefs[region];
+    if (!prefs || !prefs.length) continue;
+    const sec = document.createElement('div');
+    sec.className = 'area-region';
+    const title = document.createElement('p');
+    title.className = 'area-region-title';
+    title.textContent = region;
+    sec.appendChild(title);
+    const grid = document.createElement('div');
+    grid.className = 'area-pref-grid';
+    for (const pref of prefs) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'area-pref-btn' + (state.pref === pref ? ' active' : '');
+      btn.textContent = pref;
+      btn.onclick = () => {
+        state.pref = pref;
+        modal.style.display = 'none';
+        updateFilterBadge();
+        render();
+      };
+      grid.appendChild(btn);
+    }
+    sec.appendChild(grid);
+    content.appendChild(sec);
+  }
+
+  modal.style.display = '';
+
+  document.getElementById('areaModalClear').onclick = () => {
+    state.pref = '';
+    modal.style.display = 'none';
+    updateFilterBadge();
+    render();
+  };
+  document.getElementById('areaModalClose').onclick = () => { modal.style.display = 'none'; };
+  modal.addEventListener('click', function handler(e) {
+    if (e.target === modal) { modal.style.display = 'none'; modal.removeEventListener('click', handler); }
+  });
+}
+
+// ===== 絞り込みモーダル =====
+// focusAnimal: true のとき生き物セクションを強調
+function openFilterModal(focusAnimal) {
+  const modal = document.getElementById('filterModal');
+  if (!modal) return;
+
+  // 現在のstateをモーダルに反映
+  const radios = modal.querySelectorAll('input[name="visitFilter"]');
+  radios.forEach(r => { r.checked = r.value === (state.filter || 'all'); });
+
+  const checks = modal.querySelectorAll('input[name="animalFilter"]');
+  checks.forEach(c => { c.checked = selectedAnimals.has(c.value); });
+
+  modal.style.display = '';
+
+  if (focusAnimal) {
+    // 生き物セクションにスクロール
+    setTimeout(() => {
+      const animalSec = modal.querySelector('.filter-animal-grid');
+      if (animalSec) animalSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+
+  document.getElementById('filterApplyBtn').onclick = () => {
+    // ラジオ
+    const checked = modal.querySelector('input[name="visitFilter"]:checked');
+    state.filter = checked ? checked.value : 'all';
+    // チェックボックス
+    selectedAnimals.clear();
+    modal.querySelectorAll('input[name="animalFilter"]:checked').forEach(c => {
+      selectedAnimals.add(c.value);
+    });
+    modal.style.display = 'none';
+    updateFilterBadge();
+    render();
+  };
+
+  document.getElementById('filterResetBtn').onclick = () => {
+    state.filter = 'all';
+    selectedAnimals.clear();
+    modal.style.display = 'none';
+    updateFilterBadge();
+    render();
+  };
+
+  document.getElementById('filterModalClose').onclick = () => { modal.style.display = 'none'; };
+  modal.addEventListener('click', function handler(e) {
+    if (e.target === modal) { modal.style.display = 'none'; modal.removeEventListener('click', handler); }
+  });
+}
+
+function updateFilterBadge() {
+  // エリアボタン
+  const areaBtn = document.getElementById('areaSearchBtn');
+  if (areaBtn) {
+    areaBtn.classList.toggle('has-filter', !!state.pref);
+    areaBtn.textContent = state.pref ? ('📍 ' + state.pref) : '📍 エリアから探す';
+  }
+  // 生き物ボタン
+  const animalBtn = document.getElementById('animalSearchBtn');
+  if (animalBtn) {
+    animalBtn.classList.toggle('has-filter', selectedAnimals.size > 0);
+    animalBtn.textContent = selectedAnimals.size > 0
+      ? ('🐟 生き物 (' + selectedAnimals.size + ')')
+      : '🐟 生き物から探す';
+  }
+  // 絞り込みボタン
+  const filterBtnEl = document.getElementById('filterBtn');
+  if (filterBtnEl) {
+    const count = (state.filter !== 'all' ? 1 : 0) + selectedAnimals.size;
+    filterBtnEl.classList.toggle('has-filter', count > 0);
+    filterBtnEl.textContent = count > 0 ? ('絞り込み ▼ (' + count + ')') : '絞り込み ▼';
+  }
+}
 
 function initSuggestions() {
   const qEl = $('q');
@@ -1546,11 +1656,6 @@ if (sortSel) {
     state.sort = sortSel.value;
     localStorage.setItem("aquarium_sort", state.sort);
 
-    if (state.sort === "name") {
-      state.pref = "";
-      const prefSel = $("pref-filter");
-      if (prefSel) prefSel.value = "";
-    }
     render();
   };
 }
