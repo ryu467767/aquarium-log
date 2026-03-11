@@ -775,7 +775,7 @@ header h1 { margin: 0; }
     .sortBar{ flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 12px; }
     .sortBar .row-compact{ justify-content: flex-end; gap: 10px; }
     /* 絞り込みと並び替えのコントロール幅を統一 */
-    .sortBar #sort, .sortBar .filter-select-btn{ width: 120px; }
+    .sortBar #sort, .sortBar .filter-select-btn{ width: 100px; }
   
     /* 一覧コンテナの余白を少し減らす */
     #list{
@@ -1909,4 +1909,65 @@ header {
 .animal-count-label {
   font-size: 14px;
   color: #555;
+}
+
+/* ===== ボトムシート：写真セクション ===== */
+.sheet-photos-wrap {
+  margin-top: 14px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+.sheet-photos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sheet-photos-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: bold;
+}
+.sheet-photo-add-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1.5px dashed #0077b6;
+  color: #0077b6;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.sheet-photo-add-btn:hover { background: #f0f9ff; }
+.sheet-photo-add-btn:disabled { opacity: 0.5; cursor: default; }
+.sheet-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 0;
+}
+.sheet-thumb-item {
+  position: relative;
+}
+.sheet-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+.sheet-thumb-del {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  font-size: 11px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 18px;
+  text-align: center;
 }

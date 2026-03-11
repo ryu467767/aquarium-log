@@ -1619,6 +1619,111 @@ function renderSheetActions(it) {
     el.appendChild(dateRow);
   }
 
+  // ===== 写真セクション =====
+  const photosWrap = document.createElement('div');
+  photosWrap.className = 'sheet-photos-wrap';
+
+  const photoHeaderRow = document.createElement('div');
+  photoHeaderRow.className = 'sheet-photos-header';
+
+  const photoLabel = document.createElement('span');
+  photoLabel.className = 'sheet-photos-label';
+  photoLabel.textContent = '📷 写真';
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'sheet-photo-add-btn';
+  addBtn.textContent = '+ 追加';
+
+  photoHeaderRow.append(photoLabel, addBtn);
+
+  const thumbsDiv = document.createElement('div');
+  thumbsDiv.className = 'sheet-thumbs';
+
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+
+  async function refreshSheetPhotos() {
+    thumbsDiv.innerHTML = '<span style="font-size:12px;color:#aaa">読み込み中…</span>';
+    try {
+      const list = await apiGet(`/api/aquariums/${it.id}/photos`);
+      thumbsDiv.innerHTML = '';
+      for (const p of list) {
+        const item = document.createElement('div');
+        item.className = 'sheet-thumb-item';
+        const img = document.createElement('img');
+        img.className = 'sheet-thumb';
+        img.src = p.url;
+        img.loading = 'lazy';
+        item.appendChild(img);
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'sheet-thumb-del';
+        del.textContent = '×';
+        del.onclick = async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!confirm('この写真を削除しますか？')) return;
+          try {
+            const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
+              method: 'DELETE',
+              credentials: 'same-origin',
+              headers: { 'X-CSRF-Token': state.csrfToken },
+            });
+            if (!res.ok) throw new Error(await res.text());
+            it.has_photos = thumbsDiv.querySelectorAll('.sheet-thumb-item').length > 0;
+            _sheetChanged = true;
+            await refreshSheetPhotos();
+          } catch (err) {
+            alert('削除に失敗: ' + err.message);
+          }
+        };
+        item.appendChild(del);
+        thumbsDiv.appendChild(item);
+      }
+    } catch(e) {
+      thumbsDiv.innerHTML = '';
+      console.warn('sheet photos fetch failed:', e);
+    }
+  }
+
+  addBtn.onclick = () => { fileInput.click(); };
+
+  fileInput.onchange = async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    addBtn.disabled = true;
+    addBtn.textContent = '送信中…';
+    try {
+      const res = await fetch(`/api/aquariums/${it.id}/photos`, {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        headers: { 'X-CSRF-Token': state.csrfToken },
+      });
+      if (!res.ok) throw new Error(await res.text());
+      fileInput.value = '';
+      it.has_photos = true;
+      _sheetChanged = true;
+      await refreshSheetPhotos();
+    } catch(e) {
+      alert('写真アップロード失敗: ' + e.message);
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = '+ 追加';
+    }
+  };
+
+  photosWrap.appendChild(photoHeaderRow);
+  photosWrap.appendChild(thumbsDiv);
+  photosWrap.appendChild(fileInput);
+  el.appendChild(photosWrap);
+  refreshSheetPhotos();
+
   el.appendChild(makeSheetCardLink(it));
 }
 

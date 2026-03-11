@@ -547,7 +547,7 @@ def serve_index():
     except Exception:
         pass  # DB障害時はそのまま静的HTMLを返す
 
-    return HTMLResponse(content=html)
+    return HTMLResponse(content=html, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 
 @app.get("/sitemap.xml", include_in_schema=False)
