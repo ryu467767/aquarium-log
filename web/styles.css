@@ -775,7 +775,7 @@ header h1 { margin: 0; }
     .sortBar{ flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 12px; }
     .sortBar .row-compact{ justify-content: flex-end; gap: 10px; }
     /* 絞り込みと並び替えのコントロール幅を統一 */
-    .sortBar #sort, .sortBar .filter-select-btn{ width: 150px; }
+    .sortBar #sort, .sortBar .filter-select-btn{ width: 120px; }
   
     /* 一覧コンテナの余白を少し減らす */
     #list{
@@ -1879,10 +1879,14 @@ header {
   padding: 6px 0; font-weight: bold;
 }
 
-/* ===== 生き物モーダル ===== */
+/* ===== 生き物モーダル（modal-box クラスを使わず完全独立） ===== */
 .animal-modal-box {
-  max-width: 380px !important;
-  width: 96vw !important;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 20px 20px;
+  max-width: 380px;
+  width: 92vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
   text-align: left;
 }
 .animal-count-banner {
