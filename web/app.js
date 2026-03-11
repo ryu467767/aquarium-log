@@ -717,7 +717,7 @@ const BADGES = [
     check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_sealion).length >= 10 },
   { id: "a_sealion_all", label: "アシカ制覇",       icon: "🦭", cat: "animal",
     check: (items) => { const w = items.filter(x => !x.is_closed && x.has_sealion); return w.length > 0 && w.every(x => x.visited); } },
-  { id: "a_orca_all",    label: "シャチ制覇",       icon: "🐋", cat: "animal",
+  { id: "a_orca_all",    label: "シャチ制覇",       icon: "⚫", cat: "animal",
     check: (items) => { const w = items.filter(x => !x.is_closed && x.has_orca); return w.length > 0 && w.every(x => x.visited); } },
   { id: "a_jellyfish_3",   label: "クラゲ好き",     icon: "🪼", cat: "animal",
     check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_jellyfish).length >= 3 },

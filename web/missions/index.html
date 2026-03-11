@@ -6,7 +6,7 @@
   <title>ミッション｜全国水族館スタンプラリー</title>
   <meta name="description" content="全国水族館スタンプラリーのミッションページ。訪問数バッジ・地域制覇・都道府県制覇・生き物バッジの達成状況を確認できます。">
   <link rel="canonical" href="https://aquarium-log.onrender.com/missions/">
-  <link rel="stylesheet" href="/styles.css?v=20260311-4" />
+  <link rel="stylesheet" href="/styles.css?v=20260311-5" />
   <style>
     .missions-wrap { max-width: 700px; margin: 24px auto; padding: 0 16px; }
     .missions-title { font-size: 22px; font-weight: bold; margin-bottom: 6px; }
@@ -190,7 +190,7 @@
       { icon: "🦭", label: "アシカ制覇",       req: "アシカのいる全水族館を制覇",
         check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_sealion; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
       // シャチ
-      { icon: "🐋", label: "シャチ制覇",       req: "シャチのいる全水族館を制覇",
+      { icon: "⚫", label: "シャチ制覇",       req: "シャチのいる全水族館を制覇",
         check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_orca; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
       // クラゲ
       { icon: "🪼", label: "クラゲ好き",       req: "クラゲのいる水族館を3館訪問",
@@ -268,7 +268,7 @@
         { name: "ペンギン", icon: "🐧" },
         { name: "イルカ",   icon: "🐬" },
         { name: "アシカ",   icon: "🦭" },
-        { name: "シャチ",   icon: "🐋" },
+        { name: "シャチ",   icon: "⚫" },
         { name: "クラゲ",   icon: "🪼" },
       ];
 

@@ -771,9 +771,11 @@ header h1 { margin: 0; }
     /* 都道府県セレクトも幅100%に */
     #pref-filter{ width: 100%; }
   
-    /* 絞り込み・並び替え行をモバイルで縦積みに */
-    .sortBar{ flex-direction: column; align-items: stretch; gap: 4px; padding: 0 12px; }
-    .row-compact{ width: 100%; justify-content: space-between; }
+    /* 絞り込み・並び替え行をモバイルで縦積み・右寄せに */
+    .sortBar{ flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 12px; }
+    .sortBar .row-compact{ justify-content: flex-end; gap: 10px; }
+    /* 絞り込みと並び替えのコントロール幅を統一 */
+    .sortBar #sort, .sortBar .filter-select-btn{ width: 150px; }
   
     /* 一覧コンテナの余白を少し減らす */
     #list{
@@ -1695,6 +1697,7 @@ header {
 .filter-modal-box {
   max-width: 380px !important;
   width: 96vw !important;
+  text-align: left;
 }
 .filter-section { margin-bottom: 18px; }
 .filter-section-title {
@@ -1729,17 +1732,13 @@ header {
 }
 .filter-radio-label input { accent-color: #0077b6; }
 .filter-animal-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
-/* 奇数件数でも最終行アイテムが半幅で宙ぶらりにならないよう揃える */
-.filter-animal-grid .filter-check-label {
-  flex: 1 1 calc(50% - 3px);
-  min-width: 0;
-}
+/* 奇数件で最後の1件だけの行はフル幅に */
 .filter-animal-grid .filter-check-label:last-child:nth-child(odd) {
-  flex: 1 1 100%;
+  grid-column: 1 / -1;
 }
 .filter-check-label {
   display: flex;
@@ -1884,6 +1883,7 @@ header {
 .animal-modal-box {
   max-width: 380px !important;
   width: 96vw !important;
+  text-align: left;
 }
 .animal-count-banner {
   display: flex;
