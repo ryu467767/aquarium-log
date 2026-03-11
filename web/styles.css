@@ -771,8 +771,8 @@ header h1 { margin: 0; }
     /* 都道府県セレクトも幅100%に */
     #pref-filter{ width: 100%; }
   
-    /* 並び替え行も詰める */
-    .sortBar{ justify-content: flex-start; padding: 0 12px; }
+    /* 絞り込み・並び替え行をモバイルで縦積みに */
+    .sortBar{ flex-direction: column; align-items: stretch; gap: 4px; padding: 0 12px; }
     .row-compact{ width: 100%; justify-content: space-between; }
   
     /* 一覧コンテナの余白を少し減らす */
@@ -1623,18 +1623,18 @@ header {
 
 /* ===== 絞り込みボタン（sortBar内、並び替えselectと同デザイン） ===== */
 .filter-select-btn {
-  padding: 3px 22px 3px 8px;
-  font-size: 14px;
+  padding: 6px 10px;
+  font-size: 12px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 999px;
   background: white;
   color: #333;
   cursor: pointer;
   white-space: nowrap;
-  height: 28px;
   transition: border-color 0.15s;
   appearance: none;
   -webkit-appearance: none;
+  line-height: 1.4;
 }
 .filter-select-btn:hover { border-color: #0077b6; }
 .filter-select-btn.has-filter {
@@ -1729,9 +1729,17 @@ header {
 }
 .filter-radio-label input { accent-color: #0077b6; }
 .filter-animal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+}
+/* 奇数件数でも最終行アイテムが半幅で宙ぶらりにならないよう揃える */
+.filter-animal-grid .filter-check-label {
+  flex: 1 1 calc(50% - 3px);
+  min-width: 0;
+}
+.filter-animal-grid .filter-check-label:last-child:nth-child(odd) {
+  flex: 1 1 100%;
 }
 .filter-check-label {
   display: flex;
