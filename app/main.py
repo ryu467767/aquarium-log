@@ -371,6 +371,10 @@ def aquariums(request: Request):
             v.aquarium_id: v
             for v in db.exec(select(Visit).where(Visit.user_id == uid)).all()
         }
+        photo_aq_ids = set(
+            p.aquarium_id
+            for p in db.exec(select(Photo).where(Photo.user_id == uid)).all()
+        )
         out = []
         for a in aq:
             v = visits.get(a.id)
@@ -387,6 +391,7 @@ def aquariums(request: Request):
                 "visit_count": v.visit_count if v else 0,
                 "want_to_go": bool(v.want_to_go) if v else False,
                 "note": v.note if v else "",
+                "has_photos": a.id in photo_aq_ids,
                 "updated_at": v.updated_at.isoformat() if v else None,
                 "lat": a.lat,
                 "lng": a.lng,

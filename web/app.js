@@ -11,6 +11,8 @@ let state = {
 state.loggedIn = false;
 state.markerById = {};
 state.showClosed = false;
+state.filterMemo = false;
+state.filterPhoto = false;
 const selectedAnimals = new Set();
 const PREF_ORDER = [
   "北海道",
@@ -102,6 +104,8 @@ function passesFilter(item) {
   if (state.filter === "want_to_go") return item.want_to_go;
   if (state.filter === "unvisited") return !item.visited;
   if (state.filter === "star") return item.mola_star === 1;
+  if (state.filterMemo && !(item.note && item.note.trim())) return false;
+  if (state.filterPhoto && !item.has_photos) return false;
   return true;
 }
 
@@ -1106,13 +1110,13 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   const areaSearchBtn = document.getElementById("areaSearchBtn");
   if (areaSearchBtn) areaSearchBtn.addEventListener("click", openAreaModal);
 
-  // 生き物から探すボタン → 絞り込みモーダル（生き物セクションへ）
+  // 生き物から探すボタン → 生き物モーダル
   const animalSearchBtn = document.getElementById("animalSearchBtn");
-  if (animalSearchBtn) animalSearchBtn.addEventListener("click", () => openFilterModal(true));
+  if (animalSearchBtn) animalSearchBtn.addEventListener("click", openAnimalModal);
 
   // 絞り込みボタン
   const filterBtnEl = document.getElementById("filterBtn");
-  if (filterBtnEl) filterBtnEl.addEventListener("click", () => openFilterModal(false));
+  if (filterBtnEl) filterBtnEl.addEventListener("click", openFilterModal);
 
   initSuggestions();
 
@@ -1187,10 +1191,12 @@ function openAreaModal() {
     const grid = document.createElement('div');
     grid.className = 'area-pref-grid';
     for (const pref of prefs) {
+      const count = state.items.filter(x => x.prefecture === pref && (state.showClosed || !x.is_closed)).length;
+      if (count === 0) continue;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'area-pref-btn' + (state.pref === pref ? ' active' : '');
-      btn.textContent = pref;
+      btn.innerHTML = pref + ' <span class="area-pref-count">(' + count + ')</span>';
       btn.onclick = () => {
         state.pref = pref;
         modal.style.display = 'none';
@@ -1218,37 +1224,26 @@ function openAreaModal() {
 }
 
 // ===== 絞り込みモーダル =====
-// focusAnimal: true のとき生き物セクションを強調
-function openFilterModal(focusAnimal) {
+function openFilterModal() {
   const modal = document.getElementById('filterModal');
   if (!modal) return;
 
   // 現在のstateをモーダルに反映
-  const radios = modal.querySelectorAll('input[name="visitFilter"]');
-  radios.forEach(r => { r.checked = r.value === (state.filter || 'all'); });
-
-  const checks = modal.querySelectorAll('input[name="animalFilter"]');
-  checks.forEach(c => { c.checked = selectedAnimals.has(c.value); });
+  modal.querySelectorAll('input[name="visitFilter"]').forEach(r => {
+    r.checked = r.value === (state.filter || 'all');
+  });
+  const memoCheck = document.getElementById('filterMemoCheck');
+  const photoCheck = document.getElementById('filterPhotoCheck');
+  if (memoCheck) memoCheck.checked = state.filterMemo;
+  if (photoCheck) photoCheck.checked = state.filterPhoto;
 
   modal.style.display = '';
 
-  if (focusAnimal) {
-    // 生き物セクションにスクロール
-    setTimeout(() => {
-      const animalSec = modal.querySelector('.filter-animal-grid');
-      if (animalSec) animalSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
-  }
-
   document.getElementById('filterApplyBtn').onclick = () => {
-    // ラジオ
     const checked = modal.querySelector('input[name="visitFilter"]:checked');
     state.filter = checked ? checked.value : 'all';
-    // チェックボックス
-    selectedAnimals.clear();
-    modal.querySelectorAll('input[name="animalFilter"]:checked').forEach(c => {
-      selectedAnimals.add(c.value);
-    });
+    state.filterMemo  = !!(memoCheck && memoCheck.checked);
+    state.filterPhoto = !!(photoCheck && photoCheck.checked);
     modal.style.display = 'none';
     updateFilterBadge();
     render();
@@ -1256,13 +1251,73 @@ function openFilterModal(focusAnimal) {
 
   document.getElementById('filterResetBtn').onclick = () => {
     state.filter = 'all';
-    selectedAnimals.clear();
+    state.filterMemo = false;
+    state.filterPhoto = false;
     modal.style.display = 'none';
     updateFilterBadge();
     render();
   };
 
   document.getElementById('filterModalClose').onclick = () => { modal.style.display = 'none'; };
+  modal.addEventListener('click', function handler(e) {
+    if (e.target === modal) { modal.style.display = 'none'; modal.removeEventListener('click', handler); }
+  });
+}
+
+// ===== 生き物モーダル =====
+function countWithPendingAnimals(pendingSet) {
+  const q = ($('q') ? $('q').value.trim() : '').toLowerCase();
+  return state.items.filter(item => {
+    if (q && !match(item, q)) return false;
+    if (!passesFilter(item)) return false;
+    if (pendingSet.size > 0 && item.is_closed) return false;
+    for (const a of pendingSet) { if (!item[a]) return false; }
+    return true;
+  }).length;
+}
+
+function openAnimalModal() {
+  const modal = document.getElementById('animalModal');
+  if (!modal) return;
+
+  // 現在のselectedAnimalsをモーダルに反映
+  modal.querySelectorAll('input[name="animalModalFilter"]').forEach(c => {
+    c.checked = selectedAnimals.has(c.value);
+  });
+
+  const countEl = document.getElementById('animalCountNum');
+
+  function updateCount() {
+    const pending = new Set(
+      [...modal.querySelectorAll('input[name="animalModalFilter"]:checked')].map(c => c.value)
+    );
+    if (countEl) countEl.textContent = countWithPendingAnimals(pending);
+  }
+
+  modal.querySelectorAll('input[name="animalModalFilter"]').forEach(c => {
+    c.onchange = updateCount;
+  });
+
+  updateCount();
+  modal.style.display = '';
+
+  document.getElementById('animalApplyBtn').onclick = () => {
+    selectedAnimals.clear();
+    modal.querySelectorAll('input[name="animalModalFilter"]:checked').forEach(c => {
+      selectedAnimals.add(c.value);
+    });
+    modal.style.display = 'none';
+    updateFilterBadge();
+    render();
+  };
+
+  document.getElementById('animalResetBtn').onclick = () => {
+    selectedAnimals.clear();
+    modal.querySelectorAll('input[name="animalModalFilter"]').forEach(c => { c.checked = false; });
+    updateCount();
+  };
+
+  document.getElementById('animalModalClose').onclick = () => { modal.style.display = 'none'; };
   modal.addEventListener('click', function handler(e) {
     if (e.target === modal) { modal.style.display = 'none'; modal.removeEventListener('click', handler); }
   });
@@ -1280,16 +1335,19 @@ function updateFilterBadge() {
   if (animalBtn) {
     animalBtn.classList.toggle('has-filter', selectedAnimals.size > 0);
     animalBtn.textContent = selectedAnimals.size > 0
-      ? ('🐟 生き物 (' + selectedAnimals.size + ')')
+      ? ('🐟 生き物 (' + selectedAnimals.size + '件選択)')
       : '🐟 生き物から探す';
   }
-  // 絞り込みボタン
+  // 絞り込みボタンラベル
+  const filterLabelEl = document.getElementById('filterBtnLabel');
   const filterBtnEl = document.getElementById('filterBtn');
-  if (filterBtnEl) {
-    const count = (state.filter !== 'all' ? 1 : 0) + selectedAnimals.size;
-    filterBtnEl.classList.toggle('has-filter', count > 0);
-    filterBtnEl.textContent = count > 0 ? ('絞り込み ▼ (' + count + ')') : '絞り込み ▼';
-  }
+  const extraCount = (state.filterMemo ? 1 : 0) + (state.filterPhoto ? 1 : 0);
+  const FILTER_LABELS = { all: 'すべて', visited: '訪問済', want_to_go: '行きたい', unvisited: '未訪問' };
+  let label = FILTER_LABELS[state.filter] || 'すべて';
+  if (extraCount > 0) label += ' +' + extraCount;
+  if (filterLabelEl) filterLabelEl.textContent = label;
+  const hasFilter = state.filter !== 'all' || state.filterMemo || state.filterPhoto;
+  if (filterBtnEl) filterBtnEl.classList.toggle('has-filter', hasFilter);
 }
 
 function initSuggestions() {

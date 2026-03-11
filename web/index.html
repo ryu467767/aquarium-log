@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260311-2">
+  <link rel="stylesheet" href="styles.css?v=20260311-3">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -152,6 +152,10 @@
 
   <div class="sortBar">
     <label class="row row-compact">
+      <span>絞り込み</span>
+      <button id="filterBtn" class="filter-select-btn" type="button"><span id="filterBtnLabel">すべて</span> ▼</button>
+    </label>
+    <label class="row row-compact">
       <span>並び替え</span>
       <select id="sort">
         <option value="pref_plain">都道府県順</option>
@@ -161,7 +165,6 @@
         <option value="visited_at">訪問日順</option>
       </select>
     </label>
-    <button id="filterBtn" class="filter-btn" type="button">絞り込み ▼</button>
   </div>
 
   <main id="list"></main>
@@ -227,19 +230,39 @@
         </div>
       </div>
       <div class="filter-section">
-        <div class="filter-section-title">生き物</div>
-        <div class="filter-animal-grid">
-          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_penguin"> 🐧 ペンギン</label>
-          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_dolphin"> 🐬 イルカ</label>
-          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_sealion"> 🦭 アシカ</label>
-          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_orca"> 🐋 シャチ</label>
-          <label class="filter-check-label"><input type="checkbox" name="animalFilter" value="has_jellyfish"> 🪼 クラゲ</label>
+        <div class="filter-section-title">記録</div>
+        <div class="filter-radio-group">
+          <label class="filter-check-label"><input type="checkbox" id="filterMemoCheck"> 📝 メモあり</label>
+          <label class="filter-check-label"><input type="checkbox" id="filterPhotoCheck"> 📷 写真あり</label>
         </div>
       </div>
       <div class="modal-actions">
         <button id="filterApplyBtn" class="modal-btn modal-btn--primary">絞り込む</button>
         <button id="filterResetBtn" class="modal-btn modal-btn--secondary">リセット</button>
         <button id="filterModalClose" class="modal-btn modal-btn--cancel">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 生き物から探すモーダル -->
+  <div id="animalModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box animal-modal-box">
+      <p class="modal-title">🐟 生き物から探す</p>
+      <div class="animal-count-banner">
+        <span class="animal-count-num" id="animalCountNum">-</span>
+        <span class="animal-count-label">件の水族館が見つかります</span>
+      </div>
+      <div class="filter-animal-grid">
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_penguin"> 🐧 ペンギン</label>
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_dolphin"> 🐬 イルカ</label>
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_sealion"> 🦭 アシカ</label>
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_orca"> 🐋 シャチ</label>
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_jellyfish"> 🪼 クラゲ</label>
+      </div>
+      <div class="modal-actions">
+        <button id="animalApplyBtn" class="modal-btn modal-btn--primary">この条件で探す</button>
+        <button id="animalResetBtn" class="modal-btn modal-btn--secondary">リセット</button>
+        <button id="animalModalClose" class="modal-btn modal-btn--cancel">キャンセル</button>
       </div>
     </div>
   </div>
@@ -257,6 +280,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260311-2"></script>
+  <script src="app.js?v=20260311-3"></script>
 </body>
 </html>
