@@ -21,6 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from typing import Optional
 from pydantic import BaseModel
 from sqlmodel import select
+from sqlalchemy import func
 from .db import init_db, session
 from .models import Aquarium, Visit, Photo, UserProfile, Inquiry
 from .crud import (
@@ -706,15 +707,39 @@ def get_admin_stats(request: Request):
         active_users    = len(db.exec(select(UserProfile).where(UserProfile.last_login_at >= cutoff)).all())
         total_aquariums = len(db.exec(select(Aquarium)).all())
         total_visits    = len(db.exec(select(Visit).where(Visit.visited == True)).all())
+        total_want      = len(db.exec(select(Visit).where(Visit.want_to_go == True)).all())
+        total_photos    = len(db.exec(select(Photo)).all())
         total_inq       = len(db.exec(select(Inquiry)).all())
         unread_inq      = len(db.exec(select(Inquiry).where(Inquiry.is_read == False)).all())
+
+        # バッジ獲得者数（ユーザーごとの訪問館数で判定）
+        user_visit_counts = db.exec(
+            select(Visit.user_id, func.count(Visit.aquarium_id).label("cnt"))
+            .where(Visit.visited == True)
+            .group_by(Visit.user_id)
+        ).all()
+        uvc = {r[0]: r[1] for r in user_visit_counts}
+        badge_v10  = sum(1 for c in uvc.values() if c >= 10)
+        badge_v30  = sum(1 for c in uvc.values() if c >= 30)
+        badge_v50  = sum(1 for c in uvc.values() if c >= 50)
+
+        avg_visited  = round(total_visits  / total_users, 1) if total_users else 0
+        avg_want     = round(total_want    / total_users, 1) if total_users else 0
+
     return {
-        "total_users": total_users,
-        "active_users_30d": active_users,
-        "total_aquariums": total_aquariums,
-        "total_visits": total_visits,
-        "total_inquiries": total_inq,
-        "unread_inquiries": unread_inq,
+        "total_users":        total_users,
+        "active_users_30d":   active_users,
+        "total_aquariums":    total_aquariums,
+        "total_visits":       total_visits,
+        "total_want_to_go":   total_want,
+        "total_photos":       total_photos,
+        "avg_visited_per_user":   avg_visited,
+        "avg_want_per_user":      avg_want,
+        "badge_v10_users":    badge_v10,
+        "badge_v30_users":    badge_v30,
+        "badge_v50_users":    badge_v50,
+        "total_inquiries":    total_inq,
+        "unread_inquiries":   unread_inq,
     }
 
 
@@ -756,13 +781,36 @@ def get_users(request: Request):
         users = db.exec(
             select(UserProfile).order_by(UserProfile.last_login_at.desc())
         ).all()
+
+        # 訪問済・行きたい件数をユーザーごとに集計
+        visit_rows = db.exec(
+            select(Visit.user_id, func.count(Visit.aquarium_id).label("cnt"))
+            .where(Visit.visited == True)
+            .group_by(Visit.user_id)
+        ).all()
+        visit_map = {r[0]: r[1] for r in visit_rows}
+
+        want_rows = db.exec(
+            select(Visit.user_id, func.count(Visit.aquarium_id).label("cnt"))
+            .where(Visit.want_to_go == True)
+            .group_by(Visit.user_id)
+        ).all()
+        want_map = {r[0]: r[1] for r in want_rows}
+
+        photo_rows = db.exec(
+            select(Photo.user_id, func.count(Photo.id).label("cnt"))
+            .group_by(Photo.user_id)
+        ).all()
+        photo_map = {r[0]: r[1] for r in photo_rows}
+
         return [
             {
-                "user_id": u.user_id,
-                "name": u.name,
-                "email": u.email,
-                "created_at": u.created_at.isoformat(),
+                "user_id_masked": u.user_id[:6] + "***",
+                "created_at":    u.created_at.isoformat(),
                 "last_login_at": u.last_login_at.isoformat(),
+                "visited_count": visit_map.get(u.user_id, 0),
+                "want_count":    want_map.get(u.user_id, 0),
+                "photo_count":   photo_map.get(u.user_id, 0),
             }
             for u in users
         ]
