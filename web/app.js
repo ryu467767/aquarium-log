@@ -1163,6 +1163,12 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
   if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
 
+  // ボトムシートの閉じる処理
+  const sheetCloseBtn = document.getElementById('sheetClose');
+  const mapSheetOverlay = document.getElementById('mapSheetOverlay');
+  if (sheetCloseBtn) sheetCloseBtn.addEventListener('click', closeMapSheet);
+  if (mapSheetOverlay) mapSheetOverlay.addEventListener('click', closeMapSheet);
+
   // シェア
   const shareBtnEl = document.getElementById("shareBtn");
   if (shareBtnEl) shareBtnEl.addEventListener("click", handleShare);
@@ -1291,28 +1297,239 @@ function updateMap(items, opts = { fit: true }) {
       iconSize: [16, 16],
     });
 
-    const popupHtml = `${badge} <strong>${label}</strong><br>${it.prefecture}${it.city ? " / " + it.city : ""}<br><a href="#" class="popup-card-link" data-id="${it.id}">カードを見る →</a>`;
-    const marker = L.marker([lat, lng], { icon })
-      .addTo(markersLayer)
-      .bindPopup(popupHtml);
+    const marker = L.marker([lat, lng], { icon }).addTo(markersLayer);
 
     state.markerById[it.id] = marker;
 
-    // ポップアップのカードリンクにスクロール処理を紐付け
-    marker.on('popupopen', () => {
-      const link = marker.getPopup().getElement()?.querySelector('.popup-card-link');
-      if (!link) return;
-      link.onclick = (e) => {
-        e.preventDefault();
-        marker.closePopup();
-        const card = document.getElementById('card-' + it.id);
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      };
-    });
+    marker.on('click', () => openMapSheet(it));
   }
 
   if (opts.fit && pts.length) {
     map.fitBounds(pts, { padding: [24, 24] });
+  }
+}
+
+// ===== 地図ボトムシート =====
+let _sheetItem = null;
+let _sheetChanged = false;
+
+function openMapSheet(it) {
+  _sheetItem = it;
+  const overlay = document.getElementById('mapSheetOverlay');
+  const sheet   = document.getElementById('mapSheet');
+  const nameEl  = document.getElementById('sheetName');
+  const locEl   = document.getElementById('sheetLoc');
+  if (!sheet || !overlay) return;
+
+  nameEl.textContent = it.name || '';
+  locEl.textContent  = [it.prefecture, it.city].filter(Boolean).join(' / ');
+
+  renderSheetActions(it);
+
+  overlay.style.display = '';
+  sheet.style.display = '';
+  // force reflow
+  sheet.getBoundingClientRect();
+  overlay.classList.add('is-open');
+  sheet.classList.add('is-open');
+}
+
+function closeMapSheet() {
+  const overlay = document.getElementById('mapSheetOverlay');
+  const sheet   = document.getElementById('mapSheet');
+  if (overlay) overlay.classList.remove('is-open');
+  if (sheet)   sheet.classList.remove('is-open');
+  setTimeout(() => {
+    if (overlay) overlay.style.display = 'none';
+    if (sheet)   sheet.style.display   = 'none';
+    _sheetItem = null;
+    if (_sheetChanged) {
+      _sheetChanged = false;
+      render();
+    }
+  }, 300);
+}
+
+function renderSheetActions(it) {
+  const el = document.getElementById('sheetActions');
+  if (!el) return;
+  el.innerHTML = '';
+
+  if (!state.loggedIn) {
+    const msg = document.createElement('p');
+    msg.className = 'sheet-login-msg';
+    msg.textContent = 'ログインすると記録できます';
+    el.appendChild(msg);
+
+    const btn = document.createElement('button');
+    btn.className = 'sheet-login-btn';
+    btn.textContent = 'Googleでログイン';
+    btn.onclick = () => { location.href = '/login'; };
+    el.appendChild(btn);
+
+    el.appendChild(makeSheetCardLink(it));
+    return;
+  }
+
+  if (it.is_closed) {
+    const msg = document.createElement('p');
+    msg.className = 'sheet-closed-msg';
+    msg.textContent = '🚫 この施設は閉館しています';
+    el.appendChild(msg);
+    el.appendChild(makeSheetCardLink(it));
+    return;
+  }
+
+  // 訪問済ボタン
+  const visitBtn = document.createElement('button');
+  visitBtn.type = 'button';
+  visitBtn.className = 'sheet-visit-btn' + (it.visited ? ' visited' : '');
+  visitBtn.textContent = it.visited ? '✅ 訪問済（解除）' : '訪問済にする';
+  visitBtn.onclick = () => sheetToggleVisited(it, el);
+  el.appendChild(visitBtn);
+
+  // 行きたいボタン
+  const wantBtn = document.createElement('button');
+  wantBtn.type = 'button';
+  wantBtn.className = 'sheet-want-btn' + (it.want_to_go ? ' active' : '');
+  wantBtn.textContent = it.want_to_go ? '★ 行きたい（解除）' : '☆ 行きたい';
+  wantBtn.onclick = () => sheetToggleWantToGo(it, el);
+  el.appendChild(wantBtn);
+
+  if (it.visited) {
+    // 訪問回数行
+    const countRow = document.createElement('div');
+    countRow.className = 'sheet-count-row';
+    const cLabel = document.createElement('span');
+    cLabel.className = 'sheet-count-label';
+    cLabel.textContent = '訪問回数';
+    const minusBtn = document.createElement('button');
+    minusBtn.className = 'sheet-count-btn'; minusBtn.textContent = '−';
+    const numEl = document.createElement('span');
+    numEl.className = 'sheet-count-num';
+    numEl.textContent = String(it.visit_count || 0);
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'sheet-count-btn'; plusBtn.textContent = '+';
+
+    async function saveSheetCount(n) {
+      const newN = Math.max(0, n);
+      const old = it.visit_count || 0;
+      it.visit_count = newN;
+      numEl.textContent = String(newN);
+      _sheetChanged = true;
+      try {
+        await apiPut(`/api/aquariums/${it.id}/visit_count`, { visit_count: newN });
+      } catch(e) {
+        it.visit_count = old;
+        numEl.textContent = String(old);
+        alert('APIエラー: ' + e.message);
+      }
+    }
+    minusBtn.onclick = () => saveSheetCount((it.visit_count || 0) - 1);
+    plusBtn.onclick  = () => saveSheetCount((it.visit_count || 0) + 1);
+    countRow.append(cLabel, minusBtn, numEl, plusBtn);
+    el.appendChild(countRow);
+
+    // 訪問日行
+    const dateRow = document.createElement('div');
+    dateRow.className = 'sheet-date-row';
+    const dLabel = document.createElement('label');
+    dLabel.textContent = '訪問日：';
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    if (it.visited_at) dateInput.value = it.visited_at.slice(0, 10);
+    dateInput.onchange = async () => {
+      try {
+        const res = await apiPut(`/api/aquariums/${it.id}/visited_at`, { visited_at: dateInput.value || null });
+        if (res) it.visited_at = res.visited_at;
+        _sheetChanged = true;
+      } catch(e) {
+        alert('APIエラー: ' + e.message);
+      }
+    };
+    dateRow.append(dLabel, dateInput);
+    el.appendChild(dateRow);
+  }
+
+  el.appendChild(makeSheetCardLink(it));
+}
+
+function makeSheetCardLink(it) {
+  const a = document.createElement('a');
+  a.className = 'sheet-card-link';
+  a.href = '#card-' + it.id;
+  a.textContent = 'リストのカードを見る →';
+  a.onclick = (e) => {
+    e.preventDefault();
+    closeMapSheet();
+    setTimeout(() => {
+      const card = document.getElementById('card-' + it.id);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 320);
+  };
+  return a;
+}
+
+async function sheetToggleVisited(it, actionsEl) {
+  const newVisited = !it.visited;
+
+  if (!newVisited) {
+    // 解除確認モーダル（既存の confirmModal を流用）
+    const ok = await new Promise(resolve => {
+      const modal = document.getElementById('confirmModal');
+      const title = document.getElementById('confirmTitle');
+      const body  = document.getElementById('confirmBody');
+      const okBtn = document.getElementById('confirmOk');
+      const cancelBtn = document.getElementById('confirmCancel');
+      if (!modal) { resolve(true); return; }
+      title.textContent = '訪問済を解除しますか？';
+      body.textContent  = `「${it.name}」の訪問済と訪問回数・日付がリセットされます。`;
+      modal.style.display = '';
+      const cleanup = (result) => {
+        modal.style.display = 'none';
+        okBtn.onclick = null; cancelBtn.onclick = null;
+        resolve(result);
+      };
+      okBtn.onclick    = () => cleanup(true);
+      cancelBtn.onclick = () => cleanup(false);
+    });
+    if (!ok) return;
+  }
+
+  it.visited = newVisited;
+  if (newVisited && (it.visit_count || 0) === 0) it.visit_count = 1;
+  if (!newVisited) { it.visit_count = 0; it.visited_at = null; }
+  _sheetChanged = true;
+  refreshMarker(it);
+  renderSheetActions(it);
+
+  try {
+    const res = await apiPut(`/api/aquariums/${it.id}/visited`, { visited: newVisited });
+    if (res && res.visited_at) it.visited_at = res.visited_at;
+    if (res && res.visit_count !== undefined) it.visit_count = res.visit_count;
+    updateBadgesFromState();
+  } catch(e) {
+    it.visited = !newVisited;
+    if (!newVisited) { it.visit_count = 0; it.visited_at = null; }
+    refreshMarker(it);
+    renderSheetActions(it);
+    alert('APIエラー: ' + e.message);
+  }
+}
+
+async function sheetToggleWantToGo(it, actionsEl) {
+  const newVal = !it.want_to_go;
+  it.want_to_go = newVal;
+  _sheetChanged = true;
+  refreshMarker(it);
+  renderSheetActions(it);
+  try {
+    await apiPut(`/api/aquariums/${it.id}/want_to_go`, { want_to_go: newVal });
+  } catch(e) {
+    it.want_to_go = !newVal;
+    refreshMarker(it);
+    renderSheetActions(it);
+    alert('APIエラー: ' + e.message);
   }
 }
 

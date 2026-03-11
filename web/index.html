@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260306-5">
+  <link rel="stylesheet" href="styles.css?v=20260311-1">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -182,6 +182,20 @@
 
   <main id="list"></main>
 
+  <!-- 地図マーカータップ時のボトムシート -->
+  <div id="mapSheetOverlay" class="map-sheet-overlay" style="display:none;"></div>
+  <div id="mapSheet" class="map-sheet" style="display:none;">
+    <div class="map-sheet__bar"></div>
+    <div class="map-sheet__header">
+      <div>
+        <div class="map-sheet__name" id="sheetName"></div>
+        <div class="map-sheet__loc" id="sheetLoc"></div>
+      </div>
+      <button class="map-sheet__close" id="sheetClose" aria-label="閉じる">✕</button>
+    </div>
+    <div class="map-sheet__actions" id="sheetActions"></div>
+  </div>
+
   <footer class="site-footer">
     <div class="footer-inner">
       <a href="/contact/">お問い合わせ</a>
@@ -216,6 +230,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260306-4"></script>
+  <script src="app.js?v=20260311-1"></script>
 </body>
 </html>
