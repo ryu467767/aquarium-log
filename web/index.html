@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="google-site-verification" content="E_gwy4ExDGe3hqPfeYcgN89KmtqQZkpa7UsnWmhJb6w" />
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260312-1">
+  <link rel="stylesheet" href="styles.css?v=20260312-2">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -42,6 +42,13 @@
     }
     </script>
 
+  <!-- 生き物モーダル ボタン折り返し（スマホ幅対応・キャッシュ回避用インライン） -->
+  <style>
+    .animal-modal-box .modal-actions { flex-wrap: wrap; }
+    .animal-modal-box .modal-actions .modal-btn--primary { flex: 1 1 100%; }
+    .filter-animal-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+    .animal-modal-box { text-align: left !important; max-width: 380px !important; width: 92vw !important; }
+  </style>
 </head>
 <body>
   <header>

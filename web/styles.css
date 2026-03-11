@@ -1879,6 +1879,14 @@ header {
   padding: 6px 0; font-weight: bold;
 }
 
+/* ===== 生き物モーダル ボタン：スマホで折り返し ===== */
+.animal-modal-box .modal-actions {
+  flex-wrap: wrap;
+}
+.animal-modal-box .modal-actions .modal-btn--primary {
+  flex: 1 1 100%; /* 「この条件で探す」は単独1行 */
+}
+
 /* ===== 生き物モーダル（modal-box クラスを使わず完全独立） ===== */
 .animal-modal-box {
   background: #fff;
