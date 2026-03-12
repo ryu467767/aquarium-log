@@ -727,6 +727,34 @@ const BADGES = [
     check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_jellyfish).length >= 10 },
   { id: "a_jellyfish_all", label: "クラゲ制覇",     icon: "🪼", cat: "animal",
     check: (items) => { const w = items.filter(x => !x.is_closed && x.has_jellyfish); return w.length > 0 && w.every(x => x.visited); } },
+  // トド（8館）
+  { id: "a_steller_3",   label: "トド好き",       icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_steller).length >= 3 },
+  { id: "a_steller_5",   label: "トド大好き",     icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_steller).length >= 5 },
+  { id: "a_steller_all", label: "トド制覇",       icon: "🦭", cat: "animal",
+    check: (items) => { const w = items.filter(x => !x.is_closed && x.has_steller); return w.length > 0 && w.every(x => x.visited); } },
+  // アザラシ（25館）
+  { id: "a_seal_3",   label: "アザラシ好き",     icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_seal).length >= 3 },
+  { id: "a_seal_5",   label: "アザラシ大好き",   icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_seal).length >= 5 },
+  { id: "a_seal_10",  label: "アザラシマスター", icon: "🦭", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_seal).length >= 10 },
+  { id: "a_seal_all", label: "アザラシ制覇",     icon: "🦭", cat: "animal",
+    check: (items) => { const w = items.filter(x => !x.is_closed && x.has_seal); return w.length > 0 && w.every(x => x.visited); } },
+  // サメ（14館）
+  { id: "a_shark_3",   label: "サメ好き",       icon: "🦈", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_shark).length >= 3 },
+  { id: "a_shark_5",   label: "サメ大好き",     icon: "🦈", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_shark).length >= 5 },
+  { id: "a_shark_10",  label: "サメマスター",   icon: "🦈", cat: "animal",
+    check: (items) => items.filter(x => !x.is_closed && x.visited && x.has_shark).length >= 10 },
+  { id: "a_shark_all", label: "サメ制覇",       icon: "🦈", cat: "animal",
+    check: (items) => { const w = items.filter(x => !x.is_closed && x.has_shark); return w.length > 0 && w.every(x => x.visited); } },
+  // シロイルカ（3館）
+  { id: "a_beluga_all", label: "シロイルカ制覇", icon: "🐳", cat: "animal",
+    check: (items) => { const w = items.filter(x => !x.is_closed && x.has_beluga); return w.length > 0 && w.every(x => x.visited); } },
 ];
 
 function renderBadges(items) {

@@ -6,7 +6,7 @@
   <title>ミッション｜全国水族館スタンプラリー</title>
   <meta name="description" content="全国水族館スタンプラリーのミッションページ。訪問数バッジ・地域制覇・都道府県制覇・生き物バッジの達成状況を確認できます。">
   <link rel="canonical" href="https://aquarium-log.onrender.com/missions/">
-  <link rel="stylesheet" href="/styles.css?v=20260312-2" />
+  <link rel="stylesheet" href="/styles.css?v=20260312-4" />
   <style>
     .missions-wrap { max-width: 700px; margin: 24px auto; padding: 0 16px; }
     .missions-title { font-size: 22px; font-weight: bold; margin-bottom: 6px; }
@@ -201,6 +201,34 @@
         check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_jellyfish; }).length >= 10; } },
       { icon: "🪼", label: "クラゲ制覇",       req: "クラゲのいる全水族館を制覇",
         check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_jellyfish; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // トド
+      { icon: "🦭", label: "トド好き",         req: "トドのいる水族館を3館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_steller; }).length >= 3; } },
+      { icon: "🦭", label: "トド大好き",       req: "トドのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_steller; }).length >= 5; } },
+      { icon: "🦭", label: "トド制覇",         req: "トドのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_steller; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // アザラシ
+      { icon: "🦭", label: "アザラシ好き",     req: "アザラシのいる水族館を3館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_seal; }).length >= 3; } },
+      { icon: "🦭", label: "アザラシ大好き",   req: "アザラシのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_seal; }).length >= 5; } },
+      { icon: "🦭", label: "アザラシマスター", req: "アザラシのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_seal; }).length >= 10; } },
+      { icon: "🦭", label: "アザラシ制覇",     req: "アザラシのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_seal; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // サメ
+      { icon: "🦈", label: "サメ好き",         req: "サメのいる水族館を3館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_shark; }).length >= 3; } },
+      { icon: "🦈", label: "サメ大好き",       req: "サメのいる水族館を5館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_shark; }).length >= 5; } },
+      { icon: "🦈", label: "サメマスター",     req: "サメのいる水族館を10館訪問",
+        check: function(items) { return items.filter(function(x) { return !x.is_closed && x.visited && x.has_shark; }).length >= 10; } },
+      { icon: "🦈", label: "サメ制覇",         req: "サメのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_shark; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
+      // シロイルカ
+      { icon: "🐳", label: "シロイルカ制覇",   req: "シロイルカのいる全水族館を制覇",
+        check: function(items) { var w = items.filter(function(x) { return !x.is_closed && x.has_beluga; }); return w.length > 0 && w.every(function(x) { return x.visited; }); } },
     ];
 
     (async function() {
@@ -265,11 +293,15 @@
       list4.className = "badge-list";
 
       var ANIMAL_GROUPS = [
-        { name: "ペンギン", icon: "🐧" },
-        { name: "イルカ",   icon: "🐬" },
-        { name: "アシカ",   icon: "🦭" },
-        { name: "シャチ",   icon: "⚫" },
-        { name: "クラゲ",   icon: "🪼" },
+        { name: "ペンギン",   icon: "🐧" },
+        { name: "イルカ",     icon: "🐬" },
+        { name: "アシカ",     icon: "🦭" },
+        { name: "シャチ",     icon: "⚫" },
+        { name: "クラゲ",     icon: "🪼" },
+        { name: "トド",       icon: "🦭" },
+        { name: "アザラシ",   icon: "🦭" },
+        { name: "サメ",       icon: "🦈" },
+        { name: "シロイルカ", icon: "🐳" },
       ];
 
       ANIMAL_GROUPS.forEach(function(group) {
