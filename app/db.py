@@ -68,7 +68,7 @@ def _migrate():
         "UPDATE aquariums SET has_penguin=0, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='北里大学アクアリウムラボ'",
         "UPDATE aquariums SET has_penguin=0, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='箱根園水族館'",
         "UPDATE aquariums SET has_penguin=0, has_dolphin=0, has_sealion=1, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='よみうりランド'",
-        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='新潟市水族館 マリンピア日本海'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='新潟市水族館 マリンピア日本海'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='上越市立水族博物館 うみがたり'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='魚津水族館'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='のとじま水族館'",
@@ -79,7 +79,7 @@ def _migrate():
         "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=1, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='下田海中水族館'",
         "UPDATE aquariums SET has_penguin=0, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='ドルフィンファンタジー伊東'",
         "UPDATE aquariums SET has_penguin=0, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='幼魚水族館'",
-        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=1, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=1 WHERE name='名古屋港水族館'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=1 WHERE name='名古屋港水族館'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=1, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='南知多ビーチランド'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=1, has_seal=1, has_shark=0, has_beluga=0 WHERE name='伊勢夫婦岩ふれあい水族館 シーパラダイス'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=1, has_shark=1, has_beluga=0 WHERE name='京都水族館'",
@@ -113,6 +113,15 @@ def _migrate():
         "UPDATE aquariums SET has_penguin=0, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='沖縄美ら海水族館'",
         "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='DMMかりゆし水族館'",
         "UPDATE aquariums SET has_penguin=0, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='延岡マリンサービス'",
+        # --- 追加修正（Web検索で確認） ---
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=1, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='鳥羽水族館'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=1, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=1, has_shark=1, has_beluga=0 WHERE name='海遊館'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='四国水族館'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='ニフレル'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=1, has_orca=0, has_jellyfish=0, has_steller=1, has_seal=1, has_shark=0, has_beluga=0 WHERE name='みやじマリン 宮島水族館'",
+        "UPDATE aquariums SET has_penguin=0, has_dolphin=0, has_sealion=1, has_orca=0, has_jellyfish=1, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='竹島水族館'",
+        "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=0, has_beluga=0 WHERE name='姫路市立水族館'",
+        "UPDATE aquariums SET has_penguin=0, has_dolphin=1, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=0, has_shark=1, has_beluga=0 WHERE name='いおワールドかごしま水族館'",
     ]
     for sql in animal_seeds:
         try:
