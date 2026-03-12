@@ -23,6 +23,10 @@ class Aquarium(SQLModel, table=True):
     has_sealion: bool = Field(default=False)
     has_orca: bool = Field(default=False)
     has_jellyfish: bool = Field(default=False)
+    has_steller: bool = Field(default=False)   # トド
+    has_seal: bool = Field(default=False)      # アザラシ
+    has_shark: bool = Field(default=False)     # サメ
+    has_beluga: bool = Field(default=False)    # シロイルカ（ベルーガ）
 
     # 閉館フラグ
     is_closed: bool = Field(default=False)

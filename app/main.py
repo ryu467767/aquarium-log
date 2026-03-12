@@ -401,6 +401,10 @@ def aquariums(request: Request):
                 "has_sealion": bool(a.has_sealion),
                 "has_orca": bool(a.has_orca),
                 "has_jellyfish": bool(a.has_jellyfish),
+                "has_steller": bool(a.has_steller),
+                "has_seal": bool(a.has_seal),
+                "has_shark": bool(a.has_shark),
+                "has_beluga": bool(a.has_beluga),
                 "is_closed": bool(a.is_closed),
                 "closed_at": a.closed_at or "",
             })
@@ -425,6 +429,10 @@ def public_aquariums():
             "has_sealion": bool(a.has_sealion),
             "has_orca": bool(a.has_orca),
             "has_jellyfish": bool(a.has_jellyfish),
+            "has_steller": bool(a.has_steller),
+            "has_seal": bool(a.has_seal),
+            "has_shark": bool(a.has_shark),
+            "has_beluga": bool(a.has_beluga),
             "is_closed": bool(a.is_closed),
             "closed_at": a.closed_at or "",
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
