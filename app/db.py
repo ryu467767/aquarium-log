@@ -34,6 +34,7 @@ def _migrate():
         "ALTER TABLE aquariums ADD COLUMN has_shark INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN has_beluga INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE visits ADD COLUMN visit_years TEXT NOT NULL DEFAULT '[]'",
+        "ALTER TABLE visits ADD COLUMN visit_dates TEXT NOT NULL DEFAULT '[]'",
     ]
     for sql in schema_migrations:
         try:
