@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 背景（角丸正方形） -->
+  <rect width="512" height="512" rx="96" fill="#0077b6"/>
+
+  <!-- 水面の波 -->
+  <path d="M0 370 Q64 345 128 370 Q192 395 256 370 Q320 345 384 370 Q448 395 512 370 L512 512 L0 512Z" fill="#00b4d8" opacity="0.35"/>
+  <path d="M0 400 Q80 378 160 400 Q240 422 320 400 Q400 378 512 400 L512 512 L0 512Z" fill="#90e0ef" opacity="0.25"/>
+
+  <!-- 魚の胴体 -->
+  <ellipse cx="224" cy="235" rx="120" ry="78" fill="white"/>
+
+  <!-- 魚の尾ひれ -->
+  <path d="M336 235 L410 178 Q424 210 424 235 Q424 260 410 292Z" fill="white"/>
+
+  <!-- 背びれ -->
+  <path d="M200 158 Q240 118 285 155" stroke="white" stroke-width="18" fill="none" stroke-linecap="round"/>
+
+  <!-- 腹びれ -->
+  <path d="M210 308 Q240 335 270 310" stroke="white" stroke-width="14" fill="none" stroke-linecap="round"/>
+
+  <!-- 目 -->
+  <circle cx="148" cy="218" r="20" fill="#0077b6"/>
+  <circle cx="142" cy="213" r="7" fill="white"/>
+
+  <!-- 鱗（装飾） -->
+  <path d="M210 220 Q228 207 246 220 Q228 233 210 220Z" fill="#0096c7" opacity="0.5"/>
+  <path d="M246 220 Q264 207 282 220 Q264 233 246 220Z" fill="#0096c7" opacity="0.5"/>
+  <path d="M228 248 Q246 235 264 248 Q246 261 228 248Z" fill="#0096c7" opacity="0.4"/>
+
+  <!-- 口 -->
+  <path d="M112 235 Q104 248 112 258" stroke="#0077b6" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- 小さな泡 -->
+  <circle cx="90" cy="180" r="9" fill="white" opacity="0.6"/>
+  <circle cx="72" cy="155" r="5" fill="white" opacity="0.4"/>
+  <circle cx="108" cy="148" r="6" fill="white" opacity="0.5"/>
+</svg>
