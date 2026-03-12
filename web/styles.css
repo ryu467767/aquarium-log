@@ -294,16 +294,25 @@ input {
   font-weight: bold;
 }
 
-/* === カード生き物アイコン行 === */
+/* === カード生き物タグ行 === */
 .card-animals {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
-  margin: 4px 0 2px;
+  gap: 4px;
+  margin: 5px 0 3px;
 }
-.card-animal-icon {
-  font-size: 15px;
-  line-height: 1;
+.card-animal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: #e8f4ff;
+  color: #2a6496;
+  border: 1px solid #b8d8f5;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 /* === Xポストボタン === */

@@ -228,9 +228,8 @@ function renderCard(it) {
     animalRow.className = "card-animals";
     animalIcons.forEach(a => {
       const span = document.createElement("span");
-      span.className = "card-animal-icon";
-      span.title = a.label;
-      span.textContent = a.icon;
+      span.className = "card-animal-tag";
+      span.textContent = a.icon + "\u00a0" + a.label;
       animalRow.appendChild(span);
     });
     card.appendChild(animalRow);
@@ -981,7 +980,7 @@ function handleShare() {
   const shareApiBtn = document.getElementById("shareApiBtn");
   if (shareApiBtn) {
     shareApiBtn.onclick = async () => {
-      const tweetText = `🐠 全国水族館スタンプラリー\n${visited}館訪問達成！（全${total}館中 ${Math.round(visited/Math.max(total,1)*100)}%）\n#全国水族館スタンプラリー\nhttps://aquarium-log.onrender.com/`;
+      const tweetText = `${visited}館訪問達成！（全${total}館中 ${Math.round(visited/Math.max(total,1)*100)}%）\n#全国水族館スタンプラリー\nhttps://aquarium-log.onrender.com/`;
       // スマホ: 画像付きWeb Share → その後Xを開く
       const res = await fetch(dataUrl);
       const blob = await res.blob();
