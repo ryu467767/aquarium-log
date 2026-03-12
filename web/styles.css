@@ -582,6 +582,7 @@ header, .panel, main, .card{
     display:flex;
     justify-content:flex-end;
     margin: 10px 0 6px;
+    gap: 16px;
   }
   
   .row-compact{
@@ -1736,10 +1737,6 @@ header {
   grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
-/* 奇数件で最後の1件だけの行はフル幅に */
-.filter-animal-grid .filter-check-label:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
 .filter-check-label {
   display: flex;
   align-items: center;
@@ -1882,6 +1879,7 @@ header {
 /* ===== 生き物モーダル ボタン：スマホで折り返し ===== */
 .animal-modal-box .modal-actions {
   flex-wrap: wrap;
+  margin-top: 16px;
 }
 .animal-modal-box .modal-actions .modal-btn--primary {
   flex: 1 1 100%; /* 「この条件で探す」は単独1行 */
@@ -1908,11 +1906,21 @@ header {
   padding: 14px 20px;
   margin-bottom: 16px;
 }
+@keyframes count-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(0.75); }
+  65%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 .animal-count-num {
   font-size: 36px;
   font-weight: bold;
   color: #0077b6;
   line-height: 1;
+  display: inline-block;
+}
+.animal-count-num.pop {
+  animation: count-pop 0.35s ease;
 }
 .animal-count-label {
   font-size: 14px;

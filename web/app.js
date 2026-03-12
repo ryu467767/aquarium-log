@@ -1291,7 +1291,13 @@ function openAnimalModal() {
     const pending = new Set(
       [...modal.querySelectorAll('input[name="animalModalFilter"]:checked')].map(c => c.value)
     );
-    if (countEl) countEl.textContent = countWithPendingAnimals(pending);
+    if (countEl) {
+      countEl.textContent = countWithPendingAnimals(pending);
+      countEl.classList.remove('pop');
+      void countEl.offsetWidth; // reflow
+      countEl.classList.add('pop');
+      countEl.addEventListener('animationend', () => countEl.classList.remove('pop'), { once: true });
+    }
   }
 
   modal.querySelectorAll('input[name="animalModalFilter"]').forEach(c => {
