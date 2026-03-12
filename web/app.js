@@ -1552,7 +1552,11 @@ function openMapSheet(it) {
   const locEl   = document.getElementById('sheetLoc');
   if (!sheet || !overlay) return;
 
-  nameEl.textContent = it.name || '';
+  if (it.url) {
+    nameEl.innerHTML = `<a href="${it.url}" target="_blank" rel="noopener noreferrer" class="sheet-name-link">${it.name || ''}</a>`;
+  } else {
+    nameEl.textContent = it.name || '';
+  }
   locEl.textContent  = [it.prefecture, it.city].filter(Boolean).join(' / ');
 
   renderSheetActions(it);
