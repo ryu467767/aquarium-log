@@ -210,6 +210,32 @@ function renderCard(it) {
   meta.textContent = `${it.prefecture}${it.city ? " / " + it.city : ""} ${it.location_raw ? " / " + it.location_raw : ""}`;
   card.appendChild(meta);
 
+  // 生き物アイコン行
+  const ANIMAL_ICONS = [
+    { key: "has_penguin",   icon: "🐧", label: "ペンギン" },
+    { key: "has_dolphin",   icon: "🐬", label: "イルカ" },
+    { key: "has_sealion",   icon: "🦭", label: "アシカ" },
+    { key: "has_orca",      icon: "🐋", label: "シャチ" },
+    { key: "has_jellyfish", icon: "🪼", label: "クラゲ" },
+    { key: "has_steller",   icon: "🦭", label: "トド" },
+    { key: "has_seal",      icon: "🦭", label: "アザラシ" },
+    { key: "has_shark",     icon: "🦈", label: "サメ" },
+    { key: "has_beluga",    icon: "🐳", label: "シロイルカ" },
+  ];
+  const animalIcons = ANIMAL_ICONS.filter(a => it[a.key]);
+  if (animalIcons.length > 0) {
+    const animalRow = document.createElement("div");
+    animalRow.className = "card-animals";
+    animalIcons.forEach(a => {
+      const span = document.createElement("span");
+      span.className = "card-animal-icon";
+      span.title = a.label;
+      span.textContent = a.icon;
+      animalRow.appendChild(span);
+    });
+    card.appendChild(animalRow);
+  }
+
   const row = document.createElement("div");
   row.className = "row2";
 
@@ -951,22 +977,30 @@ function handleShare() {
   if (previewImg) previewImg.src = dataUrl;
   if (shareModal) shareModal.style.display = "flex";
 
-  // 「シェアする」ボタン（Web Share API）
+  // 「Xにポストする」ボタン
   const shareApiBtn = document.getElementById("shareApiBtn");
   if (shareApiBtn) {
     shareApiBtn.onclick = async () => {
-      try {
-        const res = await fetch(dataUrl);
-        const blob = await res.blob();
-        const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: "全国水族館スタンプラリー", text: `${visited}館訪問達成！` });
-        } else {
-          alert("このブラウザではシェア機能が使えません。「画像を保存」からダウンロードしてください。");
+      const tweetText = `🐠 全国水族館スタンプラリー\n${visited}館訪問達成！（全${total}館中 ${Math.round(visited/Math.max(total,1)*100)}%）\n#全国水族館スタンプラリー\nhttps://aquarium-log.onrender.com/`;
+      // スマホ: 画像付きWeb Share → その後Xを開く
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: "全国水族館スタンプラリー", text: tweetText });
+          return;
+        } catch (e) {
+          if (e.name === "AbortError") return;
         }
-      } catch (e) {
-        if (e.name !== "AbortError") alert("シェアに失敗しました: " + e.message);
       }
+      // デスクトップ or フォールバック: 画像を保存 + X Web Intent を開く
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "aquarium_stamp.png";
+      a.click();
+      const xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(tweetText);
+      window.open(xUrl, "_blank", "noopener");
     };
   }
 
@@ -1101,10 +1135,6 @@ function updateLoginCta(me) {
 function wireUI() {
 
   const qEl = $("q");
-const searchBtn = $("searchBtn");
-
-if (searchBtn) searchBtn.onclick = render;
-
 // Enter でも検索できるように
 if (qEl) {
   qEl.onkeydown = (e) => {

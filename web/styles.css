@@ -294,6 +294,26 @@ input {
   font-weight: bold;
 }
 
+/* === カード生き物アイコン行 === */
+.card-animals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 4px 0 2px;
+}
+.card-animal-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* === Xポストボタン === */
+.modal-btn--x-post {
+  background: #000;
+  color: #fff;
+  font-weight: bold;
+}
+.modal-btn--x-post:hover { background: #333; }
+
 /* === シェアボタン === */
 .share-btn {
   margin: 10px 0 2px;
