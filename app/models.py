@@ -48,6 +48,7 @@ class Visit(SQLModel, table=True):
     visited: bool = False
     visited_at: Optional[datetime] = None
     visit_count: int = Field(default=0)
+    visit_years: str = Field(default="[]")  # JSON array e.g. '["2024","2025"]'
     want_to_go: bool = Field(default=False)
     note: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -235,6 +235,11 @@ function renderCard(it) {
     card.appendChild(animalRow);
   }
 
+  // セパレーター（情報エリア / アクションエリアの区切り）
+  const sep = document.createElement("hr");
+  sep.className = "card-sep";
+  card.appendChild(sep);
+
   const row = document.createElement("div");
   row.className = "row2";
 
@@ -459,6 +464,86 @@ btn.dataset.lastClick = String(now);
     countRow.appendChild(countDisplay);
     countRow.appendChild(plusBtn);
     card.appendChild(countRow);
+
+    // 訪問年セクション
+    const yearsRow = document.createElement("div");
+    yearsRow.className = "visit-years-row";
+
+    let currentYears = Array.isArray(it.visit_years) ? [...it.visit_years] : [];
+
+    async function saveYears(years) {
+      try {
+        const res = await apiPut(`/api/aquariums/${it.id}/visit_years`, { visit_years: years });
+        if (res && res.visit_years) {
+          it.visit_years = res.visit_years;
+          currentYears = [...res.visit_years];
+        }
+      } catch (e) {
+        alert("保存に失敗: " + e.message);
+      }
+    }
+
+    function renderYears() {
+      yearsRow.innerHTML = "";
+      const lbl = document.createElement("span");
+      lbl.className = "visit-years-label";
+      lbl.textContent = "訪問年：";
+      yearsRow.appendChild(lbl);
+
+      const chipsWrap = document.createElement("span");
+      chipsWrap.className = "visit-years-chips";
+      currentYears.forEach(y => {
+        const chip = document.createElement("span");
+        chip.className = "visit-year-chip";
+        chip.textContent = y + "年";
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "visit-year-del";
+        del.textContent = "×";
+        del.title = y + "年を削除";
+        del.onclick = async () => {
+          currentYears = currentYears.filter(x => x !== y);
+          renderYears();
+          await saveYears(currentYears);
+        };
+        chip.appendChild(del);
+        chipsWrap.appendChild(chip);
+      });
+      yearsRow.appendChild(chipsWrap);
+
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "visit-year-add";
+      addBtn.textContent = "＋";
+      addBtn.title = "年を追加";
+      addBtn.onclick = () => {
+        const yr = String(new Date().getFullYear());
+        const input = document.createElement("input");
+        input.type = "number";
+        input.className = "visit-year-input";
+        input.min = "1950";
+        input.max = "2099";
+        input.value = yr;
+        input.style.width = "72px";
+        addBtn.replaceWith(input);
+        input.focus();
+        input.select();
+        async function confirm() {
+          const val = String(parseInt(input.value) || "").trim();
+          if (val && !currentYears.includes(val)) {
+            currentYears = [...currentYears, val].sort();
+            await saveYears(currentYears);
+          }
+          renderYears();
+        }
+        input.onblur = confirm;
+        input.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); input.blur(); } if (e.key === "Escape") renderYears(); };
+      };
+      yearsRow.appendChild(addBtn);
+    }
+
+    renderYears();
+    card.appendChild(yearsRow);
   }
 
   const note = document.createElement("textarea");
@@ -1134,11 +1219,9 @@ function updateLoginCta(me) {
 function wireUI() {
 
   const qEl = $("q");
-// Enter でも検索できるように
 if (qEl) {
-  qEl.onkeydown = (e) => {
-    if (e.key === "Enter") render();
-  };
+  qEl.oninput = render;
+  qEl.onkeydown = (e) => { if (e.key === "Enter") render(); };
 }
 
 const loginBtn = document.getElementById("googleLogin");

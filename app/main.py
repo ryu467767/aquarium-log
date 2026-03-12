@@ -288,6 +288,9 @@ class VisitCountIn(BaseModel):
 class WantToGoIn(BaseModel):
     want_to_go: bool
 
+class VisitYearsIn(BaseModel):
+    visit_years: list[str]
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -390,6 +393,7 @@ def aquariums(request: Request):
                 "visited": bool(v.visited) if v else False,
                 "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
                 "visit_count": v.visit_count if v else 0,
+                "visit_years": json.loads(v.visit_years) if (v and v.visit_years) else [],
                 "want_to_go": bool(v.want_to_go) if v else False,
                 "note": v.note if v else "",
                 "has_photos": a.id in photo_aq_ids,
@@ -439,6 +443,7 @@ def public_aquariums():
             "visited": False,
             "visited_at": None,
             "visit_count": 0,
+            "visit_years": [],
             "want_to_go": False,
             "note": "",
             "updated_at": None,
@@ -487,6 +492,20 @@ def update_visit_count(aquarium_id: int, body: VisitCountIn, request: Request):
             raise HTTPException(404, "Aquarium not found")
         v = set_visit_count(db, uid, aquarium_id, body.visit_count)
         return {"aquarium_id": aquarium_id, "visit_count": v.visit_count}
+
+
+@app.put("/api/aquariums/{aquarium_id}/visit_years")
+def update_visit_years(aquarium_id: int, body: VisitYearsIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        v = db.exec(select(Visit).where(Visit.user_id == uid, Visit.aquarium_id == aquarium_id)).first()
+        if not v:
+            raise HTTPException(404, "Visit record not found")
+        years = sorted(set(body.visit_years))
+        v.visit_years = json.dumps(years, ensure_ascii=False)
+        db.add(v)
+        db.commit()
+        return {"aquarium_id": aquarium_id, "visit_years": years}
 
 
 @app.put("/api/aquariums/{aquarium_id}/want_to_go")

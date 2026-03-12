@@ -58,9 +58,9 @@ main { padding: 0; display: grid; gap: 12px; max-width: 800px; margin: 0 auto; p
     box-shadow: 0 14px 30px rgba(0, 119, 182, 0.15);
   }
   
-.title { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
-.meta { opacity: 0.8; font-size: 12px; margin-bottom: 10px; }
-.row2 { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+.meta { opacity: 0.7; font-size: 12px; margin-bottom: 4px; }
+.row2 { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
 .btn {
     background: #00b4d8;
     color: white;
@@ -88,6 +88,7 @@ main { padding: 0; display: grid; gap: 12px; max-width: 800px; margin: 0 auto; p
 .note {
     width: 100%;
     min-height: 56px;
+    margin-top: 10px;
     padding: 10px 12px;
     border-radius: 12px;
     border: 1px solid #caf0f8;
@@ -313,6 +314,76 @@ input {
   border: 1px solid #b8d8f5;
   white-space: nowrap;
   line-height: 1.4;
+}
+
+/* === カードセパレーター === */
+.card-sep {
+  border: none;
+  border-top: 1px solid #e0f3fa;
+  margin: 10px 0 8px;
+}
+
+/* === 訪問年セクション === */
+.visit-years-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+  font-size: 13px;
+}
+.visit-years-label {
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.visit-years-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.visit-year-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #d0efff;
+  color: #005580;
+  border: 1px solid #90cce8;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.visit-year-del {
+  background: none;
+  border: none;
+  padding: 0 0 0 2px;
+  font-size: 12px;
+  color: #0077aa;
+  cursor: pointer;
+  line-height: 1;
+}
+.visit-year-del:hover { color: #cc0000; }
+.visit-year-add {
+  background: none;
+  border: 1px dashed #90cce8;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 15px;
+  line-height: 1;
+  color: #0077aa;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.visit-year-add:hover { background: #e0f7ff; }
+.visit-year-input {
+  border: 1px solid #90cce8;
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 13px;
+  color: #003b4d;
 }
 
 /* === Xポストボタン === */
