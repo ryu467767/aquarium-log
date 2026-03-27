@@ -1641,6 +1641,11 @@ header {
 .drawer__login .linklike:hover {
   color: #005f8e;
 }
+.drawer__hr {
+  border: none;
+  border-top: 1px solid #e8f0f5;
+  margin: 6px 0;
+}
 
 /* ===== Map popup card link ===== */
 .popup-card-link {
