@@ -833,6 +833,7 @@ def get_users(request: Request):
         return [
             {
                 "user_id_masked": u.user_id[:6] + "***",
+                "name": u.name,
                 "created_at":    u.created_at.isoformat(),
                 "last_login_at": u.last_login_at.isoformat(),
                 "visited_count": visit_map.get(u.user_id, 0),
@@ -840,6 +841,31 @@ def get_users(request: Request):
                 "photo_count":   photo_map.get(u.user_id, 0),
             }
             for u in users
+        ]
+
+
+@app.get("/api/admin/photos")
+def get_admin_photos(request: Request, limit: int = 100):
+    require_admin(request)
+    with session() as db:
+        # UserProfile, Aquarium と JOIN して直近の写真を limit 件取得
+        rows = db.exec(
+            select(Photo, UserProfile.name, Aquarium.name)
+            .join(UserProfile, Photo.user_id == UserProfile.user_id, isouter=True)
+            .join(Aquarium, Photo.aquarium_id == Aquarium.id, isouter=True)
+            .order_by(Photo.created_at.desc())
+            .limit(limit)
+        ).all()
+        
+        return [
+            {
+                "id": p.id,
+                "path": p.path,
+                "created_at": p.created_at.isoformat(),
+                "user_name": u_name or "不明なユーザー",
+                "aquarium_name": a_name or "不明な水族館"
+            }
+            for p, u_name, a_name in rows
         ]
 
 

@@ -175,6 +175,40 @@
       font-size: 14px;
     }
 
+    /* ===== Photo Grid ===== */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      padding: 20px;
+    }
+    .photo-card {
+      background: #f8fafc;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      border: 1px solid #e2e8f0;
+    }
+    .photo-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+      transition: transform .2s;
+    }
+    .photo-card img:hover { transform: scale(1.05); }
+    .photo-card-info { padding: 12px; }
+    .photo-card-info p {
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .photo-card-info p:last-child { margin-bottom: 0; }
+    .photo-card-info .strong { font-weight: 700; color: #0f172a; }
+
     /* ===== Mobile ===== */
     @media (max-width: 640px) {
       .adm-body { padding: 16px 12px; }
@@ -275,6 +309,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="contacts">お問い合わせ</button>
       <button class="tab-btn" data-tab="users">ユーザー一覧</button>
+      <button class="tab-btn" data-tab="photos">写真一覧</button>
     </div>
 
     <!-- Contacts tab -->
@@ -302,6 +337,7 @@
         <thead>
           <tr>
             <th>ユーザーID（匿名）</th>
+            <th>名前</th>
             <th class="hide-sm">登録日</th>
             <th>最終ログイン</th>
             <th>訪問済</th>
@@ -310,9 +346,16 @@
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="row-info"><td colspan="6">読み込み中...</td></tr>
+          <tr class="row-info"><td colspan="7">読み込み中...</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Photos tab -->
+    <div id="tab-photos" class="tab-content adm-card" style="display:none;">
+       <div class="photo-grid" id="photosBody">
+         <div class="row-info" style="grid-column: 1 / -1; padding: 48px;">読み込み中...</div>
+       </div>
     </div>
 
   </div><!-- /adminContent -->
@@ -356,6 +399,7 @@
           document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
           document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
           if (btn.dataset.tab === 'users') loadUsers();
+          if (btn.dataset.tab === 'photos') loadPhotos();
         });
       });
 
@@ -430,13 +474,14 @@
 
     const users = await fetch('/api/admin/users').then(r => r.json());
     if (!users.length) {
-      tbody.innerHTML = '<tr class="row-info"><td colspan="6">ユーザーはいません</td></tr>';
+      tbody.innerHTML = '<tr class="row-info"><td colspan="7">ユーザーはいません</td></tr>';
       return;
     }
 
     tbody.innerHTML = users.map(u => `
       <tr>
         <td style="font-family:monospace;color:#64748b;">${esc(u.user_id_masked)}</td>
+        <td style="font-weight:bold;color:#1e293b;">${esc(u.name || '不明')}</td>
         <td class="hide-sm" style="color:#94a3b8;">${fmtDate(u.created_at)}</td>
         <td style="color:#94a3b8;">${fmtDate(u.last_login_at)}</td>
         <td style="font-weight:bold;color:#0077b6;">${u.visited_count} 館</td>
@@ -446,6 +491,34 @@
     `).join('');
 
     usersLoaded = true;
+  }
+
+  let photosLoaded = false;
+  async function loadPhotos() {
+    if (photosLoaded) return;
+    const body = document.getElementById('photosBody');
+    body.innerHTML = '<div class="row-info" style="grid-column: 1 / -1; padding: 48px; text-align: center;">読み込み中...</div>';
+
+    const photos = await fetch('/api/admin/photos').then(r => r.json());
+    if (!photos.length) {
+      body.innerHTML = '<div class="row-info" style="grid-column: 1 / -1; padding: 48px; text-align: center;">投稿された写真はありません</div>';
+      return;
+    }
+
+    body.innerHTML = photos.map(p => `
+      <div class="photo-card">
+        <a href="${esc(p.path)}" target="_blank" style="display:block; overflow:hidden;">
+          <img src="${esc(p.path)}" loading="lazy" alt="photo">
+        </a>
+        <div class="photo-card-info">
+          <p class="strong" title="${esc(p.aquarium_name)}">${esc(p.aquarium_name)}</p>
+          <p title="${esc(p.user_name)}">👤 ${esc(p.user_name)}</p>
+          <p style="color:#94a3b8;font-size:11px;">${fmtDate(p.created_at)}</p>
+        </div>
+      </div>
+    `).join('');
+
+    photosLoaded = true;
   }
 
   function fmtDate(iso) {
