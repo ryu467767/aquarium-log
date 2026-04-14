@@ -62,6 +62,7 @@ class UserProfile(SQLModel, table=True):
     name: str = ""
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_login_at: datetime = Field(default_factory=datetime.utcnow)
+    login_count: int = Field(default=0)
 
 
 class Inquiry(SQLModel, table=True):

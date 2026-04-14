@@ -338,6 +338,7 @@
           <tr>
             <th>ユーザーID（匿名）</th>
             <th>名前</th>
+            <th>ログイン回数</th>
             <th class="hide-sm">登録日</th>
             <th>最終ログイン</th>
             <th>訪問済</th>
@@ -346,7 +347,7 @@
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="row-info"><td colspan="7">読み込み中...</td></tr>
+          <tr class="row-info"><td colspan="8">読み込み中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -474,7 +475,7 @@
 
     const users = await fetch('/api/admin/users').then(r => r.json());
     if (!users.length) {
-      tbody.innerHTML = '<tr class="row-info"><td colspan="7">ユーザーはいません</td></tr>';
+      tbody.innerHTML = '<tr class="row-info"><td colspan="8">ユーザーはいません</td></tr>';
       return;
     }
 
@@ -482,6 +483,7 @@
       <tr>
         <td style="font-family:monospace;color:#64748b;">${esc(u.user_id_masked)}</td>
         <td style="font-weight:bold;color:#1e293b;">${esc(u.name || '不明')}</td>
+        <td style="color:#059669;font-weight:bold;">${u.login_count} 回</td>
         <td class="hide-sm" style="color:#94a3b8;">${fmtDate(u.created_at)}</td>
         <td style="color:#94a3b8;">${fmtDate(u.last_login_at)}</td>
         <td style="font-weight:bold;color:#0077b6;">${u.visited_count} 館</td>

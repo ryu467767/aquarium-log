@@ -834,6 +834,7 @@ def get_users(request: Request):
             {
                 "user_id_masked": u.user_id[:6] + "***",
                 "name": u.name,
+                "login_count": u.login_count,
                 "created_at":    u.created_at.isoformat(),
                 "last_login_at": u.last_login_at.isoformat(),
                 "visited_count": visit_map.get(u.user_id, 0),
