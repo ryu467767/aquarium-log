@@ -860,7 +860,7 @@ def get_admin_photos(request: Request, limit: int = 100):
         return [
             {
                 "id": p.id,
-                "path": p.path,
+                "path": "/uploads/" + p.path,
                 "created_at": p.created_at.isoformat(),
                 "user_name": u_name or "不明なユーザー",
                 "aquarium_name": a_name or "不明な水族館"
