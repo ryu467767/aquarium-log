@@ -28,6 +28,10 @@ class Aquarium(SQLModel, table=True):
     has_shark: bool = Field(default=False)     # サメ
     has_beluga: bool = Field(default=False)    # シロイルカ（ベルーガ）
 
+    # SNSアカウント（アカウントID のみ、@なし）
+    twitter_id: Optional[str] = Field(default=None)    # 例: "kaiyukan"
+    instagram_id: Optional[str] = Field(default=None)  # 例: "kaiyukan_official"
+
     # 閉館フラグ
     is_closed: bool = Field(default=False)
     closed_at: Optional[str] = Field(default=None)  # 例: "2024-03"

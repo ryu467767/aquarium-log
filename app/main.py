@@ -411,6 +411,8 @@ def aquariums(request: Request):
                 "has_beluga": bool(a.has_beluga),
                 "is_closed": bool(a.is_closed),
                 "closed_at": a.closed_at or "",
+                "twitter_id": a.twitter_id or "",
+                "instagram_id": a.instagram_id or "",
             })
         return out
 
@@ -439,6 +441,8 @@ def public_aquariums():
             "has_beluga": bool(a.has_beluga),
             "is_closed": bool(a.is_closed),
             "closed_at": a.closed_at or "",
+            "twitter_id": a.twitter_id or "",
+            "instagram_id": a.instagram_id or "",
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
             "visited": False,
             "visited_at": None,
@@ -723,6 +727,32 @@ def require_admin(request: Request) -> str:
     if not admin_uid or uid != admin_uid:
         raise HTTPException(403, "Forbidden")
     return uid
+
+
+class AquariumSocialIn(BaseModel):
+    twitter_id: Optional[str] = None
+    instagram_id: Optional[str] = None
+
+
+@app.put("/api/admin/aquariums/{aquarium_id}/social")
+def update_aquarium_social(aquarium_id: int, body: AquariumSocialIn, request: Request):
+    """管理者が水族館のSNSアカウントIDを更新する。"""
+    require_admin(request)
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        # 空文字はNullに統一
+        a.twitter_id = body.twitter_id.strip() if body.twitter_id and body.twitter_id.strip() else None
+        a.instagram_id = body.instagram_id.strip() if body.instagram_id and body.instagram_id.strip() else None
+        db.add(a)
+        db.commit()
+        db.refresh(a)
+    return {
+        "id": a.id,
+        "twitter_id": a.twitter_id or "",
+        "instagram_id": a.instagram_id or "",
+    }
 
 
 @app.get("/api/admin/stats")

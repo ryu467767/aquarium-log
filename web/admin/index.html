@@ -217,6 +217,31 @@
       .stat-card__value { font-size: 26px; }
       .hide-sm { display: none; }
     }
+    /* ===== SNS Edit inputs ===== */
+    .sns-input {
+      width: 140px;
+      padding: 5px 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #1e293b;
+    }
+    .sns-input:focus { outline: none; border-color: #0077b6; box-shadow: 0 0 0 2px rgba(0,119,182,0.15); }
+    .sns-save-btn {
+      padding: 5px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #0077b6;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .1s;
+      white-space: nowrap;
+    }
+    .sns-save-btn:hover { background: #005f8e; }
+    .sns-save-btn:disabled { opacity:.5; cursor:default; }
+    .sns-saved { font-size: 11px; color: #059669; margin-left: 6px; }
   </style>
 </head>
 <body>
@@ -310,6 +335,7 @@
       <button class="tab-btn active" data-tab="contacts">お問い合わせ</button>
       <button class="tab-btn" data-tab="users">ユーザー一覧</button>
       <button class="tab-btn" data-tab="photos">写真一覧</button>
+      <button class="tab-btn" data-tab="sns">🐦 SNS設定</button>
     </div>
 
     <!-- Contacts tab -->
@@ -359,6 +385,28 @@
        </div>
     </div>
 
+    <!-- SNS tab -->
+    <div id="tab-sns" class="tab-content adm-card" style="display:none;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
+        <input id="snsSearch" type="search" placeholder="水族館名で絞り込み..." style="width:100%; max-width:360px; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:13px;">
+        <span style="margin-left:12px; font-size:12px; color:#94a3b8;">※ @なしのアカウントIDを入力してください</span>
+      </div>
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>水族館名</th>
+            <th>都道府県</th>
+            <th>X (Twitter)</th>
+            <th>Instagram</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="snsBody">
+          <tr class="row-info"><td colspan="5">読み込み中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div><!-- /adminContent -->
 </div><!-- /adm-body -->
 
@@ -401,6 +449,7 @@
           document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
           if (btn.dataset.tab === 'users') loadUsers();
           if (btn.dataset.tab === 'photos') loadPhotos();
+          if (btn.dataset.tab === 'sns') loadSNS();
         });
       });
 
@@ -522,6 +571,78 @@
 
     photosLoaded = true;
   }
+
+  let snsLoaded = false;
+  let allAquariums = [];
+  async function loadSNS() {
+    if (snsLoaded) return;
+    const tbody = document.getElementById('snsBody');
+    tbody.innerHTML = '<tr class="row-info"><td colspan="5">読み込み中...</td></tr>';
+
+    // 公開APIから水族館一覧取得（認証不要）
+    allAquariums = await fetch('/api/public/aquariums').then(r => r.json());
+    allAquariums.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+
+    renderSNSTable(allAquariums);
+    snsLoaded = true;
+
+    // 検索フィルタ
+    document.getElementById('snsSearch').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const filtered = q ? allAquariums.filter(a => a.name.toLowerCase().includes(q) || (a.prefecture || '').includes(q)) : allAquariums;
+      renderSNSTable(filtered);
+    });
+  }
+
+  function renderSNSTable(aquariums) {
+    const tbody = document.getElementById('snsBody');
+    if (!aquariums.length) {
+      tbody.innerHTML = '<tr class="row-info"><td colspan="5">該当なし</td></tr>';
+      return;
+    }
+    tbody.innerHTML = aquariums.map(a => `
+      <tr id="sns-row-${a.id}">
+        <td style="font-weight:700;"><a href="${esc(a.url)}" target="_blank" style="color:#0077b6;text-decoration:none;" title="${esc(a.name)}">${esc(a.name)}</a></td>
+        <td style="color:#94a3b8;white-space:nowrap;">${esc(a.prefecture)}</td>
+        <td>
+          <input class="sns-input" id="sns-x-${a.id}" type="text" value="${esc(a.twitter_id || '')}" placeholder="例: kaiyukan" autocomplete="off">
+        </td>
+        <td>
+          <input class="sns-input" id="sns-ig-${a.id}" type="text" value="${esc(a.instagram_id || '')}" placeholder="例: kaiyukan_official" autocomplete="off">
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="sns-save-btn" onclick="saveSNS(${a.id})">保存</button>
+          <span class="sns-saved" id="sns-saved-${a.id}" style="display:none;">✓ 保存済</span>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function saveSNS(id) {
+    const xVal = document.getElementById(`sns-x-${id}`).value.trim();
+    const igVal = document.getElementById(`sns-ig-${id}`).value.trim();
+    const btn = document.querySelector(`#sns-row-${id} .sns-save-btn`);
+    const saved = document.getElementById(`sns-saved-${id}`);
+    btn.disabled = true;
+    saved.style.display = 'none';
+    try {
+      await fetch(`/api/admin/aquariums/${id}/social`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ twitter_id: xVal || null, instagram_id: igVal || null }),
+      });
+      // stateも更新
+      const aq = allAquariums.find(a => a.id === id);
+      if (aq) { aq.twitter_id = xVal; aq.instagram_id = igVal; }
+      saved.style.display = 'inline';
+      setTimeout(() => { saved.style.display = 'none'; }, 2500);
+    } catch(e) {
+      alert('保存失敗: ' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+  window.saveSNS = saveSNS;
 
   function fmtDate(iso) {
     if (!iso) return '-';
