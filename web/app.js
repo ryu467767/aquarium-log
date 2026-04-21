@@ -2019,10 +2019,11 @@ if ('serviceWorker' in navigator) {
   const body = document.getElementById('updateNoticeBody');
   if (!btn || !body || !wrap) return;
 
-  // 1週間以内の更新があればNEWバッジを表示
-  const latest = wrap.dataset.latest;
-  if (latest) {
-    const diff = Date.now() - new Date(latest).getTime();
+  // リスト先頭の日付を読み取り、1週間以内ならNEWバッジを表示
+  const dateEl = body.querySelector('.update-notice__date');
+  if (dateEl) {
+    const latest = new Date(dateEl.textContent.trim().replace(/\//g, '-'));
+    const diff = Date.now() - latest.getTime();
     const newBadge = btn.querySelector('.update-notice__new');
     if (newBadge && diff < 7 * 24 * 60 * 60 * 1000) newBadge.hidden = false;
   }
