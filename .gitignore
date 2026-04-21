@@ -6,4 +6,5 @@ app.db
 
 *.csv
 *.json
+!web/manifest.json
 backup/

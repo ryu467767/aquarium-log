@@ -1,0 +1,33 @@
+{
+  "name": "全国水族館スタンプラリー",
+  "short_name": "水族館ラリー",
+  "description": "日本全国の水族館を巡るスタンプラリーアプリ。訪問記録・地図・写真管理。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0077b6",
+  "theme_color": "#0077b6",
+  "orientation": "portrait-primary",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["travel", "lifestyle"]
+}
