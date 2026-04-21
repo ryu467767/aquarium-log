@@ -2242,6 +2242,7 @@ header {
   flex-direction: column;
   gap: 4px;
 }
+.update-notice__body[hidden] { display: none !important; }
 .update-notice__body li {
   font-size: 12px;
   color: #444;
