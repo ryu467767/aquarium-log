@@ -2012,3 +2012,15 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// 更新情報アコーディオン
+(function() {
+  const btn = document.querySelector('.update-notice__toggle');
+  const body = document.getElementById('updateNoticeBody');
+  if (!btn || !body) return;
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    body.hidden = expanded;
+  });
+})();
+

@@ -13,7 +13,7 @@
     gtag('config', 'G-XR3WZK953P');
   </script>
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260421-1">
+  <link rel="stylesheet" href="styles.css?v=20260421-2">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -101,9 +101,13 @@
     </div>
   </nav>
 
-  <!-- 更新履歴 -->
+  <!-- 更新情報 -->
   <div class="update-notice">
-    <ul>
+    <button class="update-notice__toggle" aria-expanded="false" aria-controls="updateNoticeBody">
+      <span class="update-notice__title">📢 更新情報</span>
+      <span class="update-notice__arrow">▼</span>
+    </button>
+    <ul class="update-notice__body" id="updateNoticeBody" hidden>
       <li><span class="update-notice__date">2026/04/21</span> あわしまマリンパーク（静岡）を追加</li>
       <li><span class="update-notice__date">2026/04/21</span> 幼魚水族館の地図位置を修正</li>
       <li><span class="update-notice__date">2026/04/20</span> 各水族館のX・Instagramリンクを追加</li>
