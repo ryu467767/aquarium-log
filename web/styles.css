@@ -2229,6 +2229,19 @@ header {
 .update-notice__toggle:hover { background: #e0eefb; }
 .update-notice__toggle[aria-expanded="true"] { border-radius: 6px 6px 0 0; border-bottom: none; }
 .update-notice__arrow { font-size: 10px; transition: transform 0.2s; }
+.update-notice__new {
+  display: inline-block;
+  margin-left: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #e8433a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+}
+.update-notice__new[hidden] { display: none; }
 .update-notice__toggle[aria-expanded="true"] .update-notice__arrow { transform: rotate(180deg); }
 .update-notice__body {
   list-style: none;

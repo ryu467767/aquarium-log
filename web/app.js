@@ -2014,9 +2014,19 @@ if ('serviceWorker' in navigator) {
 
 // 更新情報アコーディオン
 (function() {
+  const wrap = document.querySelector('.update-notice');
   const btn = document.querySelector('.update-notice__toggle');
   const body = document.getElementById('updateNoticeBody');
-  if (!btn || !body) return;
+  if (!btn || !body || !wrap) return;
+
+  // 1週間以内の更新があればNEWバッジを表示
+  const latest = wrap.dataset.latest;
+  if (latest) {
+    const diff = Date.now() - new Date(latest).getTime();
+    const newBadge = btn.querySelector('.update-notice__new');
+    if (newBadge && diff < 7 * 24 * 60 * 60 * 1000) newBadge.hidden = false;
+  }
+
   btn.addEventListener('click', () => {
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', String(!expanded));
