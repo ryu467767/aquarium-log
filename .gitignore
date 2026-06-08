@@ -3,6 +3,8 @@ __pycache__/
 .env
 /data/
 app.db
+localdata/
+.venv/
 
 *.csv
 *.json

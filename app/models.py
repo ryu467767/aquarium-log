@@ -80,6 +80,31 @@ class Inquiry(SQLModel, table=True):
     is_read: bool = Field(default=False)
 
 
+class Sighting(SQLModel, table=True):
+    """魚種印帳：訪問日ごとに「見た生き物」を記録する。"""
+    __tablename__ = "sightings"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # ログインユーザー単位
+    user_id: str = Field(index=True)
+
+    # aquariums.id に紐付け
+    aquarium_id: int = Field(index=True, foreign_key="aquariums.id")
+
+    # 訪問日 "YYYY-MM-DD"
+    visited_on: str = ""
+
+    # 見た生き物（JSON配列）例: '["クラゲ","ペンギン"]'
+    creatures: str = Field(default="[]")
+
+    # ひとことメモ（任意）
+    note: str = ""
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class Photo(SQLModel, table=True):
     __tablename__ = "photos"
 

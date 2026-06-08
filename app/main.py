@@ -23,7 +23,7 @@ from pydantic import BaseModel
 from sqlmodel import select
 from sqlalchemy import func
 from .db import init_db, session
-from .models import Aquarium, Visit, Photo, UserProfile, Inquiry
+from .models import Aquarium, Visit, Photo, UserProfile, Inquiry, Sighting
 from .crud import (
     list_aquariums, set_visited, set_note, set_visited_at, set_visit_count,
     set_want_to_go, upsert_user_profile, create_inquiry, list_inquiries,
@@ -42,6 +42,9 @@ BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-secret-change-me")
 DEBUG_ERRORS = os.getenv("DEBUG_ERRORS", "").lower() in ("1", "true", "yes")
 BUILD = os.getenv("BUILD", "dev")
+# ★ローカル検証専用のテストログインを許可するか。
+#   本番(render.yaml)ではこの環境変数を設定しない＝常に False。絶対に本番で有効化しないこと。
+ALLOW_DEV_LOGIN = os.getenv("ALLOW_DEV_LOGIN", "").lower() in ("1", "true", "yes")
 
 
 def require_key(request: Request):
@@ -291,6 +294,11 @@ class WantToGoIn(BaseModel):
 class VisitDatesIn(BaseModel):
     visit_dates: list[str]
 
+class SightingIn(BaseModel):
+    visited_on: str = ""          # "YYYY-MM-DD"
+    creatures: list[str] = []     # 例: ["クラゲ","ペンギン"]
+    note: str = ""
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -337,6 +345,21 @@ async def auth_callback(request: Request):
 @app.get("/logout")
 def logout(request: Request):
     request.session.clear()
+    return RedirectResponse(url="/")
+
+@app.get("/dev-login")
+def dev_login(request: Request):
+    """ローカル検証用：Googleを使わずテストユーザーでログインする。
+    ALLOW_DEV_LOGIN=1 のときだけ有効。本番では無効（404）。"""
+    if not ALLOW_DEV_LOGIN:
+        raise HTTPException(404, "Not found")
+    uid = "google:dev-tester"
+    request.session["user_id"] = uid
+    request.session["email"] = "dev@example.com"
+    request.session["name"] = "ローカルテスト"
+    request.session["picture"] = None
+    with session() as db:
+        upsert_user_profile(db, uid, "dev@example.com", "ローカルテスト")
     return RedirectResponse(url="/")
 
 @app.get("/api/me")
@@ -533,6 +556,143 @@ def update_note(aquarium_id: int, body: NoteIn, request: Request):
         v = set_note(db, uid, aquarium_id, body.note)
         return {"aquarium_id": aquarium_id, "note": v.note, "updated_at": v.updated_at}
 
+
+# ===== 魚種印帳（Sightings）=====
+
+def _sighting_out(s: Sighting) -> dict:
+    try:
+        creatures = json.loads(s.creatures) if s.creatures else []
+    except Exception:
+        creatures = []
+    return {
+        "id": s.id,
+        "aquarium_id": s.aquarium_id,
+        "visited_on": s.visited_on or "",
+        "creatures": creatures,
+        "note": s.note or "",
+        "created_at": s.created_at.isoformat() if s.created_at else None,
+        "updated_at": s.updated_at.isoformat() if s.updated_at else None,
+    }
+
+
+def _clean_creatures(creatures):
+    """重複除去・空文字除去・最大30件にトリム。"""
+    seen = []
+    for c in (creatures or []):
+        name = (c or "").strip()
+        if name and name not in seen:
+            seen.append(name)
+        if len(seen) >= 30:
+            break
+    return seen
+
+
+@app.get("/api/aquariums/{aquarium_id}/sightings")
+def list_sightings(aquarium_id: int, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        rows = db.exec(
+            select(Sighting)
+            .where(Sighting.user_id == uid, Sighting.aquarium_id == aquarium_id)
+            .order_by(Sighting.visited_on.desc(), Sighting.id.desc())
+        ).all()
+        return [_sighting_out(s) for s in rows]
+
+
+@app.post("/api/aquariums/{aquarium_id}/sightings")
+def create_sighting(aquarium_id: int, body: SightingIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        now = datetime.utcnow()
+        s = Sighting(
+            user_id=uid,
+            aquarium_id=aquarium_id,
+            visited_on=(body.visited_on or "").strip(),
+            creatures=json.dumps(_clean_creatures(body.creatures), ensure_ascii=False),
+            note=(body.note or "").strip(),
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(s)
+        db.commit()
+        db.refresh(s)
+        return _sighting_out(s)
+
+
+@app.put("/api/sightings/{sighting_id}")
+def update_sighting(sighting_id: int, body: SightingIn, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        s = db.get(Sighting, sighting_id)
+        if not s or s.user_id != uid:
+            raise HTTPException(404, "Sighting not found")
+        s.visited_on = (body.visited_on or "").strip()
+        s.creatures = json.dumps(_clean_creatures(body.creatures), ensure_ascii=False)
+        s.note = (body.note or "").strip()
+        s.updated_at = datetime.utcnow()
+        db.add(s)
+        db.commit()
+        db.refresh(s)
+        return _sighting_out(s)
+
+
+@app.delete("/api/sightings/{sighting_id}")
+def delete_sighting(sighting_id: int, request: Request):
+    uid = get_user_id(request)
+    with session() as db:
+        s = db.get(Sighting, sighting_id)
+        if not s or s.user_id != uid:
+            raise HTTPException(404, "Sighting not found")
+        db.delete(s)
+        db.commit()
+        return {"deleted": True, "id": sighting_id}
+
+
+@app.get("/api/me/sightings/collection")
+def sightings_collection(request: Request):
+    """集めた魚種印：生き物ごとに「回数」と「見た水族館」を集計して返す。"""
+    uid = get_user_id(request)
+    with session() as db:
+        rows = db.exec(select(Sighting).where(Sighting.user_id == uid)).all()
+        aq_names = {a.id: a.name for a in list_aquariums(db)}
+
+        # creature -> {"count": n, "aquariums": {id:name}}
+        agg: dict = {}
+        total_records = 0
+        for s in rows:
+            total_records += 1
+            try:
+                creatures = json.loads(s.creatures) if s.creatures else []
+            except Exception:
+                creatures = []
+            for name in creatures:
+                name = (name or "").strip()
+                if not name:
+                    continue
+                if name not in agg:
+                    agg[name] = {"count": 0, "aquariums": {}}
+                agg[name]["count"] += 1
+                if s.aquarium_id in aq_names:
+                    agg[name]["aquariums"][s.aquarium_id] = aq_names[s.aquarium_id]
+
+        out = []
+        for name, info in agg.items():
+            out.append({
+                "name": name,
+                "count": info["count"],
+                "aquariums": [
+                    {"id": aid, "name": nm} for aid, nm in info["aquariums"].items()
+                ],
+            })
+        out.sort(key=lambda x: (-x["count"], x["name"]))
+        return {
+            "species_count": len(out),
+            "total_records": total_records,
+            "creatures": out,
+        }
 
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)

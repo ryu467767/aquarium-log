@@ -86,6 +86,56 @@ async function apiPut(path, body) {
   }
 }
 
+async function apiSend(path, method, body) {
+  const res = await fetch(path, {
+    method,
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": state.csrfToken || "",
+    },
+    body: body == null ? undefined : JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text || "(empty)"}`);
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return text; }
+}
+const apiPost = (path, body) => apiSend(path, "POST", body);
+const apiDelete = (path) => apiSend(path, "DELETE", null);
+
+// ===== 魚種印帳：生き物マスターリスト =====
+const CREATURE_LIST = [
+  { name: "クラゲ", icon: "🪼" },
+  { name: "ペンギン", icon: "🐧" },
+  { name: "イルカ", icon: "🐬" },
+  { name: "シャチ", icon: "🐋" },
+  { name: "サメ", icon: "🦈" },
+  { name: "ウミガメ", icon: "🐢" },
+  { name: "ラッコ", icon: "🦦" },
+  { name: "アザラシ", icon: "🦭" },
+  { name: "アシカ", icon: "🦁" },
+  { name: "トド", icon: "🦭" },
+  { name: "シロイルカ", icon: "🐳" },
+  { name: "クマノミ", icon: "🐠" },
+  { name: "マンボウ", icon: "🐟" },
+  { name: "フグ", icon: "🐡" },
+  { name: "チンアナゴ", icon: "🐍" },
+  { name: "タコ", icon: "🐙" },
+  { name: "イカ", icon: "🦑" },
+  { name: "カニ", icon: "🦀" },
+  { name: "エビ", icon: "🦐" },
+  { name: "サンゴ", icon: "🪸" },
+  { name: "ヒトデ", icon: "⭐" },
+  { name: "ウニ", icon: "🟣" },
+  { name: "フラミンゴ", icon: "🦩" },
+  { name: "ワニ", icon: "🐊" },
+  { name: "カワウソ", icon: "🦦" },
+  { name: "カピバラ", icon: "🦫" },
+];
+const CREATURE_ICON = {};
+CREATURE_LIST.forEach(c => { CREATURE_ICON[c.name] = c.icon; });
+function creatureIcon(name) { return CREATURE_ICON[name] || "🐟"; }
 
 
 function match(item, q) {
@@ -709,9 +759,313 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
   photosWrap.appendChild(pickBtn);
   photosWrap.appendChild(up);
     card.appendChild(photosWrap);
-  
+
+  // ===== 魚種印帳（見た生き物を訪問日ごとに記録）=====
+  card.appendChild(buildSightingsSection(it));
 
   return card;
+}
+
+// ===== 集めた魚種印モーダル =====
+async function openCollectionModal() {
+  const modal = document.getElementById("collectionModal");
+  const summary = document.getElementById("collectionSummary");
+  const content = document.getElementById("collectionContent");
+  if (!modal || !summary || !content) return;
+
+  summary.textContent = "";
+  content.innerHTML = `<div class="collection-loading">読み込み中…🐟</div>`;
+  modal.style.display = "";
+
+  let data;
+  try {
+    data = await apiGet("/api/me/sightings/collection");
+  } catch (e) {
+    content.innerHTML = `<div class="collection-loading">読み込みに失敗しました</div>`;
+    return;
+  }
+
+  summary.innerHTML =
+    `<span class="collection-stat"><b>${data.species_count}</b> 種類</span>` +
+    `<span class="collection-stat"><b>${data.total_records}</b> 回の記録</span>`;
+
+  content.innerHTML = "";
+  if (!data.creatures.length) {
+    content.innerHTML = `<div class="collection-empty">まだ魚種印がありません。<br>各水族館カードの「🐟 魚種印帳」から見た生き物を記録しましょう。</div>`;
+    return;
+  }
+  for (const c of data.creatures) {
+    const cell = document.createElement("div");
+    cell.className = "collection-cell";
+    const aqNames = c.aquariums.map(a => a.name).join(" / ");
+    cell.innerHTML =
+      `<div class="collection-icon">${creatureIcon(c.name)}</div>` +
+      `<div class="collection-name">${escapeHtml(c.name)}</div>` +
+      `<div class="collection-count">×${c.count}</div>`;
+    cell.title = aqNames;
+    content.appendChild(cell);
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]
+  ));
+}
+
+// ===== 魚種印帳セクション =====
+function buildSightingsSection(it) {
+  const wrap = document.createElement("div");
+  wrap.className = "sightings";
+
+  // 開閉トグル（429対策：開いた時だけ取得）
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "sightings-toggle";
+  toggle.innerHTML = `<span>🐟 魚種印帳</span><span class="sightings-caret">▼</span>`;
+
+  const body = document.createElement("div");
+  body.className = "sightings-body";
+  body.hidden = true;
+
+  const listEl = document.createElement("div");
+  listEl.className = "sightings-list";
+
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "sighting-add-btn";
+  addBtn.textContent = state.loggedIn ? "＋ 記録を追加" : "ログインして記録";
+
+  const formHost = document.createElement("div");
+  formHost.className = "sighting-form-host";
+
+  body.appendChild(listEl);
+  body.appendChild(addBtn);
+  body.appendChild(formHost);
+  wrap.appendChild(toggle);
+  wrap.appendChild(body);
+
+  async function refreshList() {
+    listEl.innerHTML = "";
+    if (!state.loggedIn) {
+      const msg = document.createElement("div");
+      msg.className = "sightings-guest";
+      msg.textContent = "ログインすると見た生き物を記録できます";
+      listEl.appendChild(msg);
+      return;
+    }
+    let rows = [];
+    try {
+      rows = await apiGet(`/api/aquariums/${it.id}/sightings`);
+    } catch (e) {
+      console.warn("sightings fetch failed:", e);
+      return;
+    }
+    if (!rows.length) {
+      const empty = document.createElement("div");
+      empty.className = "sightings-empty";
+      empty.textContent = "まだ記録がありません。「＋ 記録を追加」から登録できます。";
+      listEl.appendChild(empty);
+      return;
+    }
+    for (const s of rows) {
+      listEl.appendChild(renderSightingRecord(it, s, refreshList));
+    }
+  }
+
+  toggle.onclick = () => {
+    const opening = body.hidden;
+    body.hidden = !opening;
+    toggle.classList.toggle("open", opening);
+    if (opening && !wrap.dataset.loaded) {
+      wrap.dataset.loaded = "1";
+      refreshList();
+    }
+  };
+
+  addBtn.onclick = () => {
+    if (!state.loggedIn) { location.href = "/login"; return; }
+    if (formHost.firstChild) { formHost.innerHTML = ""; return; } // トグル
+    formHost.appendChild(buildSightingForm(it, null, async () => {
+      formHost.innerHTML = "";
+      await refreshList();
+    }));
+  };
+
+  return wrap;
+}
+
+// 1件の記録表示
+function renderSightingRecord(it, s, onChanged) {
+  const rec = document.createElement("div");
+  rec.className = "sighting-rec";
+
+  const head = document.createElement("div");
+  head.className = "sighting-rec-head";
+  const date = document.createElement("span");
+  date.className = "sighting-rec-date";
+  date.textContent = s.visited_on || "(日付なし)";
+  head.appendChild(date);
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "sighting-mini-btn";
+  editBtn.textContent = "✏️";
+  editBtn.title = "編集";
+
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.className = "sighting-mini-btn";
+  delBtn.textContent = "🗑️";
+  delBtn.title = "削除";
+  delBtn.onclick = async () => {
+    if (!confirm("この記録を削除しますか？")) return;
+    try {
+      await apiDelete(`/api/sightings/${s.id}`);
+      await onChanged();
+    } catch (e) { alert("削除に失敗: " + e.message); }
+  };
+  head.appendChild(editBtn);
+  head.appendChild(delBtn);
+  rec.appendChild(head);
+
+  const chips = document.createElement("div");
+  chips.className = "sighting-chips";
+  (s.creatures || []).forEach(name => {
+    const chip = document.createElement("span");
+    chip.className = "sighting-chip";
+    chip.textContent = creatureIcon(name) + " " + name;
+    chips.appendChild(chip);
+  });
+  rec.appendChild(chips);
+
+  if (s.note) {
+    const note = document.createElement("div");
+    note.className = "sighting-rec-note";
+    note.textContent = s.note;
+    rec.appendChild(note);
+  }
+
+  editBtn.onclick = () => {
+    const form = buildSightingForm(it, s, async () => { await onChanged(); });
+    rec.replaceWith(form);
+  };
+
+  return rec;
+}
+
+// 記録の入力フォーム（新規 s=null / 編集 s=記録）
+function buildSightingForm(it, s, onDone) {
+  const isEdit = !!s;
+  const form = document.createElement("div");
+  form.className = "sighting-form";
+
+  // 日付
+  const dateInput = document.createElement("input");
+  dateInput.type = "date";
+  dateInput.className = "sighting-date-input";
+  dateInput.value = (s && s.visited_on) || new Date().toISOString().slice(0, 10);
+  const dateLabel = document.createElement("label");
+  dateLabel.className = "sighting-field-label";
+  dateLabel.textContent = "訪問日";
+  dateLabel.appendChild(dateInput);
+  form.appendChild(dateLabel);
+
+  // 生き物ピッカー
+  const selected = new Set((s && s.creatures) || []);
+  const grid = document.createElement("div");
+  grid.className = "creature-grid";
+
+  function makeChip(name, icon) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "creature-pick" + (selected.has(name) ? " on" : "");
+    chip.textContent = (icon || creatureIcon(name)) + " " + name;
+    chip.onclick = () => {
+      if (selected.has(name)) { selected.delete(name); chip.classList.remove("on"); }
+      else { selected.add(name); chip.classList.add("on"); }
+    };
+    return chip;
+  }
+
+  CREATURE_LIST.forEach(c => grid.appendChild(makeChip(c.name, c.icon)));
+  // 既存の自由入力（マスターに無いもの）も表示
+  ((s && s.creatures) || []).forEach(name => {
+    if (!CREATURE_ICON[name]) grid.appendChild(makeChip(name, "🐟"));
+  });
+  form.appendChild(grid);
+
+  // 自由入力
+  const freeRow = document.createElement("div");
+  freeRow.className = "creature-free-row";
+  const freeInput = document.createElement("input");
+  freeInput.type = "text";
+  freeInput.className = "creature-free-input";
+  freeInput.placeholder = "リストにない生き物（例：ジンベエザメ）";
+  const freeAdd = document.createElement("button");
+  freeAdd.type = "button";
+  freeAdd.className = "creature-free-add";
+  freeAdd.textContent = "追加";
+  freeAdd.onclick = () => {
+    const name = freeInput.value.trim();
+    if (!name) return;
+    if (!selected.has(name)) {
+      selected.add(name);
+      grid.appendChild(makeChip(name, "🐟"));
+    }
+    freeInput.value = "";
+  };
+  freeInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); freeAdd.click(); }
+  });
+  freeRow.appendChild(freeInput);
+  freeRow.appendChild(freeAdd);
+  form.appendChild(freeRow);
+
+  // メモ
+  const memo = document.createElement("textarea");
+  memo.className = "sighting-memo";
+  memo.placeholder = "ひとことメモ（例：クラゲが幻想的だった）";
+  memo.value = (s && s.note) || "";
+  form.appendChild(memo);
+
+  // ボタン
+  const actions = document.createElement("div");
+  actions.className = "sighting-form-actions";
+  const saveBtn = document.createElement("button");
+  saveBtn.type = "button";
+  saveBtn.className = "sighting-save";
+  saveBtn.textContent = "保存する";
+  const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "sighting-cancel";
+  cancelBtn.textContent = "キャンセル";
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  form.appendChild(actions);
+
+  cancelBtn.onclick = () => { onDone(); };
+
+  saveBtn.onclick = async () => {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "保存中…";
+    const payload = {
+      visited_on: dateInput.value || "",
+      creatures: Array.from(selected),
+      note: memo.value.trim(),
+    };
+    try {
+      if (isEdit) await apiPut(`/api/sightings/${s.id}`, payload);
+      else await apiPost(`/api/aquariums/${it.id}/sightings`, payload);
+      onDone();
+    } catch (e) {
+      alert("保存に失敗: " + e.message);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "保存する";
+    }
+  };
+
+  return form;
 }
 
 
@@ -1170,6 +1524,8 @@ async function load() {
   if (shareBtnEl) shareBtnEl.style.display = state.loggedIn ? "" : "none";
   const galleryBtnEl = document.getElementById("galleryBtn");
   if (galleryBtnEl) galleryBtnEl.style.display = state.loggedIn ? "" : "none";
+  const collectionBtnEl = document.getElementById("collectionBtn");
+  if (collectionBtnEl) collectionBtnEl.style.display = state.loggedIn ? "" : "none";
 
   // 達成バッジ
   renderBadges(items);
@@ -1328,6 +1684,14 @@ if (logoutBtn) logoutBtn.onclick = async () => {
   const shareModalClose = document.getElementById("shareModalClose");
   if (shareModalClose) shareModalClose.addEventListener("click", () => { if (shareModal) shareModal.style.display = "none"; });
   if (shareModal) shareModal.addEventListener("click", (e) => { if (e.target === shareModal) shareModal.style.display = "none"; });
+
+  // 集めた魚種印モーダル
+  const collectionBtn = document.getElementById("collectionBtn");
+  const collectionModal = document.getElementById("collectionModal");
+  const collectionModalClose = document.getElementById("collectionModalClose");
+  if (collectionBtn) collectionBtn.addEventListener("click", () => { closeDrawer(); openCollectionModal(); });
+  if (collectionModalClose) collectionModalClose.addEventListener("click", () => { if (collectionModal) collectionModal.style.display = "none"; });
+  if (collectionModal) collectionModal.addEventListener("click", (e) => { if (e.target === collectionModal) collectionModal.style.display = "none"; });
 }
 
 wireUI();

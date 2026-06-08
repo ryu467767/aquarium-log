@@ -13,7 +13,7 @@
     gtag('config', 'G-XR3WZK953P');
   </script>
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260422-1">
+  <link rel="stylesheet" href="styles.css?v=20260609-1">
   <link rel="stylesheet" href="styles.layout.css?v=20260306-2">
   <link
   rel="stylesheet"
@@ -94,6 +94,7 @@
       <a href="/about/" class="drawer-link">ℹ️ このアプリについて</a>
       <a href="/missions/" class="drawer-link">🏆 ミッション</a>
       <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
+      <button id="collectionBtn" type="button" class="drawer-link" style="display:none;">🐟 集めた魚種印</button>
       <a href="/contact/" class="drawer-link">✉️ お問い合わせ</a>
       <a href="/privacy/" class="drawer-link">🔐 プライバシーポリシー</a>
       <hr class="drawer__hr">
@@ -255,6 +256,18 @@
     </div>
   </div>
 
+  <!-- 集めた魚種印モーダル -->
+  <div id="collectionModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box collection-modal-box">
+      <p class="modal-title">🐟 集めた魚種印</p>
+      <div id="collectionSummary" class="collection-summary"></div>
+      <div id="collectionContent" class="collection-content"></div>
+      <div class="modal-actions">
+        <button id="collectionModalClose" class="modal-btn modal-btn--cancel">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 絞り込みモーダル -->
   <div id="filterModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
     <div class="modal-box filter-modal-box">
@@ -323,6 +336,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260422-2"></script>
+  <script src="app.js?v=20260609-1"></script>
 </body>
 </html>
