@@ -1,36 +1,47 @@
 # ============================================================
-#  ローカル検証用：本番(Render)に一切影響しない設定でアプリを起動します
-#  使い方：PowerShellでこのファイルがあるフォルダに移動して
-#          .\run-local.ps1
-#  そのあとブラウザで http://localhost:8000 を開く
-#  ログインしたいときは     http://localhost:8000/dev-login  を開く
-#  止めるときは Ctrl + C
+#  Local verify launcher (does NOT affect production / Render)
+#  Usage:  .\run-local.ps1
+#  Then open:        http://localhost:8000
+#  Test login at:    http://localhost:8000/dev-login
+#  Stop with:        Ctrl + C
+#
+#  NOTE: keep this file ASCII-only. PowerShell 5.1 reads .ps1 as
+#  the system codepage (cp932 on JP Windows), so non-ASCII text
+#  can corrupt parsing. Japanese UI text lives in the app, not here.
 # ============================================================
 
-# ローカル専用のデータ置き場（本番DBとは完全に別。git管理外）
-$env:DB_DIR        = Join-Path $PSScriptRoot "localdata"
-$env:UPLOAD_DIR    = Join-Path $PSScriptRoot "localdata\uploads"
+# Make console/Python use UTF-8 so app logs are not garbled
+chcp 65001 > $null
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PYTHONUTF8 = "1"
 
-# テストログインを許可（本番では絶対に設定しない）
+# Local-only data dirs (separate from production DB; git-ignored)
+$env:DB_DIR     = Join-Path $PSScriptRoot "localdata"
+$env:UPLOAD_DIR = Join-Path $PSScriptRoot "localdata\uploads"
+
+# Enable the test login (NEVER set this in production)
 $env:ALLOW_DEV_LOGIN = "1"
 
-# ローカル用のダミー設定
-$env:SESSION_SECRET  = "local-dev-secret"
-$env:BASE_URL        = "http://localhost:8000"
-$env:DEBUG_ERRORS    = "1"
+# Dummy local settings
+$env:SESSION_SECRET = "local-dev-secret"
+$env:BASE_URL       = "http://localhost:8000"
+$env:DEBUG_ERRORS   = "1"
 
-# データフォルダを用意
+# Seed aquarium data into the local DB on startup (idempotent: skips existing).
+# Lets you test with the full aquarium list locally. Not set in production.
+$env:CSV_PATH       = Join-Path $PSScriptRoot "aquariums_with_animals.csv"
+
 New-Item -ItemType Directory -Force -Path $env:DB_DIR     | Out-Null
 New-Item -ItemType Directory -Force -Path $env:UPLOAD_DIR | Out-Null
 
 Write-Host ""
 Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host " ローカル起動中... 下のURLをブラウザで開いてください" -ForegroundColor Cyan
-Write-Host "   トップ      : http://localhost:8000" -ForegroundColor Yellow
-Write-Host "   テストログイン: http://localhost:8000/dev-login" -ForegroundColor Yellow
-Write-Host " 止めるには Ctrl + C" -ForegroundColor Cyan
+Write-Host " LOCAL server starting..." -ForegroundColor Cyan
+Write-Host "   Top page   : http://localhost:8000" -ForegroundColor Yellow
+Write-Host "   Test login : http://localhost:8000/dev-login" -ForegroundColor Yellow
+Write-Host " Stop: Ctrl + C" -ForegroundColor Cyan
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# venv の python で uvicorn を起動（--reload でファイル保存すると自動再読込）
-& (Join-Path $PSScriptRoot ".venv\Scripts\python.exe") -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+$py = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
+& $py -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
