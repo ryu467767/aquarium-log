@@ -1025,52 +1025,70 @@ function updateBadgesFromState() {
 
 // ===== SNSシェア =====
 function generateShareImage(visited, total, items) {
+  // X推奨の大型カード比率（1200x675 ≈ 16:9）。高解像度で描画
+  const W = 1200, H = 675, CX = W / 2;
   const canvas = document.createElement("canvas");
-  canvas.width = 800;
-  canvas.height = 450;
+  canvas.width = W;
+  canvas.height = H;
   const ctx = canvas.getContext("2d");
 
-  // 背景グラデーション
-  const grad = ctx.createLinearGradient(0, 0, 800, 450);
-  grad.addColorStop(0, "#003d5c");
-  grad.addColorStop(1, "#0077b6");
+  // 背景グラデーション（深い海色）
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, "#012a45");
+  grad.addColorStop(0.55, "#024b73");
+  grad.addColorStop(1, "#0091c2");
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 800, 450);
+  ctx.fillRect(0, 0, W, H);
 
-  ctx.beginPath();
-  ctx.arc(680, 70, 120, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255,255,255,0.05)";
-  ctx.fill();
+  // 装飾の泡（半透明の円）
+  const bubbles = [[1020, 120, 170], [180, 560, 120], [1080, 580, 70], [120, 140, 60]];
+  for (const [bx, by, br] of bubbles) {
+    ctx.beginPath();
+    ctx.arc(bx, by, br, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.05)";
+    ctx.fill();
+  }
 
   // タイトル
   ctx.fillStyle = "white";
-  ctx.font = "bold 25px sans-serif";
+  ctx.font = "bold 40px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("🐠 全国水族館スタンプラリー", 400, 70);
+  ctx.fillText("🐠 全国水族館スタンプラリー", CX, 110);
 
   // 区切り線
   ctx.beginPath();
-  ctx.moveTo(150, 95);
-  ctx.lineTo(650, 95);
+  ctx.moveTo(220, 145);
+  ctx.lineTo(W - 220, 145);
   ctx.strokeStyle = "rgba(255,255,255,0.3)";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.stroke();
 
   // 訪問数（大きい数字）
   ctx.fillStyle = "white";
-  ctx.font = "bold 105px sans-serif";
-  ctx.fillText(`${visited}館`, 400, 232);
+  ctx.font = "bold 150px sans-serif";
+  ctx.fillText(`${visited}館`, CX, 320);
 
   // サブテキスト
-  ctx.font = "bold 27px sans-serif";
+  ctx.font = "bold 40px sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(`訪問達成！（全${total}館中）`, 400, 284);
+  ctx.fillText(`訪問達成！（全${total}館中）`, CX, 380);
 
-  // 達成率
+  // ===== 達成率プログレスバー =====
   const pct = total > 0 ? Math.round(visited / total * 100) : 0;
-  ctx.font = "bold 24px sans-serif";
+  const barW = 560, barH = 26, barX = CX - barW / 2, barY = 410, barR = barH / 2;
+  // 背景トラック
+  ctx.fillStyle = "rgba(255,255,255,0.18)";
+  roundRect(ctx, barX, barY, barW, barH, barR);
+  ctx.fill();
+  // 進捗
+  const fillW = Math.max(barH, barW * pct / 100);
   ctx.fillStyle = "#ffe066";
-  ctx.fillText(`達成率 ${pct}%`, 400, 322);
+  roundRect(ctx, barX, barY, fillW, barH, barR);
+  ctx.fill();
+  // 達成率テキスト
+  ctx.font = "bold 30px sans-serif";
+  ctx.fillStyle = "#ffe066";
+  ctx.fillText(`達成率 ${pct}%`, CX, barY + barH + 38);
 
   // ===== 達成バッジを描画 =====
   const earnedBadges = [];
@@ -1097,41 +1115,29 @@ function generateShareImage(visited, total, items) {
   }
 
   if (earnedBadges.length > 0) {
-    ctx.font = "15px sans-serif";
+    ctx.font = "23px sans-serif";
     const maxShow = Math.min(earnedBadges.length, 8);
     const perRow = Math.min(4, maxShow);
-    const pillH = 26;
-    const pillPad = 12;
-    const gap = 8;
+    const pillH = 40;
+    const pillPad = 18;
+    const gap = 12;
 
     for (let rowStart = 0; rowStart < maxShow; rowStart += perRow) {
       const row = earnedBadges.slice(rowStart, rowStart + perRow);
       const labels = row.map(b => b.icon + " " + b.label);
       const pillWidths = labels.map(t => ctx.measureText(t).width + pillPad * 2);
       const totalW = pillWidths.reduce((a, c) => a + c, 0) + gap * (row.length - 1);
-      let x = 400 - totalW / 2;
-      const rowY = 355 + Math.floor(rowStart / perRow) * 34;
+      let x = CX - totalW / 2;
+      const rowY = 525 + Math.floor(rowStart / perRow) * 52;
 
       labels.forEach((label, i) => {
         const pw = pillWidths[i];
-        // 丸角背景
-        const r = 13;
         ctx.fillStyle = "rgba(255,255,255,0.18)";
-        ctx.beginPath();
-        ctx.moveTo(x + r, rowY);
-        ctx.lineTo(x + pw - r, rowY);
-        ctx.quadraticCurveTo(x + pw, rowY, x + pw, rowY + r);
-        ctx.lineTo(x + pw, rowY + pillH - r);
-        ctx.quadraticCurveTo(x + pw, rowY + pillH, x + pw - r, rowY + pillH);
-        ctx.lineTo(x + r, rowY + pillH);
-        ctx.quadraticCurveTo(x, rowY + pillH, x, rowY + pillH - r);
-        ctx.lineTo(x, rowY + r);
-        ctx.quadraticCurveTo(x, rowY, x + r, rowY);
+        roundRect(ctx, x, rowY, pw, pillH, 20);
         ctx.fill();
-        // テキスト
         ctx.fillStyle = "rgba(255,255,255,0.9)";
         ctx.textAlign = "left";
-        ctx.fillText(label, x + pillPad, rowY + pillH - 7);
+        ctx.fillText(label, x + pillPad, rowY + pillH - 12);
         x += pw + gap;
       });
     }
@@ -1139,11 +1145,23 @@ function generateShareImage(visited, total, items) {
 
   // URL
   ctx.textAlign = "center";
-  ctx.font = "14px sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
-  ctx.fillText("aquarium-log.onrender.com", 400, 440);
+  ctx.font = "22px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.45)";
+  ctx.fillText("aquarium-log.onrender.com", CX, H - 24);
 
   return canvas.toDataURL("image/png");
+}
+
+// 角丸矩形パスを作るヘルパー（呼び出し側で fill/stroke する）
+function roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
 
 function handleShare() {
@@ -1165,25 +1183,67 @@ function handleShare() {
   const shareApiBtn = document.getElementById("shareApiBtn");
   if (shareApiBtn) {
     shareApiBtn.onclick = async () => {
-      const tweetText = `${visited}館訪問達成！（全${total}館中 ${Math.round(visited/Math.max(total,1)*100)}%）\n#全国水族館スタンプラリー\nhttps://aquarium-log.onrender.com/`;
-      // スマホ: 画像付きWeb Share → その後Xを開く
+      const pct = Math.round(visited / Math.max(total, 1) * 100);
+      const SITE_URL = "https://aquarium-log.onrender.com/";
+      // URLを含まない本文（PCはintentのurl=共有URLでカード表示するため重複させない）
+      const textBase =
+        `${visited}館訪問達成！🐠（全${total}館中 ${pct}%）\n` +
+        `あなたも水族館巡りを記録しよう！\n` +
+        `#全国水族館スタンプラリー #水族館巡り #水族館`;
+
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
+
+      // 共有スナップショットをサーバー保存し、OGP付き共有URLを取得
+      let shareUrl = "";
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const up = await fetch(
+          `/api/share?visited=${encodeURIComponent(visited)}&total=${encodeURIComponent(total)}`,
+          {
+            method: "POST",
+            body: fd,
+            credentials: "same-origin",
+            headers: { "X-CSRF-Token": state.csrfToken },
+          }
+        );
+        if (up.ok) {
+          const j = await up.json();
+          shareUrl = location.origin + (j.url || "");
+        }
+      } catch (e) {
+        console.warn("share upload failed", e);
+      }
+
+      // スマホ: 画像付きWeb Share（実画像がそのまま添付される）
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title: "全国水族館スタンプラリー", text: tweetText });
+          await navigator.share({
+            files: [file],
+            title: "全国水族館スタンプラリー",
+            text: textBase + "\n" + SITE_URL,
+          });
           return;
         } catch (e) {
           if (e.name === "AbortError") return;
         }
       }
-      // デスクトップ or フォールバック: 画像を保存 + X Web Intent を開く
-      const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = "aquarium_stamp.png";
-      a.click();
-      const xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(tweetText);
+
+      // デスクトップ or フォールバック: X Web Intent を開く
+      // 共有URLがあればカード画像が自動表示される。無ければ画像保存にフォールバック
+      let xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(textBase);
+      if (shareUrl) {
+        xUrl += "&url=" + encodeURIComponent(shareUrl);
+      } else {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = "aquarium_stamp.png";
+        a.click();
+        xUrl = "https://x.com/intent/tweet?text=" +
+          encodeURIComponent(textBase + "\n" + SITE_URL);
+      }
       window.open(xUrl, "_blank", "noopener");
     };
   }
