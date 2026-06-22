@@ -1191,6 +1191,12 @@ function handleShare() {
         `あなたも水族館巡りを記録しよう！\n` +
         `#全国水族館スタンプラリー #水族館巡り #水族館`;
 
+      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+      // PCは先に空タブを開いてユーザー操作コンテキストを保持（await後のwindow.openはポップアップブロックされるため）
+      let xWin = null;
+      if (!isMobile) xWin = window.open("", "_blank");
+
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
@@ -1220,7 +1226,6 @@ function handleShare() {
       // スマホのみ: 画像付きWeb Share（実画像がそのまま添付される）
       // ※PCでもWeb Share対応ブラウザがあるが、OS共有シートが開いてXカードにならないため
       //   モバイル端末に限定し、PCは下のX Web Intent（OGPカード）に進める
-      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
       if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
@@ -1247,7 +1252,12 @@ function handleShare() {
         xUrl = "https://x.com/intent/tweet?text=" +
           encodeURIComponent(textBase + "\n" + SITE_URL);
       }
-      window.open(xUrl, "_blank", "noopener");
+      // 先に開いた空タブがあればそこを遷移、無ければ新規に開く
+      if (xWin) {
+        xWin.location.href = xUrl;
+      } else {
+        window.open(xUrl, "_blank", "noopener");
+      }
     };
   }
 
