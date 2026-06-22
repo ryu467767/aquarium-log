@@ -1217,8 +1217,11 @@ function handleShare() {
         console.warn("share upload failed", e);
       }
 
-      // スマホ: 画像付きWeb Share（実画像がそのまま添付される）
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      // スマホのみ: 画像付きWeb Share（実画像がそのまま添付される）
+      // ※PCでもWeb Share対応ブラウザがあるが、OS共有シートが開いてXカードにならないため
+      //   モバイル端末に限定し、PCは下のX Web Intent（OGPカード）に進める
+      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
             files: [file],
