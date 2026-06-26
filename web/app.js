@@ -1766,6 +1766,43 @@ function wireMapTabs() {
   const zout = document.getElementById('japanZoomOut');
   if (zin) zin.addEventListener('click', () => { japanZoom = Math.min(4, Math.round((japanZoom + 0.5) * 10) / 10); applyJapanZoom(); });
   if (zout) zout.addEventListener('click', () => { japanZoom = Math.max(1, Math.round((japanZoom - 0.5) * 10) / 10); applyJapanZoom(); });
+
+  enableMapDrag();
+}
+
+// マウスドラッグで地図をパン（スマホは overflow のネイティブ指スクロールに任せる）
+function enableMapDrag() {
+  const vp = document.querySelector('.japan-map-viewport');
+  if (!vp || vp.dataset.dragWired) return;
+  vp.dataset.dragWired = '1';
+
+  let down = false, moved = false, sx = 0, sy = 0, sl = 0, st = 0;
+
+  vp.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') return; // タッチはネイティブスクロール
+    down = true; moved = false;
+    sx = e.clientX; sy = e.clientY;
+    sl = vp.scrollLeft; st = vp.scrollTop;
+    vp.classList.add('grabbing');
+    try { vp.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  vp.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+    vp.scrollLeft = sl - dx;
+    vp.scrollTop = st - dy;
+  });
+
+  const end = () => { down = false; vp.classList.remove('grabbing'); };
+  vp.addEventListener('pointerup', end);
+  vp.addEventListener('pointercancel', end);
+
+  // ドラッグ後のクリックで都道府県詳細が開かないように抑制
+  vp.addEventListener('click', (e) => {
+    if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+  }, true);
 }
 
 function applyJapanZoom() {

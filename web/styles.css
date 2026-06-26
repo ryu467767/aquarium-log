@@ -2364,7 +2364,12 @@ header {
   border: 1px solid #e2ebef;
   border-radius: 10px;
   background: #f8fbfc;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
+.japan-map-viewport.grabbing { cursor: grabbing; }
+.japan-map-viewport svg { -webkit-user-drag: none; }
 .japan-map {
   width: 100%;          /* 拡大時は JS で width を変更（ビューポートをスクロールして移動）*/
   transition: width .15s ease;
