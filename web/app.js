@@ -251,6 +251,13 @@ function renderCard(it) {
   meta.textContent = `${it.prefecture}${it.city ? " / " + it.city : ""} ${it.location_raw ? " / " + it.location_raw : ""}`;
   card.appendChild(meta);
 
+  // 個別水族館ページへの内部リンク（SEO/AIEO）
+  const detailLink = document.createElement("a");
+  detailLink.className = "card-detail-link";
+  detailLink.href = `/aquarium/${it.id}`;
+  detailLink.textContent = "📄 詳細ページを見る";
+  card.appendChild(detailLink);
+
   // 生き物アイコン行
   const ANIMAL_ICONS = [
     { key: "has_penguin",   icon: "🐧", label: "ペンギン" },

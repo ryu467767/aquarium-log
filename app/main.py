@@ -600,8 +600,36 @@ def serve_index():
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap():
-    path = WEB_DIR / "sitemap.xml"
-    return FileResponse(path, media_type="application/xml")
+    """静的ページ＋全水族館ページを含む sitemap を動的生成（館の追加に自動追従）。"""
+    base = "https://aquarium-log.onrender.com"
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    static_pages = [
+        ("/", "weekly", "1.0"),
+        ("/about/", "monthly", "0.8"),
+        ("/missions/", "monthly", "0.6"),
+        ("/updates/", "weekly", "0.5"),
+        ("/contact/", "monthly", "0.4"),
+        ("/privacy/", "yearly", "0.3"),
+    ]
+    parts = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, freq, pri in static_pages:
+        parts.append(
+            f"  <url><loc>{base}{loc}</loc><lastmod>{today}</lastmod>"
+            f"<changefreq>{freq}</changefreq><priority>{pri}</priority></url>"
+        )
+    try:
+        with session() as db:
+            for a in list_aquariums(db):
+                parts.append(
+                    f"  <url><loc>{base}/aquarium/{a.id}</loc>"
+                    f"<lastmod>{today}</lastmod><changefreq>monthly</changefreq>"
+                    f"<priority>0.6</priority></url>"
+                )
+    except Exception:
+        pass
+    parts.append("</urlset>")
+    return Response(content="\n".join(parts), media_type="application/xml")
 
 
 # ===== 個別水族館ページ（SSR・SEO/AIEO用 / 現在は試作=noindex）=====
@@ -762,7 +790,6 @@ def aquarium_page(aquarium_id: int):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex"><!-- 試作中：本採用時に外す -->
   <title>{_esc(a.name)}（{_esc(a.prefecture)}）｜全国水族館スタンプラリー</title>
   <meta name="description" content="{_esc(desc)}">
   <link rel="canonical" href="{canonical}">
@@ -774,7 +801,7 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20260626-6">
+  <link rel="stylesheet" href="/styles.css?v=20260627-1">
   <style>
     .aq-wrap {{ max-width: 800px; margin: 18px auto 40px; padding: 0 16px; line-height: 1.85; }}
     .aq-breadcrumb {{ font-size: 12px; color: #789; margin-bottom: 10px; }}
