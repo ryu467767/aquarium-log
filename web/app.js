@@ -1764,8 +1764,8 @@ function wireMapTabs() {
   // 拡大／縮小ボタン
   const zin = document.getElementById('japanZoomIn');
   const zout = document.getElementById('japanZoomOut');
-  if (zin) zin.addEventListener('click', () => { japanZoom = Math.min(4, Math.round((japanZoom + 0.5) * 10) / 10); applyJapanZoom(); });
-  if (zout) zout.addEventListener('click', () => { japanZoom = Math.max(1, Math.round((japanZoom - 0.5) * 10) / 10); applyJapanZoom(); });
+  if (zin) zin.addEventListener('click', () => setJapanZoom(japanZoom + 0.5));
+  if (zout) zout.addEventListener('click', () => setJapanZoom(japanZoom - 0.5));
 
   enableMapDrag();
 }
@@ -1775,6 +1775,12 @@ function enableMapDrag() {
   const vp = document.querySelector('.japan-map-viewport');
   if (!vp || vp.dataset.dragWired) return;
   vp.dataset.dragWired = '1';
+
+  // マウスホイールでカーソル位置を中心に拡大／縮小
+  vp.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    setJapanZoom(japanZoom + (e.deltaY < 0 ? 0.3 : -0.3), e.clientX, e.clientY);
+  }, { passive: false });
 
   let down = false, moved = false, sx = 0, sy = 0, sl = 0, st = 0;
 
@@ -1826,6 +1832,24 @@ function enableMapDrag() {
 function applyJapanZoom() {
   const host = document.getElementById('japanMap');
   if (host) host.style.width = (japanZoom * 100) + '%';
+}
+
+// 拡大率を変更（clientX/Y を渡すとその位置を中心に、無ければ中央基準）
+function setJapanZoom(newZoom, clientX, clientY) {
+  newZoom = Math.max(1, Math.min(4, Math.round(newZoom * 100) / 100));
+  if (newZoom === japanZoom) return;
+  const vp = document.querySelector('.japan-map-viewport');
+  if (!vp) { japanZoom = newZoom; applyJapanZoom(); return; }
+  const rect = vp.getBoundingClientRect();
+  const ax = (clientX == null ? rect.width / 2 : clientX - rect.left);
+  const ay = (clientY == null ? rect.height / 2 : clientY - rect.top);
+  const contentX = vp.scrollLeft + ax;
+  const contentY = vp.scrollTop + ay;
+  const ratio = newZoom / japanZoom;
+  japanZoom = newZoom;
+  applyJapanZoom();
+  vp.scrollLeft = contentX * ratio - ax;
+  vp.scrollTop  = contentY * ratio - ay;
 }
 
 // 都道府県ごとの「訪問済 / 総数」（閉館は除外）

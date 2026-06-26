@@ -2375,7 +2375,6 @@ header {
 .japan-map-viewport svg { -webkit-user-drag: none; }
 .japan-map {
   width: 100%;          /* 拡大時は JS で width を変更（ビューポートをスクロールして移動）*/
-  transition: width .15s ease;
 }
 .japan-map svg { width: 100%; height: auto; display: block; }
 .japan-map g.prefecture { transition: fill .15s ease; }
