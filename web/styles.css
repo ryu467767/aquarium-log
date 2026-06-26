@@ -2367,7 +2367,10 @@ header {
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+  scrollbar-width: none;        /* Firefox：スクロールバー非表示 */
+  -ms-overflow-style: none;     /* 旧Edge/IE */
 }
+.japan-map-viewport::-webkit-scrollbar { width: 0; height: 0; display: none; } /* Chrome/Safari */
 .japan-map-viewport.grabbing { cursor: grabbing; }
 .japan-map-viewport svg { -webkit-user-drag: none; }
 .japan-map {
