@@ -2356,10 +2356,12 @@ header {
 .japan-map-stage { position: relative; }
 .japan-map-viewport {
   max-width: 440px;
-  max-height: 62vh;
+  height: 56vh;          /* 高さ固定：拡大してもブロックは伸びず、中だけズーム＆スクロール */
+  max-height: 460px;
   margin: 0 auto;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  border: 1px solid #e2ebef;
   border-radius: 10px;
   background: #f8fbfc;
 }
