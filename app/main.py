@@ -603,6 +603,236 @@ def sitemap():
     path = WEB_DIR / "sitemap.xml"
     return FileResponse(path, media_type="application/xml")
 
+
+# ===== 個別水族館ページ（SSR・SEO/AIEO用 / 現在は試作=noindex）=====
+
+def _esc(s):
+    s = "" if s is None else str(s)
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+             .replace('"', "&quot;").replace("'", "&#39;"))
+
+_AQ_ANIMALS = [
+    ("has_jellyfish", "🪼", "クラゲ"),
+    ("has_penguin",   "🐧", "ペンギン"),
+    ("has_dolphin",   "🐬", "イルカ"),
+    ("has_orca",      "🐋", "シャチ"),
+    ("has_beluga",    "🐳", "シロイルカ"),
+    ("has_shark",     "🦈", "サメ"),
+    ("has_sealion",   "🦭", "アシカ"),
+    ("has_seal",      "🦭", "アザラシ"),
+    ("has_steller",   "🦭", "トド"),
+]
+
+AQ_DRAWER = """
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <nav id="drawer" class="drawer" aria-hidden="true">
+    <button id="drawerClose" class="drawer-close" aria-label="閉じる">×</button>
+    <div class="drawer__login">
+      <span id="loginStatus" class="drawer-login-status"></span>
+      <button class="linklike" id="googleLogin" type="button">Googleでログイン</button>
+      <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
+    </div>
+    <div class="drawer__inner">
+      <a href="/" class="drawer-link">🏠 トップページ</a>
+      <a href="/updates/" class="drawer-link">📰 更新情報</a>
+      <a href="/about/" class="drawer-link">ℹ️ このアプリについて</a>
+      <a href="/missions/" class="drawer-link">🏆 ミッション</a>
+      <a href="/contact/" class="drawer-link">✉️ お問い合わせ</a>
+      <a href="/privacy/" class="drawer-link">🔐 プライバシーポリシー</a>
+    </div>
+  </nav>
+"""
+
+AQ_FOOTER = """
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="/contact/">お問い合わせ</a>
+      <a href="/privacy/">プライバシーポリシー</a>
+      <a href="https://zoo-log.onrender.com/" target="_blank" rel="noopener noreferrer">🐘 全国動物園スタンプラリー</a>
+      <span>© 2025 全国水族館スタンプラリー</span>
+    </div>
+  </footer>
+  <script src="/nav.js?v=20260305-1"></script>
+"""
+
+
+@app.get("/aquarium/{aquarium_id}", response_class=HTMLResponse, include_in_schema=False)
+def aquarium_page(aquarium_id: int):
+    with session() as db:
+        a = db.get(Aquarium, aquarium_id)
+        if not a:
+            raise HTTPException(404, "Aquarium not found")
+        all_aq = list_aquariums(db)
+        related = [x for x in all_aq
+                   if x.prefecture == a.prefecture and x.id != a.id and not x.is_closed][:8]
+        try:
+            visited_users = db.exec(
+                select(func.count(func.distinct(Visit.user_id)))
+                .where(Visit.aquarium_id == aquarium_id, Visit.visited == True)
+            ).one()
+            visited_users = int(visited_users or 0)
+        except Exception:
+            visited_users = 0
+
+    base = "https://aquarium-log.onrender.com"
+    canonical = f"{base}/aquarium/{a.id}"
+    loc = (a.prefecture or "") + (a.city or "")
+
+    animals = [(ic, lb) for key, ic, lb in _AQ_ANIMALS if getattr(a, key, False)]
+    animals_html = "".join(f'<span class="aq-animal">{ic} {lb}</span>' for ic, lb in animals)
+
+    # 紹介文
+    intro = f"{_esc(a.name)}は{_esc(loc)}にある水族館です。"
+    if animals:
+        names = "・".join(lb for ic, lb in animals[:5])
+        intro += f"{names}などの生き物に会えます。"
+    intro += "訪問記録・写真・メモを残して、全国の水族館めぐりを楽しもう。"
+
+    # リンク（公式・SNS）
+    links = []
+    if a.url:
+        links.append(f'<a class="aq-link" href="{_esc(a.url)}" target="_blank" rel="noopener noreferrer">公式サイト ↗</a>')
+    if a.twitter_id:
+        links.append(f'<a class="aq-link" href="https://x.com/{_esc(a.twitter_id)}" target="_blank" rel="noopener noreferrer">X (旧Twitter)</a>')
+    if a.instagram_id:
+        links.append(f'<a class="aq-link" href="https://www.instagram.com/{_esc(a.instagram_id)}/" target="_blank" rel="noopener noreferrer">Instagram</a>')
+    links_html = "".join(links)
+
+    # 地図（OpenStreetMap 埋め込み・JS不要）
+    map_html = ""
+    same_as = []
+    if a.url: same_as.append(a.url)
+    if a.twitter_id: same_as.append(f"https://x.com/{a.twitter_id}")
+    if a.instagram_id: same_as.append(f"https://www.instagram.com/{a.instagram_id}/")
+    if a.lat is not None and a.lng is not None:
+        d = 0.02
+        bbox = f"{a.lng-d}%2C{a.lat-d}%2C{a.lng+d}%2C{a.lat+d}"
+        src = (f"https://www.openstreetmap.org/export/embed.html?bbox={bbox}"
+               f"&layer=mapnik&marker={a.lat}%2C{a.lng}")
+        map_html = (f'<iframe class="aq-map" src="{src}" loading="lazy" '
+                    f'title="{_esc(a.name)}の地図"></iframe>'
+                    f'<p class="aq-maplink"><a href="https://www.openstreetmap.org/?mlat={a.lat}&mlon={a.lng}#map=15/{a.lat}/{a.lng}" '
+                    f'target="_blank" rel="noopener noreferrer">大きな地図で見る ↗</a></p>')
+
+    related_html = "".join(
+        f'<li><a href="/aquarium/{x.id}">{_esc(x.name)}</a></li>' for x in related
+    ) or '<li>（同じ都道府県の他の水族館は登録されていません）</li>'
+
+    closed_badge = ""
+    if a.is_closed:
+        closed_badge = f'<span class="aq-closed">閉館{(" " + _esc(a.closed_at)) if a.closed_at else ""}</span>'
+
+    visited_line = ""
+    if visited_users > 0:
+        visited_line = f'<p class="aq-visited">このアプリで <b>{visited_users}</b> 人が訪問済みです。</p>'
+
+    # 構造化データ
+    ld_attraction = {
+        "@context": "https://schema.org",
+        "@type": "TouristAttraction",
+        "name": a.name,
+        "url": canonical,
+        "address": {
+            "@type": "PostalAddress",
+            "addressRegion": a.prefecture or "",
+            "addressLocality": a.city or "",
+            "addressCountry": "JP",
+        },
+    }
+    if a.lat is not None and a.lng is not None:
+        ld_attraction["geo"] = {"@type": "GeoCoordinates", "latitude": a.lat, "longitude": a.lng}
+    if same_as:
+        ld_attraction["sameAs"] = same_as
+    ld_breadcrumb = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "ホーム", "item": base + "/"},
+            {"@type": "ListItem", "position": 2, "name": (a.prefecture or "") + "の水族館"},
+            {"@type": "ListItem", "position": 3, "name": a.name, "item": canonical},
+        ],
+    }
+    ld = (f'<script type="application/ld+json">{json.dumps(ld_attraction, ensure_ascii=False)}</script>'
+          f'<script type="application/ld+json">{json.dumps(ld_breadcrumb, ensure_ascii=False)}</script>')
+
+    desc = f"{a.name}（{loc}）の基本情報。会える生き物・公式サイト・地図・アクセス。全国水族館スタンプラリーで訪問記録・写真・メモを管理できます。"
+
+    page = f"""<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex"><!-- 試作中：本採用時に外す -->
+  <title>{_esc(a.name)}（{_esc(a.prefecture)}）｜全国水族館スタンプラリー</title>
+  <meta name="description" content="{_esc(desc)}">
+  <link rel="canonical" href="{canonical}">
+  <meta property="og:title" content="{_esc(a.name)}（{_esc(a.prefecture)}）｜全国水族館スタンプラリー">
+  <meta property="og:description" content="{_esc(desc)}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{canonical}">
+  <meta property="og:image" content="{base}/ogp.png?v=20260626">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
+  {ld}
+  <link rel="stylesheet" href="/styles.css?v=20260626-6">
+  <style>
+    .aq-wrap {{ max-width: 800px; margin: 18px auto 40px; padding: 0 16px; line-height: 1.85; }}
+    .aq-breadcrumb {{ font-size: 12px; color: #789; margin-bottom: 10px; }}
+    .aq-breadcrumb a {{ color: #0077b6; text-decoration: none; }}
+    .aq-loc {{ color: #456; font-size: 14px; margin: 2px 0 12px; }}
+    .aq-links {{ display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }}
+    .aq-link {{ display: inline-block; background: #eaf4f7; color: #00546b; border-radius: 999px;
+               padding: 6px 14px; font-size: 13px; text-decoration: none; font-weight: 700; }}
+    .aq-map {{ width: 100%; height: 300px; border: 1px solid #d7e3e8; border-radius: 12px; }}
+    .aq-maplink {{ font-size: 12px; margin: 4px 0 0; }}
+    .aq-animals {{ display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0 4px; }}
+    .aq-animal {{ background: #f2f8fa; border: 1px solid #d7e3e8; border-radius: 999px;
+                 padding: 4px 12px; font-size: 13.5px; }}
+    .aq-cta {{ display: block; text-align: center; background: #006c8e; color: #fff;
+              padding: 13px; border-radius: 12px; font-weight: 700; text-decoration: none; margin: 22px 0; }}
+    .aq-visited {{ color: #2a7d5a; font-size: 14px; }}
+    .aq-closed {{ background: #b00; color: #fff; font-size: 12px; border-radius: 6px; padding: 2px 8px; margin-left: 8px; }}
+    .aq-related li {{ margin: 2px 0; }}
+    .aq-related a {{ color: #0077b6; }}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="font-size:18px;"><a href="/" style="color:inherit;text-decoration:none;">全国水族館スタンプラリー</a></h1>
+    <div class="userbox" id="userbox">
+      <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
+    </div>
+  </header>
+{AQ_DRAWER}
+  <div class="aq-wrap">
+    <nav class="aq-breadcrumb"><a href="/">ホーム</a> ＞ {_esc(a.prefecture)}の水族館 ＞ {_esc(a.name)}</nav>
+
+    <h1>{_esc(a.name)}{closed_badge}</h1>
+    <p class="aq-loc">📍 {_esc(loc) or "所在地不明"}</p>
+
+    <div class="aq-links">{links_html}</div>
+
+    {map_html}
+
+    <h2>この水族館で会える生き物</h2>
+    <div class="aq-animals">{animals_html or "（生き物データは準備中です）"}</div>
+
+    <h2>{_esc(a.name)}について</h2>
+    <p>{intro}</p>
+    {visited_line}
+
+    <a class="aq-cta" href="/">このアプリで訪問を記録する（無料）</a>
+
+    <h2>{_esc(a.prefecture)}の他の水族館</h2>
+    <ul class="aq-related">{related_html}</ul>
+
+    <p style="margin-top:24px;"><a href="/">← 全国の水族館一覧に戻る</a></p>
+  </div>
+{AQ_FOOTER}
+</body>
+</html>"""
+    return HTMLResponse(content=page)
+
 @app.get("/api/user/photos")
 def user_all_photos(request: Request):
     """ログインユーザーが投稿した全写真（館名・訪問日付き）"""
