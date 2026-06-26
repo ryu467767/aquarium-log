@@ -1778,26 +1778,44 @@ function enableMapDrag() {
 
   let down = false, moved = false, sx = 0, sy = 0, sl = 0, st = 0;
 
-  vp.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'touch') return; // タッチはネイティブスクロール
-    down = true; moved = false;
-    sx = e.clientX; sy = e.clientY;
-    sl = vp.scrollLeft; st = vp.scrollTop;
-    vp.classList.add('grabbing');
-    try { vp.setPointerCapture(e.pointerId); } catch (_) {}
-  });
-
-  vp.addEventListener('pointermove', (e) => {
+  function onMove(e) {
     if (!down) return;
     const dx = e.clientX - sx, dy = e.clientY - sy;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
     vp.scrollLeft = sl - dx;
-    vp.scrollTop = st - dy;
-  });
+    vp.scrollTop  = st - dy;
+    e.preventDefault();
+  }
+  function onUp() {
+    if (!down) return;
+    down = false;
+    vp.classList.remove('grabbing');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+  }
 
-  const end = () => { down = false; vp.classList.remove('grabbing'); };
-  vp.addEventListener('pointerup', end);
-  vp.addEventListener('pointercancel', end);
+  // マウス／ペンのドラッグ開始（タッチはネイティブスクロールに任せる）
+  vp.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') return;
+    down = true; moved = false;
+    sx = e.clientX; sy = e.clientY;
+    sl = vp.scrollLeft; st = vp.scrollTop;
+    vp.classList.add('grabbing');
+    window.addEventListener('pointermove', onMove, { passive: false });
+    window.addEventListener('pointerup', onUp);
+  });
+  // 旧ブラウザ用フォールバック
+  vp.addEventListener('mousedown', (e) => {
+    if (down) return;
+    down = true; moved = false;
+    sx = e.clientX; sy = e.clientY;
+    sl = vp.scrollLeft; st = vp.scrollTop;
+    vp.classList.add('grabbing');
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', function mu() {
+      onUp(); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', mu);
+    });
+  });
 
   // ドラッグ後のクリックで都道府県詳細が開かないように抑制
   vp.addEventListener('click', (e) => {
