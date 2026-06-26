@@ -1737,6 +1737,8 @@ function initSuggestions() {
 
 // ===== 地図タブ（リーフレット / 都道府県別の達成状況）=====
 let japanMapLoaded = false;
+let japanZoom = 1;            // 都道府県地図の拡大率
+let _japanCurrentPref = null; // いま詳細表示している都道府県
 
 function wireMapTabs() {
   const tabs = document.querySelectorAll('.map-tab');
@@ -1758,6 +1760,17 @@ function wireMapTabs() {
       }
     });
   });
+
+  // 拡大／縮小ボタン
+  const zin = document.getElementById('japanZoomIn');
+  const zout = document.getElementById('japanZoomOut');
+  if (zin) zin.addEventListener('click', () => { japanZoom = Math.min(4, Math.round((japanZoom + 0.5) * 10) / 10); applyJapanZoom(); });
+  if (zout) zout.addEventListener('click', () => { japanZoom = Math.max(1, Math.round((japanZoom - 0.5) * 10) / 10); applyJapanZoom(); });
+}
+
+function applyJapanZoom() {
+  const host = document.getElementById('japanMap');
+  if (host) host.style.width = (japanZoom * 100) + '%';
 }
 
 // 都道府県ごとの「訪問済 / 総数」（閉館は除外）
@@ -1787,6 +1800,7 @@ async function showJapanMap() {
       return;
     }
   }
+  applyJapanZoom();
   colorJapanMap();
 }
 
@@ -1808,21 +1822,45 @@ function colorJapanMap() {
 function showPrefDetail(pref) {
   const el = document.getElementById('prefDetail');
   if (!el) return;
+  _japanCurrentPref = pref;
   const { total, visited, list } = prefStats(pref);
+
+  el.innerHTML = '';
+  const head = document.createElement('div');
+  head.className = 'pref-detail-head';
+  const name = document.createElement('span');
+  name.className = 'pref-detail-name';
+  name.textContent = pref;
+  head.appendChild(name);
+  if (total > 0) {
+    const cnt = document.createElement('span');
+    cnt.className = 'pref-detail-count';
+    cnt.textContent = `${visited}/${total}　` + (visited === total ? '🏆 制覇！' : (visited === 0 ? '未訪問' : '一部訪問'));
+    head.appendChild(cnt);
+  }
+  el.appendChild(head);
+
   if (total === 0) {
-    el.innerHTML =
-      `<div class="pref-detail-head"><span class="pref-detail-name">${escapeHtml(pref)}</span></div>` +
-      `<div class="pref-detail-sub">登録されている水族館はありません</div>`;
+    const sub = document.createElement('div');
+    sub.className = 'pref-detail-sub';
+    sub.textContent = '登録されている水族館はありません';
+    el.appendChild(sub);
     return;
   }
-  const status = visited === total ? '🏆 制覇！' : (visited === 0 ? '未訪問' : '一部訪問');
-  const names = list
-    .map(x => `<span class="pref-aq ${x.visited ? 'on' : ''}">${x.visited ? '✅' : '⬜'} ${escapeHtml(x.name)}</span>`)
-    .join('');
-  el.innerHTML =
-    `<div class="pref-detail-head"><span class="pref-detail-name">${escapeHtml(pref)}</span>` +
-    `<span class="pref-detail-count">${visited}/${total}　${status}</span></div>` +
-    `<div class="pref-aq-list">${names}</div>`;
+
+  const listEl = document.createElement('div');
+  listEl.className = 'pref-aq-list';
+  for (const it of list) {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'pref-aq' + (it.visited ? ' on' : '');
+    row.innerHTML =
+      `<span class="pref-aq-name">${it.visited ? '✅' : '⬜'} ${escapeHtml(it.name)}</span>` +
+      `<span class="pref-aq-arrow">›</span>`;
+    row.addEventListener('click', () => openMapSheet(it));  // 各水族館のハーフモーダルを開く
+    listEl.appendChild(row);
+  }
+  el.appendChild(listEl);
 }
 
 function initMap() {
@@ -1940,6 +1978,8 @@ function closeMapSheet() {
     if (_sheetChanged) {
       _sheetChanged = false;
       render();
+      colorJapanMap();                                   // 都道府県地図の色を更新
+      if (_japanCurrentPref) showPrefDetail(_japanCurrentPref); // 詳細の件数も更新
     }
   }, 300);
 }
