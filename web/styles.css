@@ -2327,3 +2327,84 @@ header {
 }
 .collection-detail-title { font-size: 13px; font-weight: 700; color: #003b4d; margin-bottom: 6px; }
 .collection-detail-list { font-size: 12.5px; color: #555; line-height: 1.6; }
+
+/* ===== 地図タブ（リーフレット / 都道府県別）===== */
+.map-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.map-tab {
+  flex: 1;
+  padding: 9px 8px;
+  border: 1px solid #cfdde2;
+  background: #f2f8fa;
+  color: #4a6470;
+  border-radius: 10px 10px 0 0;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.map-tab.is-active {
+  background: #006c8e;
+  color: #fff;
+  border-color: #006c8e;
+}
+.map-pane[hidden] { display: none !important; }
+
+/* 都道府県別パネル */
+.japan-map {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.japan-map svg { width: 100%; height: auto; display: block; }
+.japan-map g.prefecture { transition: fill .15s ease; }
+.japan-map g.prefecture:hover { fill-opacity: .82; }
+.japan-map-err { text-align: center; color: #999; padding: 40px 8px; font-size: 13px; }
+
+.japan-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 10px 0 12px;
+  font-size: 12px;
+  color: #555;
+}
+.japan-legend i.lg {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: -1px;
+  border: 1px solid rgba(0,0,0,.12);
+}
+.lg-done { background: #4db6ac; }
+.lg-part { background: #ffd54f; }
+.lg-none { background: #cfd8dc; }
+.lg-empty { background: #eceff1; }
+
+.pref-detail {
+  background: #f7fbfc;
+  border: 1px solid #d7e3e8;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  color: #6b8a96;
+  min-height: 44px;
+}
+.pref-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pref-detail-name { font-weight: 700; color: #003b4d; font-size: 15px; }
+.pref-detail-count { font-size: 13px; color: #00546b; white-space: nowrap; }
+.pref-detail-sub { font-size: 12.5px; color: #9aa7ad; }
+.pref-aq-list { display: flex; flex-direction: column; gap: 4px; }
+.pref-aq { font-size: 12.5px; color: #8a99a0; }
+.pref-aq.on { color: #2a9d6a; }
+.japan-map-attr { text-align: center; font-size: 10px; color: #b8c4ca; margin-top: 8px; }
