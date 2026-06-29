@@ -50,6 +50,9 @@ def fetch_app(app_id: str) -> dict:
         "releaseNotes": (r.get("releaseNotes") or "").strip(),
         "seller": r.get("sellerName", ""),
         "url": r.get("trackViewUrl", ""),
+        # 「具体的な変化のヒント」用：説明文とスクリーンショット
+        "description": (r.get("description") or "").strip(),
+        "screenshots": list(r.get("screenshotUrls") or []) + list(r.get("ipadScreenshotUrls") or []),
     }
 
 
@@ -79,7 +82,44 @@ def diff_app(prev: dict, cur: dict) -> list:
         changes.append("リリースノート（更新内容）が変わりました")
     if prev.get("releaseDate") != cur.get("releaseDate"):
         changes.append(f"更新日: {prev.get('releaseDate','?')} → {cur.get('releaseDate','?')}")
+    # 説明文/スクショは「prevに項目がある時だけ」比較（旧スナップショットでの誤検知を防ぐ）
+    if "description" in prev and prev.get("description") != cur.get("description"):
+        changes.append("アプリ説明文が変わりました")
+    if "screenshots" in prev and prev.get("screenshots") != cur.get("screenshots"):
+        pc, cc = len(prev.get("screenshots") or []), len(cur.get("screenshots") or [])
+        changes.append(f"スクリーンショットが変わりました（{pc}枚→{cc}枚）")
     return changes
+
+
+def description_diff(prev_desc: str, cur_desc: str, max_lines: int = 40) -> str:
+    """説明文の行単位の差分（+追加 / -削除）を返す。変化なしor比較不能なら空文字。"""
+    import difflib
+    if (prev_desc or "") == (cur_desc or ""):
+        return ""
+    diff = difflib.unified_diff(
+        (prev_desc or "").splitlines(), (cur_desc or "").splitlines(), lineterm="", n=1
+    )
+    body = [d for d in diff if d[:3] not in ("---", "+++") and not d.startswith("@@")]
+    body = [d for d in body if d.strip() not in ("+", "-")]  # 空行の追加/削除は省く
+    if not body:
+        return ""
+    if len(body) > max_lines:
+        body = body[:max_lines] + ["…(以下省略)"]
+    return "\n".join(body)
+
+
+def screenshot_diff(prev_list, cur_list) -> dict:
+    """スクリーンショットの増減と新規URLを返す。"""
+    prev_set = set(prev_list or [])
+    added = [u for u in (cur_list or []) if u not in prev_set]
+    cur_set = set(cur_list or [])
+    removed = len([u for u in (prev_list or []) if u not in cur_set])
+    return {
+        "prev_count": len(prev_list or []),
+        "cur_count": len(cur_list or []),
+        "added": added,
+        "removed_count": removed,
+    }
 
 
 def call_claude(your_app: dict, changed_items: list) -> str:
@@ -89,19 +129,30 @@ def call_claude(your_app: dict, changed_items: list) -> str:
     lines = []
     for it in changed_items:
         cur = it["cur"]
-        lines.append(
+        block = (
             f"## {it['label']}\n"
             f"- バージョン: {it.get('prev_version','?')} → {cur.get('version','?')}\n"
             f"- 更新日: {cur.get('releaseDate','')}\n"
-            f"- 更新内容(リリースノート):\n{cur.get('releaseNotes','(なし)')}\n"
+            f"- 更新内容(リリースノート原文):\n{cur.get('releaseNotes','(なし)')}\n"
         )
+        if it.get("desc_diff"):
+            block += f"- アプリ説明文の変更差分(+追加/-削除):\n{it['desc_diff']}\n"
+        ss = it.get("ss_info")
+        if ss and (ss["added"] or ss["prev_count"] != ss["cur_count"]):
+            block += (f"- スクリーンショット: {ss['prev_count']}枚→{ss['cur_count']}枚"
+                      f"（新規{len(ss['added'])}枚）\n")
+        lines.append(block)
     competitor_block = "\n".join(lines)
     user_msg = (
         f"私たちのアプリ:\n名称: {your_app.get('name')}\n概要: {your_app.get('summary')}\n\n"
         f"以下は競合アプリ（App Store）の今週の更新です。\n\n{competitor_block}\n\n"
-        "各更新について、私たちのアプリにとっての示唆を日本語で簡潔にまとめてください。"
-        "特に「自社が追随・対抗を検討すべき機能」があれば優先度（高/中/低）付きで挙げ、"
-        "最後に全体の所感を2〜3行で。Markdownの見出しと箇条書きで読みやすく。"
+        "各更新について、次の構成で日本語でまとめてください。\n"
+        "1. 【事実】リリースノート・説明文差分・スクショ変化から確実に言えること。\n"
+        "2. 【推測】上記から推測される具体的な変更内容（あくまで推測と明示。"
+        "リリースノートが曖昧な場合は『公開情報からは詳細不明』と正直に書く）。\n"
+        "3. 【自社への示唆】追随・対抗を検討すべき点を優先度（高/中/低）付きで。\n"
+        "最後に全体の所感を2〜3行。Markdownの見出しと箇条書きで読みやすく。"
+        "事実と推測は必ず分け、根拠のない断定はしないこと。"
     )
     body = json.dumps({
         "model": CLAUDE_MODEL,
@@ -167,6 +218,31 @@ def build_report_html(changed_items: list, analysis: str) -> str:
     for it in changed_items:
         cur = it["cur"]
         notes = html.escape(cur.get("releaseNotes", "")).replace("\n", "<br>")
+        extra = ""
+        # 説明文の差分
+        if it.get("desc_diff"):
+            dd = []
+            for ln in it["desc_diff"].split("\n"):
+                color = "#1a7f37" if ln.startswith("+") else ("#cf222e" if ln.startswith("-") else "#57606a")
+                dd.append(f"<span style='color:{color};'>{html.escape(ln)}</span>")
+            extra += (
+                "<p style='margin:10px 0 2px;'><b>アプリ説明文の変更:</b></p>"
+                "<div style='background:#f6f8fa;padding:10px;border-radius:6px;font-size:13px;"
+                "white-space:pre-wrap;font-family:monospace;'>" + "<br>".join(dd) + "</div>"
+            )
+        # スクリーンショットの変化
+        ss = it.get("ss_info")
+        if ss and (ss["added"] or ss["prev_count"] != ss["cur_count"]):
+            thumbs = "".join(
+                f"<a href='{html.escape(u)}'><img src='{html.escape(u)}' "
+                f"style='height:160px;margin:4px;border:1px solid #ccc;border-radius:6px;'></a>"
+                for u in ss["added"][:6]
+            )
+            extra += (
+                f"<p style='margin:10px 0 2px;'><b>スクリーンショット:</b> "
+                f"{ss['prev_count']}枚 → {ss['cur_count']}枚（新規{len(ss['added'])}枚）</p>"
+                f"<div>{thumbs}</div>"
+            )
         rows.append(
             f"<div style='margin:0 0 20px;padding:14px;border:1px solid #ddd;border-radius:8px;'>"
             f"<h3 style='margin:0 0 6px;color:#0077b6;'>"
@@ -174,8 +250,9 @@ def build_report_html(changed_items: list, analysis: str) -> str:
             f"<p style='margin:2px 0;'><b>バージョン:</b> {html.escape(str(it.get('prev_version','?')))} → "
             f"<b>{html.escape(str(cur.get('version','?')))}</b></p>"
             f"<p style='margin:2px 0;'><b>更新日:</b> {html.escape(cur.get('releaseDate',''))}</p>"
-            f"<p style='margin:8px 0 2px;'><b>更新内容:</b></p>"
+            f"<p style='margin:8px 0 2px;'><b>更新内容（リリースノート原文）:</b></p>"
             f"<div style='background:#f6f8fa;padding:10px;border-radius:6px;font-size:14px;'>{notes}</div>"
+            f"{extra}"
             f"</div>"
         )
     analysis_html = md_to_html(analysis) if analysis else "<p>（Claudeによる分析は未生成です。ANTHROPIC_API_KEY未設定か生成失敗。）</p>"
@@ -225,12 +302,20 @@ def main():
         prev = prev_apps.get(app_id)
         changes = diff_app(prev, cur)
         if changes:
+            prev_for = prev or {}
+            # 説明文・スクショの差分（prevに項目がある時だけ＝誤検知防止）
+            desc_diff = (description_diff(prev_for.get("description", ""), cur.get("description", ""))
+                         if "description" in prev_for else "")
+            ss_info = (screenshot_diff(prev_for.get("screenshots"), cur.get("screenshots") or [])
+                       if "screenshots" in prev_for else None)
             changed_items.append({
                 "id": app_id,
                 "label": label,
-                "prev_version": (prev or {}).get("version", "?"),
+                "prev_version": prev_for.get("version", "?"),
                 "cur": cur,
                 "changes": changes,
+                "desc_diff": desc_diff,
+                "ss_info": ss_info,
             })
 
     # スナップショットは常に最新化（初回ベースライン含む）
