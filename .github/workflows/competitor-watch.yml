@@ -1,0 +1,56 @@
+name: competitor-watch
+
+# 毎週月曜18時(JST) = 月曜09:00(UTC) に競合アプリの仕様更新をチェックする。
+# 変化があれば Claude が分析し、結果をメール送信する。
+on:
+  schedule:
+    - cron: "0 9 * * 1"   # Mon 09:00 UTC = Mon 18:00 JST
+  workflow_dispatch: {}    # 手動実行（テスト用）
+
+permissions:
+  contents: write          # snapshot のコミットに必要
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run competitor watch
+        id: watch
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: claude-sonnet-4-6
+        run: python tools/competitor_watch.py
+
+      - name: Send email (only when changes detected)
+        if: steps.watch.outputs.changed == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ${{ steps.watch.outputs.subject }}
+          to: ${{ secrets.MAIL_TO }}
+          from: Competitor Watch <${{ secrets.MAIL_USERNAME }}>
+          html_body: file://report.html
+
+      - name: Commit updated snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tools/competitor_snapshot.json
+          if git diff --staged --quiet; then
+            echo "snapshot unchanged"
+          else
+            git commit -m "chore: update competitor snapshot [competitor-watch]"
+            git push
+          fi

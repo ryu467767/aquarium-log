@@ -9,4 +9,9 @@ localdata/
 *.csv
 *.json
 !web/manifest.json
+!tools/competitors.json
+!tools/competitor_snapshot.json
 backup/
+
+# 競合ウォッチャーの一時生成物（メール本文）
+report.html
