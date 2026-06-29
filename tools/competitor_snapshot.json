@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-06-29T15:12:39.849457+00:00",
+  "checked_at": "2026-06-29T16:45:22.740019+00:00",
   "apps": {
     "6761375438": {
       "found": true,
       "name": "うおめぐり -水族館ログ-",
-      "version": "1.7",
+      "version": "1.8",
       "releaseDate": "2026-06-28T12:48:43Z",
-      "releaseNotes": "(テスト用の古い内容)",
+      "releaseNotes": "マップ、水族館情報の修正を行いました。",
       "seller": "RYOTARO TSUJI",
       "url": "https://apps.apple.com/jp/app/%E3%81%86%E3%81%8A%E3%82%81%E3%81%90%E3%82%8A-%E6%B0%B4%E6%97%8F%E9%A4%A8%E3%83%AD%E3%82%B0/id6761375438?uo=4"
     },
