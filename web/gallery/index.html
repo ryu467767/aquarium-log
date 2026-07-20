@@ -6,6 +6,13 @@
   <title>マイ写真ギャラリー｜全国水族館スタンプラリー</title>
   <link rel="stylesheet" href="/styles.css?v=20260415-1" />
   <style>
+    /* ヘッダー常時固定（ハンバーガーメニューをどこからでも開けるように） */
+    header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 500 !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12) !important;
+    }
     .gallery-wrap { max-width: 800px; margin: 24px auto; padding: 0 16px; }
     .gallery-back { margin-bottom: 16px; }
     .gallery-back a { text-decoration: none; color: #0077b6; }

@@ -60,11 +60,20 @@ section.panel {
 }
 
 /* ===== Header: h1左・ハンバーガー右上に固定 ===== */
+/* ===== ヘッダー常時固定（どのページ位置でもハンバーガーを開けるようにする） =====
+   styles.css 側に position: sticky の指定があるが、後方の
+   「ヘッダー：全ページで flex レイアウト」ルール（position: relative）に
+   上書きされて無効化されていたため、ここで確実に sticky を効かせる。
+   z-index は .panel/main(2) より上・ドロワー(999/1000)より下に設定。 */
 header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   padding-bottom: 16px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 500 !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,.12) !important;
 }
 header h1 {
   margin: 0 !important;
