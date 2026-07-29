@@ -81,7 +81,8 @@
     <div class="userbox" id="userbox">
       <div class="bell-wrap">
         <button id="updateBellBtn" class="bell-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="更新情報のお知らせ">
-          🔔<span id="bellBadge" class="bell-badge" hidden></span>
+          <svg class="bell-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span id="bellBadge" class="bell-badge" hidden></span>
         </button>
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title">📰 更新情報</div>
@@ -124,24 +125,6 @@
       <a href="https://zoo-log.onrender.com/" class="drawer-link" target="_blank" rel="noopener noreferrer">🐘 全国動物園スタンプラリー</a>
     </div>
   </nav>
-
-  <!-- 更新情報 -->
-  <div class="update-notice">
-    <button class="update-notice__toggle" aria-expanded="false" aria-controls="updateNoticeBody">
-      <span class="update-notice__title">更新情報<span class="update-notice__new" hidden>NEW</span></span>
-      <span class="update-notice__arrow">▼</span>
-    </button>
-    <ul class="update-notice__body" id="updateNoticeBody" hidden>
-      <li><span class="update-notice__date">2026/07/29</span> ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ</li>
-      <li><span class="update-notice__date">2026/07/20</span> ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</li>
-      <li><span class="update-notice__date">2026/06/26</span> 地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認（拡大・ドラッグ移動対応）</li>
-      <li><span class="update-notice__date">2026/06/26</span> 「集めた魚種印」を追加：訪問した水族館の生き物が自動で図鑑に集まります</li>
-      <li><span class="update-notice__date">2026/06/22</span> Xシェアを刷新：成績画像のデザイン一新＋PCでもカード画像付きで投稿できるように</li>
-      <li><span class="update-notice__date">2026/04/21</span> あわしまマリンパーク（静岡）を追加</li>
-      <li><span class="update-notice__date">2026/04/21</span> 幼魚水族館の地図位置を修正</li>
-      <li class="update-notice__more"><a href="/updates/">すべての更新情報を見る →</a></li>
-    </ul>
-  </div>
 
   <!-- Stats Dashboard（ログイン時のみ表示） -->
   <div id="statsDashboard" class="stats-dashboard" style="display:none;">
@@ -215,11 +198,11 @@
 
   <section class="mapwrap">
     <div class="map-tabs" role="tablist">
-      <button type="button" class="map-tab is-active" data-maptab="leaflet">地図</button>
-      <button type="button" class="map-tab" data-maptab="pref">都道府県</button>
+      <button type="button" class="map-tab is-active" data-maptab="pref">都道府県</button>
+      <button type="button" class="map-tab" data-maptab="leaflet">地図</button>
     </div>
-    <div id="map" class="map-pane"></div>
-    <div id="prefPane" class="map-pane" hidden>
+    <div id="map" class="map-pane" hidden></div>
+    <div id="prefPane" class="map-pane">
       <div class="japan-map-stage">
         <div class="japan-zoom">
           <button type="button" id="japanZoomIn" aria-label="拡大">＋</button>

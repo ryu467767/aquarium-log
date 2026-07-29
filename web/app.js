@@ -1775,6 +1775,15 @@ function wireMapTabs() {
   if (zout) zout.addEventListener('click', () => setJapanZoom(japanZoom - 0.5));
 
   enableMapDrag();
+
+  // デフォルトが都道府県タブの場合は初期表示しておく
+  // (japanMapLoaded 等の let 宣言がこの時点でまだ未初期化のため setTimeout で遅延実行)
+  setTimeout(() => {
+    const activeTab = document.querySelector('.map-tab.is-active');
+    if (activeTab && activeTab.dataset.maptab === 'pref') {
+      showJapanMap();
+    }
+  }, 0);
 }
 
 // マウスドラッグで地図をパン（スマホは overflow のネイティブ指スクロールに任せる）
@@ -2383,29 +2392,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-
-// 更新情報アコーディオン
-(function() {
-  const wrap = document.querySelector('.update-notice');
-  const btn = document.querySelector('.update-notice__toggle');
-  const body = document.getElementById('updateNoticeBody');
-  if (!btn || !body || !wrap) return;
-
-  // リスト先頭の日付を読み取り、1週間以内ならNEWバッジを表示
-  const dateEl = body.querySelector('.update-notice__date');
-  if (dateEl) {
-    const latest = new Date(dateEl.textContent.trim().replace(/\//g, '-'));
-    const diff = Date.now() - latest.getTime();
-    const newBadge = btn.querySelector('.update-notice__new');
-    if (newBadge && diff < 7 * 24 * 60 * 60 * 1000) newBadge.hidden = false;
-  }
-
-  btn.addEventListener('click', () => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-    body.hidden = expanded;
-  });
-})();
 
 // お知らせベル（ヘッダーの更新情報ポップアップ）
 (function() {

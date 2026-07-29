@@ -2493,11 +2493,16 @@ header{
   position: relative;
   background: none;
   border: none;
-  padding: 4px 8px;
-  font-size: 21px;
-  line-height: 1;
+  padding: 4px 6px;
   cursor: pointer;
-  color: inherit;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+.bell-icon{
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 .bell-btn.is-shaking{
   animation: bellShake 4.5s ease-in-out infinite;
@@ -2512,13 +2517,12 @@ header{
 }
 .bell-badge{
   position: absolute;
-  top: 2px;
-  right: 4px;
+  top: 1px;
+  right: 3px;
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #ff3b30;
-  border: 1.5px solid #fff;
+  background: #ff5a3c;
 }
 .bell-popover{
   position: absolute;
