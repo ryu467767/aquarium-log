@@ -1763,7 +1763,13 @@ function wireMapTabs() {
       } else {
         prefPane.hidden = true;
         leafletPane.hidden = false;
-        if (map) setTimeout(() => map.invalidateSize(), 0); // 非表示中にサイズ0だった対策
+        if (map) setTimeout(() => {
+          map.invalidateSize(); // 非表示中にサイズ0だった対策
+          if (state.mapNeedsFit && state.mapPts && state.mapPts.length) {
+            map.fitBounds(state.mapPts, { padding: [24, 24] });
+            state.mapNeedsFit = false;
+          }
+        }, 0);
       }
     });
   });
@@ -2027,8 +2033,17 @@ function updateMap(items, opts = { fit: true }) {
     marker.on('click', () => openMapSheet(it));
   }
 
+  state.mapPts = pts;
   if (opts.fit && pts.length) {
-    map.fitBounds(pts, { padding: [24, 24] });
+    const leafletPane = document.getElementById('map');
+    if (leafletPane && leafletPane.hidden) {
+      // 非表示中（都道府県タブ表示時）は0サイズでfitBoundsすると変な位置になるため、
+      // 地図タブが表示されたタイミングで改めてfitBoundsする
+      state.mapNeedsFit = true;
+    } else {
+      map.fitBounds(pts, { padding: [24, 24] });
+      state.mapNeedsFit = false;
+    }
   }
 }
 
