@@ -1503,9 +1503,22 @@ main{
 .app-intro__list li {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   font-size: 13px;
   color: #333;
+}
+.app-intro__list li::before {
+  content: "✓";
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e6f7f0;
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
 }
 .app-intro__link {
   display: block;
