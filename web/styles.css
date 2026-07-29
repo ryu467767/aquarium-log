@@ -1593,6 +1593,9 @@ header {
   cursor: pointer;
   transition: background .12s;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .hamburger-btn:hover {
   background: rgba(255,255,255,.14);
@@ -1650,7 +1653,9 @@ header {
   margin-top: 44px;
 }
 .drawer-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 9px;
   padding: 11px 14px;
   border-radius: 10px;
   text-decoration: none;
@@ -2538,6 +2543,9 @@ header{
   z-index: 600;
 }
 .bell-popover__title{
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 8px;
@@ -2572,3 +2580,15 @@ header{
   font-weight: 600;
 }
 .bell-popover__more:hover{ text-decoration: underline; }
+
+/* ===== 絵文字の代わりに使う線画SVGアイコン（ハンバーガーメニュー等） ===== */
+.nav-icon{
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.hamburger-icon{
+  width: 18px;
+  height: 18px;
+  display: block;
+}
