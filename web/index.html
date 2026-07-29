@@ -13,7 +13,7 @@
     gtag('config', 'G-XR3WZK953P');
   </script>
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260730-4">
+  <link rel="stylesheet" href="styles.css?v=20260730-5">
   <link rel="stylesheet" href="styles.layout.css?v=20260720-1">
   <link
   rel="stylesheet"
@@ -181,7 +181,9 @@
     <label class="row">
       <span class="suggest-wrap">
         <input id="q" type="text" placeholder="施設名/都道府県/市区町村" />
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        <button type="button" id="searchGoBtn" class="search-icon-btn" aria-label="検索する">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        </button>
         <ul id="suggestList" class="suggest-list" style="display:none;"></ul>
       </span>
     </label>
@@ -221,7 +223,10 @@
 
   <div class="sortBar">
     <label class="closed-toggle-label">
-      <input type="checkbox" id="showClosedToggle">
+      <span class="toggle-switch">
+        <input type="checkbox" id="showClosedToggle">
+        <span class="toggle-switch__track"></span>
+      </span>
       閉館館を表示する
     </label>
     <div class="sortBar__filters">
@@ -372,6 +377,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260730-2"></script>
+  <script src="app.js?v=20260730-3"></script>
 </body>
 </html>

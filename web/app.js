@@ -1405,8 +1405,15 @@ function wireUI() {
 
   const qEl = $("q");
 if (qEl) {
-  qEl.oninput = render;
   qEl.onkeydown = (e) => { if (e.key === "Enter") render(); };
+}
+const searchGoBtn = $("searchGoBtn");
+if (searchGoBtn) {
+  searchGoBtn.addEventListener("click", () => {
+    const list = $('suggestList');
+    if (list) list.style.display = 'none';
+    render();
+  });
 }
 
 const loginBtn = document.getElementById("googleLogin");
@@ -1702,7 +1709,7 @@ function initSuggestions() {
     }
     const lq = q.toLowerCase();
     const matches = state.items
-      .filter(item => item.name.toLowerCase().includes(lq))
+      .filter(item => item.name.toLowerCase().startsWith(lq))
       .slice(0, 8);
     if (!matches.length) {
       list.style.display = 'none';
