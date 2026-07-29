@@ -37,7 +37,6 @@ h1 {
     background: white;
     color: #003b4d;
   }
-.row button { padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.10); color: #e7eefc; }
 
 .chip { padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: #e7eefc; margin-right: 6px; }
 .chip.active { background: rgba(255,255,255,0.18); }
@@ -242,7 +241,6 @@ input {
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
   user-select: none;
   font-size: 13px;
   color: #555;
@@ -251,6 +249,7 @@ input {
 .toggle-switch {
   position: relative;
   display: inline-block;
+  cursor: pointer;
   width: 36px;
   height: 20px;
   flex-shrink: 0;
@@ -1007,15 +1006,26 @@ header h1 { margin: 0; }
       grid-template-columns: 1fr;
     }
     .row > span{ font-size: 12px; opacity: .85; }
-    .row input, .row button{ width: 100%; }
+    .row input{ width: 100%; }
   
     /* 都道府県セレクトも幅100%に */
     #pref-filter{ width: 100%; }
   
-    /* 絞り込み・並び替え行をモバイルで縦積み・右寄せに */
-    .sortBar{ flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 12px; }
-    .sortBar__filters{ flex-direction: column; align-items: flex-end; gap: 6px; }
-    .sortBar .row-compact{ justify-content: flex-end; gap: 10px; }
+    /* 閉館トグルと絞り込みを必ず同じ行に、並び替えはその下の行に固定表示
+       （flex-wrapの折返しはビューポート幅で結果が不安定なため、gridで確定配置する） */
+    .sortBar{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      row-gap: 6px;
+      column-gap: 10px;
+      padding: 0 12px;
+    }
+    .sortBar .closed-toggle-label{ grid-column: 1; grid-row: 1; }
+    .sortBar__filters{ display: contents; }
+    .sortBar__filter-btn{ grid-column: 2; grid-row: 1; justify-self: end; }
+    .sortBar .row-compact:not(.sortBar__filter-btn){ grid-column: 1 / -1; grid-row: 2; justify-self: end; }
+    .sortBar .row-compact{ justify-content: flex-end; gap: 6px; }
     /* 絞り込みと並び替えのコントロール幅を統一 */
     .sortBar #sort, .sortBar .filter-select-btn{ width: 100px; }
   
