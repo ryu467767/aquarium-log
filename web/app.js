@@ -255,7 +255,7 @@ function renderCard(it) {
   const detailLink = document.createElement("a");
   detailLink.className = "card-detail-link";
   detailLink.href = `/aquarium/${it.id}`;
-  detailLink.textContent = "📄 詳細ページを見る";
+  detailLink.innerHTML = '<svg class="card-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16.5" x2="13" y2="16.5"/></svg>詳細を見る';
   card.appendChild(detailLink);
 
   // 生き物アイコン行

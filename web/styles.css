@@ -29,7 +29,7 @@ h1 {
     border-bottom: none;
   }
   
-.row { display: grid; grid-template-columns: 72px 1fr auto; gap: 8px; align-items: center; margin: 8px 0; }
+.row { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: center; margin: 8px 0; }
 .row input {
     padding: 10px 12px;
     border-radius: 12px;
@@ -237,18 +237,16 @@ input {
   opacity: 0.8;
 }
 
-/* === 閉館トグル === */
-.closed-toggle-row {
-  margin: 8px 0 4px;
-  font-size: 13px;
-  color: #555;
-}
+/* === 閉館トグル（sortBar内・地図の左下に配置） === */
 .closed-toggle-label {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
   user-select: none;
+  font-size: 13px;
+  color: #555;
+  flex-shrink: 0;
 }
 
 /* === 達成バッジ === */
@@ -326,12 +324,18 @@ input {
 /* === カードタイトル行（名前 + Xアイコン） === */
 .card-title-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   margin-bottom: 4px;
 }
 .card-title-row .title {
   margin-bottom: 0;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.card-title-x,
+.card-title-ig {
+  margin-top: 1px;
 }
 .card-title-x {
   display: inline-flex;
@@ -769,11 +773,18 @@ header, .panel, main, .card{
 
   .sortBar{
     display:flex;
-    justify-content:flex-end;
+    justify-content:space-between;
+    align-items:center;
     margin: 10px 0 6px;
     gap: 16px;
   }
-  
+
+  .sortBar__filters{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+
   .row-compact{
     display:flex;
     align-items:center;
@@ -963,6 +974,7 @@ header h1 { margin: 0; }
   
     /* 絞り込み・並び替え行をモバイルで縦積み・右寄せに */
     .sortBar{ flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 12px; }
+    .sortBar__filters{ flex-direction: column; align-items: flex-end; gap: 6px; }
     .sortBar .row-compact{ justify-content: flex-end; gap: 10px; }
     /* 絞り込みと並び替えのコントロール幅を統一 */
     .sortBar #sort, .sortBar .filter-select-btn{ width: 100px; }
@@ -1707,6 +1719,17 @@ header {
 }
 .suggest-wrap input {
   width: 100%;
+  padding-right: 38px;
+}
+.search-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #6d8a94;
+  pointer-events: none;
 }
 .suggest-list {
   position: absolute;
@@ -2490,13 +2513,20 @@ header {
 
 /* 個別水族館ページへの導線（カード内） */
 .card-detail-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   margin: 4px 0 2px;
   font-size: 12px;
   color: #0077b6;
   text-decoration: none;
 }
 .card-detail-link:hover { text-decoration: underline; }
+.card-detail-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
 
 /* ===== header の overflow:hidden を解除（お知らせベルのポップアップ表示のため） =====
    上の「header wave」用の overflow:hidden は未使用の .wave 装飾の名残りで、

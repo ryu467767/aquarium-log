@@ -13,7 +13,7 @@
     gtag('config', 'G-XR3WZK953P');
   </script>
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260730-3">
+  <link rel="stylesheet" href="styles.css?v=20260730-4">
   <link rel="stylesheet" href="styles.layout.css?v=20260720-1">
   <link
   rel="stylesheet"
@@ -179,9 +179,9 @@
 
   <section class="panel">
     <label class="row">
-      <span>検索</span>
       <span class="suggest-wrap">
         <input id="q" type="text" placeholder="施設名/都道府県/市区町村" />
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
         <ul id="suggestList" class="suggest-list" style="display:none;"></ul>
       </span>
     </label>
@@ -189,13 +189,6 @@
     <div class="search-action-row">
       <button id="areaSearchBtn" class="search-action-btn" type="button">エリアから探す</button>
       <button id="animalSearchBtn" class="search-action-btn" type="button">生き物から探す</button>
-    </div>
-
-    <div class="closed-toggle-row">
-      <label class="closed-toggle-label">
-        <input type="checkbox" id="showClosedToggle">
-        閉館館を表示する
-      </label>
     </div>
   </section>
 
@@ -227,20 +220,26 @@
   </section>
 
   <div class="sortBar">
-    <label class="row-compact">
-      <span>絞り込み</span>
-      <button id="filterBtn" class="filter-select-btn" type="button"><span id="filterBtnLabel">すべて</span> ▼</button>
+    <label class="closed-toggle-label">
+      <input type="checkbox" id="showClosedToggle">
+      閉館館を表示する
     </label>
-    <label class="row-compact">
-      <span>並び替え</span>
-      <select id="sort">
-        <option value="pref_plain">都道府県順</option>
-        <option value="pref">地域別</option>
-        <option value="name">五十音順</option>
-        <option value="visit_count">訪問回数順</option>
-        <option value="visited_at">訪問日順</option>
-      </select>
-    </label>
+    <div class="sortBar__filters">
+      <label class="row-compact">
+        <span>絞り込み</span>
+        <button id="filterBtn" class="filter-select-btn" type="button"><span id="filterBtnLabel">すべて</span> ▼</button>
+      </label>
+      <label class="row-compact">
+        <span>並び替え</span>
+        <select id="sort">
+          <option value="pref_plain">都道府県順</option>
+          <option value="pref">地域別</option>
+          <option value="name">五十音順</option>
+          <option value="visit_count">訪問回数順</option>
+          <option value="visited_at">訪問日順</option>
+        </select>
+      </label>
+    </div>
   </div>
 
   <main id="list"></main>
@@ -373,6 +372,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260730-1"></script>
+  <script src="app.js?v=20260730-2"></script>
 </body>
 </html>
