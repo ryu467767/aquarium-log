@@ -13,7 +13,7 @@
     gtag('config', 'G-XR3WZK953P');
   </script>
   <title>全国水族館スタンプラリー｜日本全国の水族館を巡ろう</title>
-  <link rel="stylesheet" href="styles.css?v=20260627-1">
+  <link rel="stylesheet" href="styles.css?v=20260729-1">
   <link rel="stylesheet" href="styles.layout.css?v=20260720-1">
   <link
   rel="stylesheet"
@@ -79,6 +79,20 @@
   <header>
     <h1>全国水族館スタンプラリー</h1>
     <div class="userbox" id="userbox">
+      <div class="bell-wrap">
+        <button id="updateBellBtn" class="bell-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="更新情報のお知らせ">
+          🔔<span id="bellBadge" class="bell-badge" hidden></span>
+        </button>
+        <div id="bellPopover" class="bell-popover" hidden>
+          <div class="bell-popover__title">📰 更新情報</div>
+          <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/07/29</span>ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ</li>
+            <li><span class="bell-popover__date">2026/07/20</span>ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</li>
+            <li><span class="bell-popover__date">2026/06/26</span>地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認できるように</li>
+          </ul>
+          <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
+        </div>
+      </div>
       <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
     </div>
   </header>
@@ -99,11 +113,11 @@
 
     <div class="drawer__inner">
       <a href="/" class="drawer-link drawer-link--active">🏠 トップページ</a>
-      <a href="/updates/" class="drawer-link">📰 更新情報</a>
       <a href="/about/" class="drawer-link">ℹ️ このアプリについて</a>
       <a href="/missions/" class="drawer-link">🏆 ミッション</a>
       <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
       <button id="collectionBtn" type="button" class="drawer-link" style="display:none;">🐟 集めた魚種印</button>
+      <a href="/updates/" class="drawer-link">📰 更新情報</a>
       <a href="/contact/" class="drawer-link">✉️ お問い合わせ</a>
       <a href="/privacy/" class="drawer-link">🔐 プライバシーポリシー</a>
       <hr class="drawer__hr">
@@ -118,6 +132,8 @@
       <span class="update-notice__arrow">▼</span>
     </button>
     <ul class="update-notice__body" id="updateNoticeBody" hidden>
+      <li><span class="update-notice__date">2026/07/29</span> ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ</li>
+      <li><span class="update-notice__date">2026/07/20</span> ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</li>
       <li><span class="update-notice__date">2026/06/26</span> 地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認（拡大・ドラッグ移動対応）</li>
       <li><span class="update-notice__date">2026/06/26</span> 「集めた魚種印」を追加：訪問した水族館の生き物が自動で図鑑に集まります</li>
       <li><span class="update-notice__date">2026/06/22</span> Xシェアを刷新：成績画像のデザイン一新＋PCでもカード画像付きで投稿できるように</li>
@@ -371,6 +387,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js?v=20260627-1"></script>
+  <script src="app.js?v=20260729-1"></script>
 </body>
 </html>

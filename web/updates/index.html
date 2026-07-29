@@ -6,7 +6,7 @@
   <title>更新情報｜全国水族館スタンプラリー</title>
   <meta name="description" content="全国水族館スタンプラリーの更新履歴。新機能の追加・水族館データの更新・不具合修正などのお知らせ一覧です。">
   <link rel="canonical" href="https://aquarium-log.onrender.com/updates/">
-  <link rel="stylesheet" href="/styles.css?v=20260415-1" />
+  <link rel="stylesheet" href="/styles.css?v=20260729-1" />
   <style>
     /* ヘッダー常時固定（ハンバーガーメニューをどこからでも開けるように） */
     header {
@@ -32,6 +32,20 @@
   <header>
     <h1><a href="/" style="color:inherit;text-decoration:none;">全国水族館スタンプラリー</a></h1>
     <div class="userbox" id="userbox">
+      <div class="bell-wrap">
+        <button id="updateBellBtn" class="bell-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="更新情報のお知らせ">
+          🔔<span id="bellBadge" class="bell-badge" hidden></span>
+        </button>
+        <div id="bellPopover" class="bell-popover" hidden>
+          <div class="bell-popover__title">📰 更新情報</div>
+          <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/07/29</span>ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ</li>
+            <li><span class="bell-popover__date">2026/07/20</span>ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</li>
+            <li><span class="bell-popover__date">2026/06/26</span>地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認できるように</li>
+          </ul>
+          <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
+        </div>
+      </div>
       <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
     </div>
   </header>
@@ -46,10 +60,10 @@
     </div>
     <div class="drawer__inner">
       <a href="/" class="drawer-link">🏠 トップページ</a>
-      <a href="/updates/" class="drawer-link drawer-link--active">📰 更新情報</a>
       <a href="/about/" class="drawer-link">ℹ️ このアプリについて</a>
       <a href="/missions/" class="drawer-link">🏆 ミッション</a>
       <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;">📷 マイ写真ギャラリー</a>
+      <a href="/updates/" class="drawer-link drawer-link--active">📰 更新情報</a>
       <a href="/contact/" class="drawer-link">✉️ お問い合わせ</a>
       <a href="/privacy/" class="drawer-link">🔐 プライバシーポリシー</a>
       <hr class="drawer__hr">
@@ -63,6 +77,10 @@
     <p style="opacity:0.7; font-size:13px;">新機能の追加・水族館データの更新・不具合修正などのお知らせ一覧です。</p>
 
     <ul class="updates-list">
+      <li>
+        <span class="updates-date">2026/07/29</span>
+        <span class="updates-text">ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ。ハンバーガーメニュー内の並び順も調整</span>
+      </li>
       <li>
         <span class="updates-date">2026/07/20</span>
         <span class="updates-text">ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</span>
@@ -106,6 +124,6 @@
     </div>
   </footer>
 
-  <script src="/nav.js?v=20260305-1"></script>
+  <script src="/nav.js?v=20260729-1"></script>
 </body>
 </html>

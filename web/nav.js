@@ -50,4 +50,43 @@
       });
     })
     .catch(function () {});
+
+  // お知らせベル（ヘッダーの更新情報ポップアップ）
+  var bellBtn = document.getElementById('updateBellBtn');
+  var bellBadge = document.getElementById('bellBadge');
+  var bellPop = document.getElementById('bellPopover');
+  if (bellBtn && bellBadge && bellPop) {
+    var bellDateEl = bellPop.querySelector('.bell-popover__date');
+    var bellLatest = bellDateEl ? bellDateEl.textContent.trim() : '';
+    var BELL_SEEN_KEY = 'aq_lastSeenUpdate';
+    var bellLastSeen = localStorage.getItem(BELL_SEEN_KEY) || '';
+
+    if (bellLatest && bellLatest > bellLastSeen) {
+      bellBadge.hidden = false;
+      bellBtn.classList.add('is-shaking');
+    }
+
+    var closeBellPopover = function () {
+      bellPop.hidden = true;
+      bellBtn.setAttribute('aria-expanded', 'false');
+    };
+    var openBellPopover = function () {
+      bellPop.hidden = false;
+      bellBtn.setAttribute('aria-expanded', 'true');
+      bellBadge.hidden = true;
+      bellBtn.classList.remove('is-shaking');
+      if (bellLatest) localStorage.setItem(BELL_SEEN_KEY, bellLatest);
+    };
+
+    bellBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (bellPop.hidden) openBellPopover(); else closeBellPopover();
+    });
+    document.addEventListener('click', function (e) {
+      if (!bellPop.hidden && !bellPop.contains(e.target) && e.target !== bellBtn) closeBellPopover();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeBellPopover();
+    });
+  }
 })();

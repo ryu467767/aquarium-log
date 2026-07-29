@@ -2407,3 +2407,44 @@ if ('serviceWorker' in navigator) {
   });
 })();
 
+// お知らせベル（ヘッダーの更新情報ポップアップ）
+(function() {
+  const btn = document.getElementById('updateBellBtn');
+  const badge = document.getElementById('bellBadge');
+  const pop = document.getElementById('bellPopover');
+  if (!btn || !badge || !pop) return;
+
+  const dateEl = pop.querySelector('.bell-popover__date');
+  const latest = dateEl ? dateEl.textContent.trim() : '';
+  const SEEN_KEY = 'aq_lastSeenUpdate';
+  const lastSeen = localStorage.getItem(SEEN_KEY) || '';
+
+  if (latest && latest > lastSeen) {
+    badge.hidden = false;
+    btn.classList.add('is-shaking');
+  }
+
+  function closePopover() {
+    pop.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  }
+  function openPopover() {
+    pop.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    badge.hidden = true;
+    btn.classList.remove('is-shaking');
+    if (latest) localStorage.setItem(SEEN_KEY, latest);
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (pop.hidden) openPopover(); else closePopover();
+  });
+  document.addEventListener('click', (e) => {
+    if (!pop.hidden && !pop.contains(e.target) && e.target !== btn) closePopover();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopover();
+  });
+})();
+
