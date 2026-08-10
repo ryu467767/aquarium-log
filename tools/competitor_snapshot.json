@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-08-03T12:21:12.407419+00:00",
+  "checked_at": "2026-08-10T10:14:58.582306+00:00",
   "apps": {
     "6761375438": {
       "found": true,
@@ -10,7 +10,16 @@
       "seller": "RYOTARO TSUJI",
       "url": "https://apps.apple.com/jp/app/%E3%81%86%E3%81%8A%E3%82%81%E3%81%90%E3%82%8A-%E6%B0%B4%E6%97%8F%E9%A4%A8%E3%83%AD%E3%82%B0/id6761375438?uo=4",
       "description": "うおめぐりは、日本全国の水族館を制覇していくスタンプ帳アプリです。\n\n■ うおめぐりマップ\n都道府県ブロックマップで制覇状況を一目で確認。訪問済みの県が青く染まっていく達成感をお楽しみください。\n\n■ チェックイン\n水族館を訪れたら記録を残しましょう。訪問日・メモを複数回分記録できます。\n\n■ 地図で探す\n全国の水族館をマップ上で確認。一覧表示にも切り替え可能です。\n\n■ 近くの水族館\n現在地から近い水族館を距離順で表示。旅先での立ち寄りスポット探しに便利です。\n\n■ めぐりバッジ\n8つの地方を制覇するとバッジ獲得。コンプリートを目指しましょう。\n\n訪問記録はすべて端末内に保存。登録不要・完全無料でお使いいただけます。",
-      "screenshots": []
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/20/b0/55/20b05589-a74e-bf3d-a687-d66f6fcb5f2c/01_home.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/00/76/be/0076be28-f992-ba86-9906-b3e7137491b8/02_map.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/fa/83/ec/fa83ecd0-78d5-65c2-9eb4-6db4883a198e/04_detail.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/c4/f5/07/c4f50770-0fda-cba5-76e4-c450c62b81de/03_list.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/c7/50/cc/c750ccec-62f6-5581-2e47-d5c93b8df186/01_home.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/98/cb/78/98cb78d2-7b7c-e276-ca53-caf748c40b62/02_map.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/4b/8a/46/4b8a462d-c242-d4b3-fbc7-d7e40cd83e3d/04_detail.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/52/42/ea/5242ea54-df1b-5c20-d2a6-9397cb33a0bd/03_list.png/360x480bb.jpg"
+      ]
     },
     "6768515720": {
       "found": true,
@@ -21,7 +30,14 @@
       "seller": "BettaLab",
       "url": "https://apps.apple.com/jp/app/%E3%82%A2%E3%82%AF%E3%82%A2%E3%83%AD%E3%82%B0-%E6%B0%B4%E6%97%8F%E9%A4%A8-%E5%8B%95%E7%89%A9%E5%9C%92%E3%82%B9%E3%82%BF%E3%83%B3%E3%83%97%E5%B8%B3/id6768515720?uo=4",
       "description": "アクアログは、訪れた水族館や動物園を「スタンプ」のように集めて記録できる、おでかけ・旅行のおともアプリです。\n\n水族館や動物園に行ったら、日付・メモ・写真をかんたんに残すだけ。日本全国のスポットをどれだけ巡ったかが一目でわかり、次に行きたい場所もすぐ見つかります。\n\n■ こんな方におすすめ\n・水族館めぐり、動物園めぐりが好きな方\n・旅行やおでかけ、デートの思い出を記録に残したい方\n・家族や子どもとのおでかけ先をさがしている方\n・日本全国の水族館・動物園をコンプリートしたい方\n・自由研究やおでかけの記録に活用したい方\n\n■ 主な機能\n\n【一覧で探す】\n全国の水族館・動物園を収録。地域別（北海道・東北・関東・中部・関西・中国・四国・九州・沖縄）でしぼり込めるほか、「未訪問のみ」表示で次のおでかけ先もすぐ見つかります。\n\n【マップで見る】\n地図上に水族館・動物園を表示。現在地のまわりにあるスポットを確認できるので、旅先での立ち寄り先選びにも便利です。\n\n【チェックインで記録する】\n訪れた施設で、訪問日・メモ・写真を記録。「いつ、どんな思い出だったか」をあとからゆっくり振り返れます。\n\n【コレクションで集める】\n訪問した施設はコレクションとして地域別に表示。訪問数や達成状況がひと目でわかり、スタンプラリーのように楽しくコンプリートを目指せます。\n\n【動物園の表示はオン/オフ自由】\n設定で動物園の表示を切り替え可能。「水族館だけを楽しみたい」という方にもぴったりです。\n\n■ 特長\n・アカウント登録不要。ダウンロードしてすぐ使えます\n・記録はすべて端末内に保存。面倒なログインはありません\n・シンプルで直感的な操作\n\n水族館や動物園が好きな人も、これから巡ってみたい人も。\nアクアログで、あなただけのおでかけ記録を残してみませんか。",
-      "screenshots": []
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/5f/28/97/5f289720-ebe1-894f-f514-9b7f2394ab25/marketing1.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/81/2e/cf/812ecf5a-0e8b-3d77-fb65-3d8c7aa33d88/marketing2.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/e4/31/83/e4318320-f120-0144-6d31-32bf8d3c268a/marketing3.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/53/db/63/53db6337-4772-3c9d-bc43-de089a7ff25b/marketing1.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/1a/b6/36/1ab636fd-5012-8b04-e661-1020df987493/marketing2.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/3e/69/c3/3e69c326-027c-a802-85c4-ea15fa917607/marketing3.png/360x480bb.jpg"
+      ]
     },
     "6757411071": {
       "found": true,
@@ -32,7 +48,14 @@
       "seller": "Daisuke Sasaki",
       "url": "https://apps.apple.com/jp/app/%E3%82%B9%E3%82%A4%E3%83%AD%E3%82%B0/id6757411071?uo=4",
       "description": "全国の水族館を巡って水槽に生き物を集めよう！\nスタンプラリー感覚で水族館めぐりの記録をつけられます。\n現地で位置情報を使って記録するほか、あとから日付を選んで記録することもできます。",
-      "screenshots": []
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/02/a0/6c/02a06c0e-3c90-e14b-dfb2-8d9d73407d7d/1.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/9e/55/71/9e55716f-7c82-ee0b-5ca4-129999a8ab02/2.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/00/fb/ca/00fbca3f-351a-c321-6515-13148950e363/3.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/29/9d/e5/299de54e-06f0-b5a1-9059-9e5b934866d4/1.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/97/cf/1e/97cf1edf-657a-788a-f695-5f7b8879bf37/2.png/360x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/11/c8/05/11c805a8-4d02-1822-7d8a-2cde653bf447/3.png/360x480bb.jpg"
+      ]
     }
   }
 }
