@@ -32,10 +32,31 @@
     .bulk { background: #fff; border: 1px solid #d7e3e8; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; }
     .bulk__title { font-size: 15px; font-weight: 700; color: #003b4d; margin: 0 0 4px; }
     .bulk__hint { font-size: 12px; color: #789; margin: 0 0 12px; line-height: 1.6; }
-    .bulk__row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .bulk__select { flex: 1 1 220px; min-width: 0; padding: 9px 10px; border: 1px solid #cdd9de;
+
+    /* 1行＝1つの水族館 */
+    .bulk__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+                 padding: 10px; margin-bottom: 8px; border: 1px solid #e4edf1;
+                 border-radius: 10px; background: #fafdfe; }
+    .bulk__select { flex: 1 1 100%; min-width: 0; padding: 9px 10px; border: 1px solid #cdd9de;
                     border-radius: 8px; font-size: 14px; background: #fff; color: #003b4d; font-family: inherit; }
-    .bulk__file { flex: 1 1 220px; min-width: 0; font-size: 13px; }
+    .bulk__file { flex: 1 1 180px; min-width: 0; font-size: 13px; }
+    .bulk__count { flex: 0 0 auto; font-size: 12px; color: #2a7d5a; font-weight: 700; min-width: 3.5em; }
+    .bulk__remove { flex: 0 0 auto; width: 30px; height: 30px; padding: 0; line-height: 1;
+                    border: 1px solid #d7e3e8; border-radius: 8px; background: #fff;
+                    color: #98a8b0; font-size: 17px; cursor: pointer; font-family: inherit; }
+    .bulk__remove:hover { border-color: #e0a0a0; color: #b00; background: #fff6f6; }
+    .bulk__remove:disabled { opacity: .35; cursor: default; }
+
+    .bulk__addrow { display: inline-block; padding: 8px 14px; margin: 2px 0 4px;
+                    border: 1px dashed #9ec4d2; border-radius: 8px; background: #fff;
+                    color: #006c8e; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .bulk__addrow:hover { background: #f2f8fa; border-color: #006c8e; }
+    .bulk__addrow:disabled { opacity: .5; cursor: default; }
+
+    .bulk__footer { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+                    justify-content: space-between; margin-top: 12px;
+                    padding-top: 12px; border-top: 1px solid #eef4f6; }
+    .bulk__total { font-size: 13px; color: #456; }
     .bulk__btn { padding: 10px 20px; border: none; border-radius: 8px; background: #006c8e; color: #fff;
                  font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
     .bulk__btn:hover { background: #00587a; }
@@ -58,9 +79,9 @@
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
-            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」を追加：水族館ごとに複数枚まとめてアップロードできます</li>
+            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」を追加：複数の水族館ぶんをまとめてアップロードできます</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「訪問を記録する」の不具合を修正し、「行きたい」ボタンを追加</li>
-            <li><span class="bell-popover__date">2026/09/07</span>すべてのページのメニューから「集めた魚種印」を開けるように</li>
+            <li><span class="bell-popover__date">2026/09/07</span>その他軽微な不具合の修正、改善を行いました</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -95,15 +116,23 @@
     <div class="gallery-title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5h3.2L9 6h6l1.8 2.5H20v10H4v-10z"/><circle cx="12" cy="13" r="3.2"/></svg>マイ写真ギャラリー</div>
     <div class="gallery-sub">投稿した写真がすべて表示されます</div>
 
-    <!-- 水族館ごとに写真をまとめて追加 -->
+    <!-- 水族館ごとに写真をまとめて追加（複数の水族館を一度に） -->
     <div class="bulk" id="bulkPanel" style="display:none;">
       <p class="bulk__title">📷 写真をまとめて追加</p>
-      <p class="bulk__hint">水族館を選んで、写真を複数選択して追加できます（JPEG / PNG / WebP・1枚5MBまで）。</p>
-      <div class="bulk__row">
-        <select id="bulkAquarium" class="bulk__select"></select>
-        <input id="bulkFiles" class="bulk__file" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+      <p class="bulk__hint">
+        水族館ごとに写真を選べます。「＋ 水族館を追加」で行を増やせば、複数の水族館ぶんを一度に追加できます。<br>
+        JPEG / PNG / WebP・1枚5MBまで。
+      </p>
+
+      <div id="bulkRows"></div>
+
+      <button id="bulkAddRow" class="bulk__addrow" type="button">＋ 水族館を追加</button>
+
+      <div class="bulk__footer">
+        <span id="bulkTotal" class="bulk__total"></span>
         <button id="bulkUpload" class="bulk__btn" type="button">まとめて追加</button>
       </div>
+
       <div id="bulkStatus" class="bulk__status"></div>
       <ul id="bulkErrors" class="bulk__errors"></ul>
     </div>
@@ -117,8 +146,9 @@
 
     const content    = document.getElementById("content");
     const panel      = document.getElementById("bulkPanel");
-    const selectEl   = document.getElementById("bulkAquarium");
-    const filesEl    = document.getElementById("bulkFiles");
+    const rowsEl     = document.getElementById("bulkRows");
+    const addRowBtn  = document.getElementById("bulkAddRow");
+    const totalEl    = document.getElementById("bulkTotal");
     const uploadBtn  = document.getElementById("bulkUpload");
     const statusEl   = document.getElementById("bulkStatus");
     const errorsEl   = document.getElementById("bulkErrors");
@@ -184,8 +214,102 @@
 
     // ---- まとめて追加パネルの準備 ----
     let csrfToken = "";
+    let aquariums = [];
+
+    // 水族館の選択肢（訪問済みを先頭にまとめて選びやすくする）
+    function fillSelect(sel) {
+      const optionFor = (a) => {
+        const o = document.createElement("option");
+        o.value = a.id;
+        o.textContent = `${a.name}（${a.prefecture || ""}）`;
+        return o;
+      };
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = "水族館を選んでください";
+      sel.appendChild(ph);
+
+      const groups = [
+        ["訪問済み", aquariums.filter(a => a.visited)],
+        ["そのほか", aquariums.filter(a => !a.visited)],
+      ];
+      for (const [label, list] of groups) {
+        if (!list.length) continue;
+        const g = document.createElement("optgroup");
+        g.label = label;
+        list.forEach(a => g.appendChild(optionFor(a)));
+        sel.appendChild(g);
+      }
+    }
+
+    // 1行 = 1つの水族館ぶんの入力欄
+    function addRow() {
+      const row = document.createElement("div");
+      row.className = "bulk__row";
+
+      const sel = document.createElement("select");
+      sel.className = "bulk__select";
+      fillSelect(sel);
+
+      const file = document.createElement("input");
+      file.type = "file";
+      file.className = "bulk__file";
+      file.accept = "image/jpeg,image/png,image/webp";
+      file.multiple = true;
+
+      const count = document.createElement("span");
+      count.className = "bulk__count";
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "bulk__remove";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "この行を削除");
+
+      file.addEventListener("change", () => {
+        const n = (file.files || []).length;
+        count.textContent = n ? `${n}枚` : "";
+        updateTotal();
+      });
+      sel.addEventListener("change", updateTotal);
+      remove.addEventListener("click", () => {
+        row.remove();
+        if (!rowsEl.children.length) addRow();
+        updateTotal();
+      });
+
+      row.append(sel, file, count, remove);
+      rowsEl.appendChild(row);
+      updateTotal();
+      return row;
+    }
+
+    // 入力済みの行だけを取り出す
+    function collectRows() {
+      return Array.from(rowsEl.children).map(row => ({
+        row,
+        sel: row.querySelector(".bulk__select"),
+        file: row.querySelector(".bulk__file"),
+        count: row.querySelector(".bulk__count"),
+      }));
+    }
+
+    function updateTotal() {
+      const rows = collectRows();
+      const ready = rows.filter(r => r.sel.value && (r.file.files || []).length);
+      const photos = ready.reduce((n, r) => n + r.file.files.length, 0);
+
+      totalEl.textContent = photos
+        ? `${ready.length}館 / 合計 ${photos}枚`
+        : "水族館と写真を選んでください";
+      uploadBtn.disabled = photos === 0;
+
+      // 行が1つだけのときは削除ボタンを無効化（必ず1行は残す）
+      const only = rows.length === 1;
+      rows.forEach(r => { r.row.querySelector(".bulk__remove").disabled = only; });
+    }
+
     async function setupBulk() {
-      let aquariums = [];
       try {
         const [csrf, list] = await Promise.all([
           fetch("/api/csrf", { credentials: "same-origin" }).then(r => r.json()),
@@ -197,85 +321,81 @@
         return;   // パネルは出さない（一覧表示だけは動く）
       }
 
-      // 訪問済みを先頭にまとめて選びやすくする
-      const visited   = aquariums.filter(a => a.visited);
-      const others    = aquariums.filter(a => !a.visited);
-      const optionFor = (a) => {
-        const o = document.createElement("option");
-        o.value = a.id;
-        o.textContent = `${a.name}（${a.prefecture || ""}）`;
-        return o;
-      };
-
-      selectEl.innerHTML = "";
-      const ph = document.createElement("option");
-      ph.value = "";
-      ph.textContent = "水族館を選んでください";
-      selectEl.appendChild(ph);
-
-      if (visited.length) {
-        const g = document.createElement("optgroup");
-        g.label = "訪問済み";
-        visited.forEach(a => g.appendChild(optionFor(a)));
-        selectEl.appendChild(g);
-      }
-      if (others.length) {
-        const g = document.createElement("optgroup");
-        g.label = "そのほか";
-        others.forEach(a => g.appendChild(optionFor(a)));
-        selectEl.appendChild(g);
-      }
-
+      addRow();
       panel.style.display = "";
     }
+
+    addRowBtn.addEventListener("click", () => addRow());
 
     function setStatus(msg, cls) {
       statusEl.textContent = msg;
       statusEl.className = "bulk__status" + (cls ? " " + cls : "");
     }
 
+    // 1つの水族館ぶんを送る（サーバーの上限に合わせて分割）
+    async function uploadOne(aquariumId, files, onProgress) {
+      let saved = 0;
+      const errors = [];
+      for (let i = 0; i < files.length; i += BULK_CHUNK) {
+        const chunk = files.slice(i, i + BULK_CHUNK);
+        onProgress(Math.min(i + chunk.length, files.length), files.length);
+
+        const fd = new FormData();
+        chunk.forEach(f => fd.append("files", f, f.name));
+
+        const res = await fetch(`/api/aquariums/${aquariumId}/photos/bulk`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "X-CSRF-Token": csrfToken },
+          body: fd,
+        });
+
+        if (res.status === 429) throw new Error("短時間に送りすぎです。少し時間をおいてから再度お試しください。");
+        if (!res.ok) throw new Error(`アップロードに失敗しました (HTTP ${res.status})`);
+
+        const json = await res.json();
+        saved += json.saved || 0;
+        (json.errors || []).forEach(e => errors.push(e));
+      }
+      return { saved, errors };
+    }
+
     uploadBtn.addEventListener("click", async () => {
       errorsEl.innerHTML = "";
 
-      const aquariumId = selectEl.value;
-      const files = Array.from(filesEl.files || []);
+      const targets = collectRows()
+        .filter(r => r.sel.value && (r.file.files || []).length)
+        .map(r => ({
+          id: r.sel.value,
+          name: r.sel.options[r.sel.selectedIndex].textContent,
+          files: Array.from(r.file.files),
+          ui: r,
+        }));
 
-      if (!aquariumId) { setStatus("水族館を選んでください", "ng"); return; }
-      if (!files.length) { setStatus("写真を選んでください", "ng"); return; }
+      if (!targets.length) { setStatus("水族館と写真を選んでください", "ng"); return; }
 
-      uploadBtn.disabled = true;
-      selectEl.disabled = true;
-      filesEl.disabled = true;
+      const controls = [uploadBtn, addRowBtn,
+                        ...Array.from(rowsEl.querySelectorAll("select, input, button"))];
+      controls.forEach(c => { c.disabled = true; });
 
       let saved = 0;
       const allErrors = [];
+      const done = [];
 
       try {
-        for (let i = 0; i < files.length; i += BULK_CHUNK) {
-          const chunk = files.slice(i, i + BULK_CHUNK);
-          setStatus(`アップロード中... (${Math.min(i + chunk.length, files.length)} / ${files.length})`);
-
-          const fd = new FormData();
-          chunk.forEach(f => fd.append("files", f, f.name));
-
-          const res = await fetch(`/api/aquariums/${aquariumId}/photos/bulk`, {
-            method: "POST",
-            credentials: "same-origin",
-            headers: { "X-CSRF-Token": csrfToken },
-            body: fd,
+        for (const t of targets) {
+          const { saved: n, errors } = await uploadOne(t.id, t.files, (cur, all) => {
+            setStatus(`アップロード中... ${t.name} (${cur} / ${all}枚)`);
           });
-
-          if (res.status === 429) throw new Error("短時間に送りすぎです。少し時間をおいてから再度お試しください。");
-          if (!res.ok) throw new Error(`アップロードに失敗しました (HTTP ${res.status})`);
-
-          const json = await res.json();
-          saved += json.saved || 0;
-          (json.errors || []).forEach(e => allErrors.push(e));
+          saved += n;
+          errors.forEach(e => allErrors.push({ ...e, aquarium: t.name }));
+          if (n > 0) done.push(t);
         }
 
         if (saved > 0) {
-          setStatus(`${saved} 枚を追加しました`, "ok");
-          filesEl.value = "";
+          setStatus(`${targets.length}館に合計 ${saved} 枚を追加しました`, "ok");
+          // 送信できた行は入力をリセットしておく
+          done.forEach(t => { t.ui.file.value = ""; t.ui.count.textContent = ""; });
           await renderPhotos();
         } else {
           setStatus("追加できた写真がありませんでした", "ng");
@@ -283,15 +403,14 @@
 
         allErrors.forEach(e => {
           const li = document.createElement("li");
-          li.textContent = `${e.name}：${e.reason}`;
+          li.textContent = `${e.aquarium}／${e.name}：${e.reason}`;
           errorsEl.appendChild(li);
         });
       } catch (e) {
         setStatus(e.message || "アップロードに失敗しました", "ng");
       } finally {
-        uploadBtn.disabled = false;
-        selectEl.disabled = false;
-        filesEl.disabled = false;
+        controls.forEach(c => { c.disabled = false; });
+        updateTotal();
       }
     });
 
