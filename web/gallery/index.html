@@ -49,29 +49,44 @@
                  border-radius: 10px; background: #fafdfe; }
     .bulk__select { flex: 1 1 100%; min-width: 0; padding: 9px 10px; border: 1px solid #cdd9de;
                     border-radius: 8px; font-size: 14px; background: #fff; color: #003b4d; font-family: inherit; }
-    .bulk__file { flex: 1 1 180px; min-width: 0; font-size: 13px; }
-    .bulk__count { flex: 0 0 auto; font-size: 12px; color: #2a7d5a; font-weight: 700; min-width: 3.5em; }
+    /* ネイティブのファイル入力は隠す。
+       選んだあとも「選択されていません」と出て紛らわしいため、自前のボタンに置き換える */
+    .bulk__file { display: none; }
+    .bulk__pick { flex: 1 1 auto; padding: 10px 14px; border: 1px dashed #9ec4d2;
+                  border-radius: 8px; background: #fff; color: #006c8e;
+                  font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .bulk__pick:hover { background: #f2f8fa; border-color: #006c8e; }
+    .bulk__pick:disabled { opacity: .5; cursor: default; }
+    .bulk__count { flex: 0 0 auto; font-size: 12px; color: #2a7d5a; font-weight: 700; min-width: 4.5em; }
+    .bulk__count:empty { min-width: 0; }
     .bulk__remove { flex: 0 0 auto; width: 30px; height: 30px; padding: 0; line-height: 1;
                     border: 1px solid #d7e3e8; border-radius: 8px; background: #fff;
                     color: #98a8b0; font-size: 17px; cursor: pointer; font-family: inherit; }
     .bulk__remove:hover { border-color: #e0a0a0; color: #b00; background: #fff6f6; }
     .bulk__remove:disabled { opacity: .35; cursor: default; }
 
-    /* 選んだ写真の一覧（選ぶたびに積み増しされる） */
-    .bulk__filelist { flex: 1 1 100%; list-style: none; margin: 2px 0 0; padding: 0; }
-    .bulk__filelist:empty { margin: 0; }
-    .bulk__filelist li {
-      display: flex; align-items: center; gap: 6px;
-      padding: 4px 6px; margin-top: 4px;
-      background: #fff; border: 1px solid #e4edf1; border-radius: 6px;
-      font-size: 12px; color: #456;
+    /* 選んだ写真のプレビュー（選ぶたびに積み増しされる） */
+    .bulk__filelist {
+      flex: 1 1 100%; list-style: none; margin: 8px 0 0; padding: 0;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px;
     }
-    .bulk__filename { flex: 1 1 auto; min-width: 0; overflow: hidden;
-                      text-overflow: ellipsis; white-space: nowrap; }
-    .bulk__filedel { flex: 0 0 auto; width: 22px; height: 22px; padding: 0; line-height: 1;
-                     border: none; border-radius: 4px; background: transparent;
-                     color: #98a8b0; font-size: 15px; cursor: pointer; font-family: inherit; }
-    .bulk__filedel:hover { color: #b00; background: #fff2f2; }
+    .bulk__filelist:empty { margin: 0; }
+    .bulk__filelist li { position: relative; }
+    .bulk__thumb {
+      width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+      border: 1px solid #d7e3e8; border-radius: 6px; background: #fff;
+    }
+    .bulk__filename {
+      display: block; margin-top: 2px; font-size: 10px; color: #789;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .bulk__filedel {
+      position: absolute; top: 3px; right: 3px; width: 22px; height: 22px;
+      padding: 0; line-height: 20px; text-align: center;
+      border: none; border-radius: 50%; background: rgba(0, 0, 0, .6);
+      color: #fff; font-size: 13px; cursor: pointer; font-family: inherit;
+    }
+    .bulk__filedel:hover { background: rgba(176, 0, 0, .85); }
     .bulk__filedel:disabled { opacity: .35; cursor: default; }
 
     .bulk__addrow { display: inline-block; padding: 8px 14px; margin: 2px 0 4px;
@@ -373,11 +388,19 @@
       sel.className = "bulk__select";
       fillSelect(sel);
 
+      // ネイティブのファイル入力は隠して、自前のボタンから開く。
+      // （選んだあとも「選択されていません」と表示されて紛らわしいため）
       const file = document.createElement("input");
       file.type = "file";
       file.className = "bulk__file";
       file.accept = "image/jpeg,image/png,image/webp";
       file.multiple = true;
+
+      const pick = document.createElement("button");
+      pick.type = "button";
+      pick.className = "bulk__pick";
+      pick.textContent = "＋ 写真を選ぶ";
+      pick.addEventListener("click", () => file.click());
 
       const count = document.createElement("span");
       count.className = "bulk__count";
@@ -388,7 +411,7 @@
       remove.textContent = "×";
       remove.setAttribute("aria-label", "この行を削除");
 
-      // 選んだ写真の一覧（1枚ずつ取り消せる）
+      // 選んだ写真のプレビュー（1枚ずつ取り消せる）
       const list = document.createElement("ul");
       list.className = "bulk__filelist";
 
@@ -398,31 +421,55 @@
         list.innerHTML = "";
         row.__files.forEach((f, i) => {
           const li = document.createElement("li");
+
+          const img = document.createElement("img");
+          img.className = "bulk__thumb";
+          img.src = f.__previewUrl;
+          img.alt = f.name;
+          img.title = f.name;
+
           const nameEl = document.createElement("span");
           nameEl.className = "bulk__filename";
           nameEl.textContent = f.name;
+
           const del = document.createElement("button");
           del.type = "button";
           del.className = "bulk__filedel";
           del.textContent = "×";
           del.setAttribute("aria-label", `${f.name} を取り消す`);
           del.addEventListener("click", () => {
+            URL.revokeObjectURL(f.__previewUrl);
             row.__files.splice(i, 1);
             renderList();
             updateTotal();
           });
-          li.append(nameEl, del);
+
+          li.append(img, del, nameEl);
           list.appendChild(li);
         });
-        count.textContent = row.__files.length ? `${row.__files.length}枚` : "";
+
+        count.textContent = row.__files.length ? `${row.__files.length}枚 選択中` : "";
+        pick.textContent = row.__files.length ? "＋ さらに写真を選ぶ" : "＋ 写真を選ぶ";
       }
       row.__renderList = renderList;
+
+      // 送信後などにまとめて空にする（プレビュー用のURLも解放する）
+      row.__clearFiles = () => {
+        row.__files.forEach(f => URL.revokeObjectURL(f.__previewUrl));
+        row.__files = [];
+        renderList();
+      };
 
       file.addEventListener("change", () => {
         const picked = Array.from(file.files || []);
         const seen = new Set(row.__files.map(key));
         // 同じ写真を二重に入れない
-        picked.forEach(f => { if (!seen.has(key(f))) { row.__files.push(f); seen.add(key(f)); } });
+        picked.forEach(f => {
+          if (seen.has(key(f))) return;
+          f.__previewUrl = URL.createObjectURL(f);
+          row.__files.push(f);
+          seen.add(key(f));
+        });
         // 値を空に戻す。こうしないと同じ写真をもう一度選んでも change が起きない
         file.value = "";
         renderList();
@@ -430,12 +477,13 @@
       });
       sel.addEventListener("change", updateTotal);
       remove.addEventListener("click", () => {
+        row.__clearFiles();
         row.remove();
         if (!rowsEl.children.length) addRow();
         updateTotal();
       });
 
-      row.append(sel, file, count, remove, list);
+      row.append(sel, file, pick, count, remove, list);
       rowsEl.appendChild(row);
       updateTotal();
       return row;
@@ -583,10 +631,7 @@
         );
         // 送信できた行は写真だけ空にする（水族館の選択はそのまま残すので、
         // 同じ水族館に続けて追加するときに選び直さなくていい）
-        done.forEach(t => {
-          t.ui.row.__files = [];
-          t.ui.row.__renderList();
-        });
+        done.forEach(t => t.ui.row.__clearFiles());
         await renderPhotos();
       } else {
         setStatus("追加できた写真がありませんでした", "ng");
