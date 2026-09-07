@@ -134,6 +134,18 @@ def _migrate():
         except _sqlite3.OperationalError:
             pass
     con.commit()
+
+    # --- 公式サイトURLの修正（誤リンクの上書き）---
+    url_fixes = [
+        # 波左間海中公園のURLが誤ってコピーされていた
+        "UPDATE aquariums SET url='https://ioworld.jp/' WHERE name='いおワールドかごしま水族館'",
+    ]
+    for sql in url_fixes:
+        try:
+            con.execute(sql)
+        except _sqlite3.OperationalError:
+            pass
+    con.commit()
     con.close()
 
 def init_db() -> None:
