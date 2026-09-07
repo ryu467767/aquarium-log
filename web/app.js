@@ -619,7 +619,9 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     thumbs.className = "thumbs";
     photosWrap.appendChild(thumbs);
   
-    async function refreshPhotos() {
+    // 写真は state.photosByAq（読み込み時に1回だけ取得）から描く。
+    // カードごとにAPIを叩かないので、最初から表示されるようになる。
+    function refreshPhotos() {
       thumbs.innerHTML = "";
       if (!state.loggedIn) {
         const msg = document.createElement("div");
@@ -628,49 +630,55 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
         thumbs.appendChild(msg);
         return;
       }
-  
-      try {
-        const list = await apiGet(`/api/aquariums/${it.id}/photos`);
-        for (const p of list) {
-          const item = document.createElement("div");
-          item.className = "thumb-item";
-        
-          const img = document.createElement("img");
-          img.className = "thumb";
-          img.src = p.url;
-          img.loading = "lazy";
-          item.appendChild(img);
-        
-          const del = document.createElement("button");
-          del.type = "button";
-          del.className = "thumb-del";
-          del.textContent = "×";
-          del.title = "削除";
-          del.onclick = async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!confirm("この写真を削除しますか？")) return;
-        
-            try {
-              const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
-                method: "DELETE",
-                credentials: "same-origin",
-                headers: { "X-CSRF-Token": state.csrfToken },
-              });
-              if (!res.ok) throw new Error(await res.text());
-              await refreshPhotos();
-            } catch (err) {
-              alert("削除に失敗: " + err.message);
-            }
-          };
-          item.appendChild(del);
-        
-          thumbs.appendChild(item);
-        }
-      } catch (e) {
-        console.warn("photos fetch failed:", e);
-      }
+
+      const list = state.photosByAq[it.id] || [];
+      it.has_photos = list.length > 0;
+
+      list.forEach((p, i) => {
+        const item = document.createElement("div");
+        item.className = "thumb-item";
+
+        const img = document.createElement("img");
+        img.className = "thumb";
+        img.src = p.url;
+        img.loading = "lazy";
+        img.alt = `${it.name} の写真`;
+        // 押したら全画面表示（複数枚あれば横スクロールで移動できる）
+        img.onclick = () => {
+          if (!window.AqLightbox) return;
+          AqLightbox.open(list.map(x => ({ url: x.url, caption: it.name })), i);
+        };
+        item.appendChild(img);
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "thumb-del";
+        del.textContent = "×";
+        del.title = "削除";
+        del.onclick = async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!(await showConfirm("この写真を削除しますか？", "削除すると元に戻せません"))) return;
+
+          try {
+            const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
+              method: "DELETE",
+              credentials: "same-origin",
+              headers: { "X-CSRF-Token": state.csrfToken },
+            });
+            if (!res.ok) throw new Error(await res.text());
+            state.photosByAq[it.id] = (state.photosByAq[it.id] || []).filter(x => x.id !== p.id);
+            refreshPhotos();
+          } catch (err) {
+            alert("削除に失敗: " + err.message);
+          }
+        };
+        item.appendChild(del);
+
+        thumbs.appendChild(item);
+      });
     }
+    refreshPhotos();
   
   // アップロード input（非表示）
   const up = document.createElement("input");
@@ -693,13 +701,6 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
       location.href = "/login";
       return;
     }
-  
-    // 429対策：写真一覧は必要になった時だけ読む（初回だけ）
-    if (!photosWrap.dataset.loaded) {
-      photosWrap.dataset.loaded = "1";
-      refreshPhotos();
-    }
-  
     up.click();
   };
 
@@ -719,8 +720,10 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
         headers: { "X-CSRF-Token": state.csrfToken },
       });
       if (!res.ok) throw new Error(await res.text());
+      const saved = await res.json();
+      (state.photosByAq[it.id] ||= []).unshift({ id: saved.id, url: saved.url });
       up.value = "";
-      await refreshPhotos();
+      refreshPhotos();
     } catch (e) {
       alert("写真アップロード失敗: " + e.message);
     }
@@ -1280,6 +1283,24 @@ function handleShare() {
   }
 }
 
+// 自分の写真を水族館ごとにまとめて持っておく。
+// カードごとに /photos を叩くと館数ぶんリクエストが飛んでレート制限に当たるため、
+// 1リクエストで全部取ってきてここから表示する。
+state.photosByAq = {};
+
+async function loadAllPhotos() {
+  state.photosByAq = {};
+  if (!state.loggedIn) return;
+  try {
+    const list = await apiGet("/api/user/photos");
+    for (const p of list) {
+      (state.photosByAq[p.aquarium_id] ||= []).push({ id: p.id, url: p.url });
+    }
+  } catch (e) {
+    console.warn("写真一覧の取得に失敗:", e);
+  }
+}
+
 async function load() {
   const items = await apiGet(state.loggedIn ? "/api/aquariums" : "/api/public/aquariums");
 
@@ -1291,6 +1312,7 @@ async function load() {
     } catch (e) {
       console.warn("stats取得失敗:", e);
     }
+    await loadAllPhotos();
   }
 
   state.items = items;
@@ -2242,48 +2264,53 @@ function renderSheetActions(it) {
   fileInput.accept = 'image/*';
   fileInput.style.display = 'none';
 
-  async function refreshSheetPhotos() {
-    thumbsDiv.innerHTML = '<span style="font-size:12px;color:#aaa">読み込み中…</span>';
-    try {
-      const list = await apiGet(`/api/aquariums/${it.id}/photos`);
-      thumbsDiv.innerHTML = '';
-      for (const p of list) {
-        const item = document.createElement('div');
-        item.className = 'sheet-thumb-item';
-        const img = document.createElement('img');
-        img.className = 'sheet-thumb';
-        img.src = p.url;
-        img.loading = 'lazy';
-        item.appendChild(img);
-        const del = document.createElement('button');
-        del.type = 'button';
-        del.className = 'sheet-thumb-del';
-        del.textContent = '×';
-        del.onclick = async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!confirm('この写真を削除しますか？')) return;
-          try {
-            const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
-              method: 'DELETE',
-              credentials: 'same-origin',
-              headers: { 'X-CSRF-Token': state.csrfToken },
-            });
-            if (!res.ok) throw new Error(await res.text());
-            it.has_photos = thumbsDiv.querySelectorAll('.sheet-thumb-item').length > 0;
-            _sheetChanged = true;
-            await refreshSheetPhotos();
-          } catch (err) {
-            alert('削除に失敗: ' + err.message);
-          }
-        };
-        item.appendChild(del);
-        thumbsDiv.appendChild(item);
-      }
-    } catch(e) {
-      thumbsDiv.innerHTML = '';
-      console.warn('sheet photos fetch failed:', e);
-    }
+  // カードと同じく state.photosByAq から描く（APIは叩かない）
+  function refreshSheetPhotos() {
+    thumbsDiv.innerHTML = '';
+    const list = state.photosByAq[it.id] || [];
+    it.has_photos = list.length > 0;
+
+    list.forEach((p, i) => {
+      const item = document.createElement('div');
+      item.className = 'sheet-thumb-item';
+
+      const img = document.createElement('img');
+      img.className = 'sheet-thumb';
+      img.src = p.url;
+      img.loading = 'lazy';
+      img.alt = `${it.name} の写真`;
+      // 押したら全画面表示（複数枚あれば横スクロールで移動できる）
+      img.onclick = () => {
+        if (!window.AqLightbox) return;
+        AqLightbox.open(list.map(x => ({ url: x.url, caption: it.name })), i);
+      };
+      item.appendChild(img);
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'sheet-thumb-del';
+      del.textContent = '×';
+      del.onclick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!(await showConfirm('この写真を削除しますか？', '削除すると元に戻せません'))) return;
+        try {
+          const res = await fetch(`/api/aquariums/${it.id}/photos/${p.id}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: { 'X-CSRF-Token': state.csrfToken },
+          });
+          if (!res.ok) throw new Error(await res.text());
+          state.photosByAq[it.id] = (state.photosByAq[it.id] || []).filter(x => x.id !== p.id);
+          _sheetChanged = true;
+          refreshSheetPhotos();
+        } catch (err) {
+          alert('削除に失敗: ' + err.message);
+        }
+      };
+      item.appendChild(del);
+      thumbsDiv.appendChild(item);
+    });
   }
 
   addBtn.onclick = () => { fileInput.click(); };
@@ -2303,10 +2330,12 @@ function renderSheetActions(it) {
         headers: { 'X-CSRF-Token': state.csrfToken },
       });
       if (!res.ok) throw new Error(await res.text());
+      const saved = await res.json();
+      (state.photosByAq[it.id] ||= []).unshift({ id: saved.id, url: saved.url });
       fileInput.value = '';
       it.has_photos = true;
       _sheetChanged = true;
-      await refreshSheetPhotos();
+      refreshSheetPhotos();
     } catch(e) {
       alert('写真アップロード失敗: ' + e.message);
     } finally {
