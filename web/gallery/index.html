@@ -22,7 +22,17 @@
     .gallery-login-msg a { color: #0077b6; font-weight: bold; }
     .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 8px; }
     .gallery-item { display: flex; flex-direction: column; align-items: center; }
-    .gallery-img  { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #eee; }
+    .gallery-thumb { position: relative; width: 100%; }
+    .gallery-img  { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #eee; display: block; }
+    /* 写真の削除ボタン（サムネイル右上） */
+    .gallery-del {
+      position: absolute; top: 6px; right: 6px; width: 30px; height: 30px;
+      padding: 0; line-height: 28px; text-align: center;
+      border: none; border-radius: 50%; cursor: pointer;
+      background: rgba(0, 0, 0, .55); color: #fff; font-size: 16px; font-family: inherit;
+    }
+    .gallery-del:hover { background: rgba(176, 0, 0, .85); }
+    .gallery-del:disabled { opacity: .5; cursor: default; }
     .gallery-label { font-size: 12px; color: #555; margin-top: 5px; text-align: center; line-height: 1.4; word-break: break-all; }
     .gallery-date  { font-size: 11px; color: #aaa; margin-top: 1px; }
     .gallery-empty { padding: 40px 0; text-align: center; color: #aaa; font-size: 15px; }
@@ -79,7 +89,7 @@
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
-            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」を追加：複数の水族館ぶんをまとめてアップロードできます</li>
+            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」と写真の削除を追加</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「訪問を記録する」の不具合を修正し、「行きたい」ボタンを追加</li>
             <li><span class="bell-popover__date">2026/09/07</span>その他軽微な不具合の修正、改善を行いました</li>
           </ul>
@@ -137,6 +147,19 @@
       <ul id="bulkErrors" class="bulk__errors"></ul>
     </div>
 
+    <!-- 写真の削除確認 -->
+    <div id="delModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+      <div class="modal-box" style="max-width:340px;">
+        <p class="modal-title">写真を削除しますか？</p>
+        <p id="delModalText" style="font-size:14px;color:#456;margin:0 0 4px;"></p>
+        <p style="font-size:12px;color:#b00;margin:0;">削除すると元に戻せません。</p>
+        <div class="modal-actions">
+          <button id="delModalOk" class="modal-btn modal-btn--secondary">削除する</button>
+          <button id="delModalCancel" class="modal-btn modal-btn--cancel">やめる</button>
+        </div>
+      </div>
+    </div>
+
     <div id="content"><div class="loading">読み込み中...</div></div>
   </div>
 
@@ -182,11 +205,25 @@
           const item = document.createElement("div");
           item.className = "gallery-item";
 
+          const thumb = document.createElement("div");
+          thumb.className = "gallery-thumb";
+
           const img = document.createElement("img");
           img.src = p.url;
           img.loading = "lazy";
           img.className = "gallery-img";
           img.alt = p.aquarium_name;
+
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "gallery-del";
+          del.textContent = "×";
+          del.title = "この写真を削除";
+          del.setAttribute("aria-label", `${p.aquarium_name} の写真を削除`);
+          del.addEventListener("click", () => askDelete(p, item, del));
+
+          thumb.appendChild(img);
+          thumb.appendChild(del);
 
           const label = document.createElement("div");
           label.className = "gallery-label";
@@ -196,13 +233,15 @@
           date.className = "gallery-date";
           date.textContent = p.visited_at ? p.visited_at : (p.created_at ? p.created_at.slice(0, 10) : "");
 
-          item.appendChild(img);
+          item.appendChild(thumb);
           item.appendChild(label);
           item.appendChild(date);
           grid.appendChild(item);
         }
 
         const countEl = document.createElement("div");
+        countEl.id = "photoCount";
+        countEl.dataset.count = String(photos.length);
         countEl.style.cssText = "font-size:13px;color:#666;margin-bottom:12px;";
         countEl.textContent = `${photos.length} 枚`;
         content.appendChild(countEl);
@@ -210,6 +249,67 @@
       } catch (e) {
         content.innerHTML = `<div class="gallery-empty">写真の読み込みに失敗しました</div>`;
       }
+    }
+
+    // 一括追加パネルの準備に失敗していてもトークンを取り直せるようにする
+    async function ensureCsrf() {
+      if (csrfToken) return csrfToken;
+      const j = await fetch("/api/csrf", { credentials: "same-origin" }).then(r => r.json());
+      csrfToken = (j && j.token) || "";
+      return csrfToken;
+    }
+
+    // ---- 写真の削除 ----
+    const delModal  = document.getElementById("delModal");
+    const delText   = document.getElementById("delModalText");
+    const delOkBtn  = document.getElementById("delModalOk");
+    let pendingDelete = null;   // { photo, item, btn }
+
+    function closeDelModal() {
+      delModal.style.display = "none";
+      pendingDelete = null;
+    }
+    document.getElementById("delModalCancel").addEventListener("click", closeDelModal);
+    delModal.addEventListener("click", (e) => { if (e.target === delModal) closeDelModal(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && delModal.style.display !== "none") closeDelModal();
+    });
+
+    function askDelete(photo, item, btn) {
+      pendingDelete = { photo, item, btn };
+      delText.textContent = `${photo.aquarium_name} の写真`;
+      delModal.style.display = "";
+    }
+
+    delOkBtn.addEventListener("click", async () => {
+      if (!pendingDelete) return;
+      const { photo, item, btn } = pendingDelete;
+      closeDelModal();
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/aquariums/${photo.aquarium_id}/photos/${photo.id}`, {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: { "X-CSRF-Token": await ensureCsrf() },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        item.remove();
+        updatePhotoCount(-1);
+      } catch (e) {
+        btn.disabled = false;
+        alert("写真を削除できませんでした。時間をおいて試してください。");
+      }
+    });
+
+    // 「〇枚」の表示を増減させる（全件取り直さずに済ませる）
+    function updatePhotoCount(diff) {
+      const el = document.getElementById("photoCount");
+      if (!el) return;
+      const n = Math.max(0, (parseInt(el.dataset.count, 10) || 0) + diff);
+      el.dataset.count = String(n);
+      el.textContent = `${n} 枚`;
+      if (n === 0) renderPhotos();
     }
 
     // ---- まとめて追加パネルの準備 ----
@@ -332,14 +432,12 @@
       statusEl.className = "bulk__status" + (cls ? " " + cls : "");
     }
 
-    // 1つの水族館ぶんを送る（サーバーの上限に合わせて分割）
-    async function uploadOne(aquariumId, files, onProgress) {
-      let saved = 0;
-      const errors = [];
-      for (let i = 0; i < files.length; i += BULK_CHUNK) {
-        const chunk = files.slice(i, i + BULK_CHUNK);
-        onProgress(Math.min(i + chunk.length, files.length), files.length);
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+    // 1回ぶんを送る。送りすぎ(429)のときは少し待ってやり直す
+    async function postChunk(aquariumId, chunk, onWait) {
+      const WAITS = [5000, 12000, 20000];   // 待ち時間（レート制限は1分単位）
+      for (let attempt = 0; ; attempt++) {
         const fd = new FormData();
         chunk.forEach(f => fd.append("files", f, f.name));
 
@@ -350,10 +448,27 @@
           body: fd,
         });
 
-        if (res.status === 429) throw new Error("短時間に送りすぎです。少し時間をおいてから再度お試しください。");
-        if (!res.ok) throw new Error(`アップロードに失敗しました (HTTP ${res.status})`);
+        if (res.status !== 429) {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        }
+        if (attempt >= WAITS.length) {
+          throw new Error("短時間に送りすぎです。少し時間をおいてからお試しください");
+        }
+        onWait(Math.round(WAITS[attempt] / 1000));
+        await sleep(WAITS[attempt]);
+      }
+    }
 
-        const json = await res.json();
+    // 1つの水族館ぶんを送る（サーバーの1回あたりの上限に合わせて分割）
+    async function uploadOne(aquariumId, files, onProgress, onWait) {
+      let saved = 0;
+      const errors = [];
+      for (let i = 0; i < files.length; i += BULK_CHUNK) {
+        const chunk = files.slice(i, i + BULK_CHUNK);
+        onProgress(Math.min(i + chunk.length, files.length), files.length);
+
+        const json = await postChunk(aquariumId, chunk, onWait);
         saved += json.saved || 0;
         (json.errors || []).forEach(e => errors.push(e));
       }
@@ -379,39 +494,50 @@
       controls.forEach(c => { c.disabled = true; });
 
       let saved = 0;
+      let okCount = 0;
       const allErrors = [];
       const done = [];
 
-      try {
-        for (const t of targets) {
-          const { saved: n, errors } = await uploadOne(t.id, t.files, (cur, all) => {
-            setStatus(`アップロード中... ${t.name} (${cur} / ${all}枚)`);
-          });
+      // 1館ずつ独立して送る。1館が失敗しても残りの館は必ず試す
+      for (let i = 0; i < targets.length; i++) {
+        const t = targets[i];
+        const pos = `(${i + 1}/${targets.length}館)`;
+        try {
+          const { saved: n, errors } = await uploadOne(
+            t.id,
+            t.files,
+            (cur, all) => setStatus(`アップロード中... ${pos} ${t.name} ${cur}/${all}枚`),
+            (sec) => setStatus(`送信が混み合っています。${sec}秒待ってから続けます... ${pos} ${t.name}`),
+          );
           saved += n;
-          errors.forEach(e => allErrors.push({ ...e, aquarium: t.name }));
-          if (n > 0) done.push(t);
+          errors.forEach(e => allErrors.push({ aquarium: t.name, name: e.name, reason: e.reason }));
+          if (n > 0) { okCount++; done.push(t); }
+        } catch (e) {
+          allErrors.push({ aquarium: t.name, name: `${t.files.length}枚`, reason: e.message || "送信に失敗しました" });
         }
-
-        if (saved > 0) {
-          setStatus(`${targets.length}館に合計 ${saved} 枚を追加しました`, "ok");
-          // 送信できた行は入力をリセットしておく
-          done.forEach(t => { t.ui.file.value = ""; t.ui.count.textContent = ""; });
-          await renderPhotos();
-        } else {
-          setStatus("追加できた写真がありませんでした", "ng");
-        }
-
-        allErrors.forEach(e => {
-          const li = document.createElement("li");
-          li.textContent = `${e.aquarium}／${e.name}：${e.reason}`;
-          errorsEl.appendChild(li);
-        });
-      } catch (e) {
-        setStatus(e.message || "アップロードに失敗しました", "ng");
-      } finally {
-        controls.forEach(c => { c.disabled = false; });
-        updateTotal();
       }
+
+      if (saved > 0) {
+        const failed = targets.length - okCount;
+        setStatus(
+          `${okCount}館に合計 ${saved} 枚を追加しました` + (failed ? `（${failed}館は追加できませんでした）` : ""),
+          failed ? "ng" : "ok",
+        );
+        // 送信できた行だけ入力をリセットする（失敗した行はやり直せるように残す）
+        done.forEach(t => { t.ui.file.value = ""; t.ui.count.textContent = ""; });
+        await renderPhotos();
+      } else {
+        setStatus("追加できた写真がありませんでした", "ng");
+      }
+
+      allErrors.forEach(e => {
+        const li = document.createElement("li");
+        li.textContent = `${e.aquarium}／${e.name}：${e.reason}`;
+        errorsEl.appendChild(li);
+      });
+
+      controls.forEach(c => { c.disabled = false; });
+      updateTotal();
     });
 
     await Promise.all([renderPhotos(), setupBulk()]);

@@ -119,7 +119,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "unknown")
 
             # ルール：写真アップロードは厳しめ
-            if request.method == "POST" and "/photos" in path:
+            # ただし一括アップロードは「水族館1館＝1リクエスト」なので、
+            # 複数館まとめて追加すると10回ではすぐ足りなくなる。別枠で少し緩める。
+            if request.method == "POST" and path.endswith("/photos/bulk"):
+                ok = _hit(f"upbulk:{ip}", limit=30, window_sec=60)  # 1分30回
+            elif request.method == "POST" and "/photos" in path:
                 ok = _hit(f"up:{ip}", limit=10, window_sec=60)  # 1分10回
             # 認証も厳しめ
             elif path.startswith("/auth/"):
@@ -708,7 +712,7 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
-            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」を追加：複数の水族館ぶんをまとめてアップロードできます</li>
+            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」と写真の削除を追加</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「訪問を記録する」の不具合を修正し、「行きたい」ボタンを追加</li>
             <li><span class="bell-popover__date">2026/09/07</span>その他軽微な不具合の修正、改善を行いました</li>
           </ul>
