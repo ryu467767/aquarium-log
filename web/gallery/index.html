@@ -57,6 +57,23 @@
     .bulk__remove:hover { border-color: #e0a0a0; color: #b00; background: #fff6f6; }
     .bulk__remove:disabled { opacity: .35; cursor: default; }
 
+    /* 選んだ写真の一覧（選ぶたびに積み増しされる） */
+    .bulk__filelist { flex: 1 1 100%; list-style: none; margin: 2px 0 0; padding: 0; }
+    .bulk__filelist:empty { margin: 0; }
+    .bulk__filelist li {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 6px; margin-top: 4px;
+      background: #fff; border: 1px solid #e4edf1; border-radius: 6px;
+      font-size: 12px; color: #456;
+    }
+    .bulk__filename { flex: 1 1 auto; min-width: 0; overflow: hidden;
+                      text-overflow: ellipsis; white-space: nowrap; }
+    .bulk__filedel { flex: 0 0 auto; width: 22px; height: 22px; padding: 0; line-height: 1;
+                     border: none; border-radius: 4px; background: transparent;
+                     color: #98a8b0; font-size: 15px; cursor: pointer; font-family: inherit; }
+    .bulk__filedel:hover { color: #b00; background: #fff2f2; }
+    .bulk__filedel:disabled { opacity: .35; cursor: default; }
+
     .bulk__addrow { display: inline-block; padding: 8px 14px; margin: 2px 0 4px;
                     border: 1px dashed #9ec4d2; border-radius: 8px; background: #fff;
                     color: #006c8e; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -130,7 +147,9 @@
     <div class="bulk" id="bulkPanel" style="display:none;">
       <p class="bulk__title">📷 写真をまとめて追加</p>
       <p class="bulk__hint">
-        水族館ごとに写真を選べます。「＋ 水族館を追加」で行を増やせば、複数の水族館ぶんを一度に追加できます。<br>
+        水族館を選んで写真を選びます。<strong>写真は選ぶたびに追加されていく</strong>ので、
+        同じ水族館なら何回に分けて選んでも構いません。<br>
+        別の水族館ぶんも一緒に追加したいときは「＋ 水族館を追加」で行を増やしてください。<br>
         JPEG / PNG / WebP・1枚5MBまで。
       </p>
 
@@ -343,9 +362,12 @@
     }
 
     // 1行 = 1つの水族館ぶんの入力欄
+    // 写真は選ぶたびに「積み増し」される。ファイル選択ダイアログは選び直すと
+    // 前回の選択が消えてしまうので、選んだファイルは行ごとに自分で持っておく。
     function addRow() {
       const row = document.createElement("div");
       row.className = "bulk__row";
+      row.__files = [];   // この行で選ばれている写真
 
       const sel = document.createElement("select");
       sel.className = "bulk__select";
@@ -366,9 +388,44 @@
       remove.textContent = "×";
       remove.setAttribute("aria-label", "この行を削除");
 
+      // 選んだ写真の一覧（1枚ずつ取り消せる）
+      const list = document.createElement("ul");
+      list.className = "bulk__filelist";
+
+      const key = (f) => `${f.name}::${f.size}::${f.lastModified}`;
+
+      function renderList() {
+        list.innerHTML = "";
+        row.__files.forEach((f, i) => {
+          const li = document.createElement("li");
+          const nameEl = document.createElement("span");
+          nameEl.className = "bulk__filename";
+          nameEl.textContent = f.name;
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "bulk__filedel";
+          del.textContent = "×";
+          del.setAttribute("aria-label", `${f.name} を取り消す`);
+          del.addEventListener("click", () => {
+            row.__files.splice(i, 1);
+            renderList();
+            updateTotal();
+          });
+          li.append(nameEl, del);
+          list.appendChild(li);
+        });
+        count.textContent = row.__files.length ? `${row.__files.length}枚` : "";
+      }
+      row.__renderList = renderList;
+
       file.addEventListener("change", () => {
-        const n = (file.files || []).length;
-        count.textContent = n ? `${n}枚` : "";
+        const picked = Array.from(file.files || []);
+        const seen = new Set(row.__files.map(key));
+        // 同じ写真を二重に入れない
+        picked.forEach(f => { if (!seen.has(key(f))) { row.__files.push(f); seen.add(key(f)); } });
+        // 値を空に戻す。こうしないと同じ写真をもう一度選んでも change が起きない
+        file.value = "";
+        renderList();
         updateTotal();
       });
       sel.addEventListener("change", updateTotal);
@@ -378,7 +435,7 @@
         updateTotal();
       });
 
-      row.append(sel, file, count, remove);
+      row.append(sel, file, count, remove, list);
       rowsEl.appendChild(row);
       updateTotal();
       return row;
@@ -391,13 +448,14 @@
         sel: row.querySelector(".bulk__select"),
         file: row.querySelector(".bulk__file"),
         count: row.querySelector(".bulk__count"),
+        files: row.__files || [],
       }));
     }
 
     function updateTotal() {
       const rows = collectRows();
-      const ready = rows.filter(r => r.sel.value && (r.file.files || []).length);
-      const photos = ready.reduce((n, r) => n + r.file.files.length, 0);
+      const ready = rows.filter(r => r.sel.value && r.files.length);
+      const photos = ready.reduce((n, r) => n + r.files.length, 0);
 
       totalEl.textContent = photos
         ? `${ready.length}館 / 合計 ${photos}枚`
@@ -479,11 +537,11 @@
       errorsEl.innerHTML = "";
 
       const targets = collectRows()
-        .filter(r => r.sel.value && (r.file.files || []).length)
+        .filter(r => r.sel.value && r.files.length)
         .map(r => ({
           id: r.sel.value,
           name: r.sel.options[r.sel.selectedIndex].textContent,
-          files: Array.from(r.file.files),
+          files: r.files.slice(),
           ui: r,
         }));
 
@@ -523,8 +581,12 @@
           `${okCount}館に合計 ${saved} 枚を追加しました` + (failed ? `（${failed}館は追加できませんでした）` : ""),
           failed ? "ng" : "ok",
         );
-        // 送信できた行だけ入力をリセットする（失敗した行はやり直せるように残す）
-        done.forEach(t => { t.ui.file.value = ""; t.ui.count.textContent = ""; });
+        // 送信できた行は写真だけ空にする（水族館の選択はそのまま残すので、
+        // 同じ水族館に続けて追加するときに選び直さなくていい）
+        done.forEach(t => {
+          t.ui.row.__files = [];
+          t.ui.row.__renderList();
+        });
         await renderPhotos();
       } else {
         setStatus("追加できた写真がありませんでした", "ng");
