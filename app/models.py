@@ -28,6 +28,23 @@ class Aquarium(SQLModel, table=True):
     has_shark: bool = Field(default=False)     # サメ
     has_beluga: bool = Field(default=False)    # シロイルカ（ベルーガ）
 
+    # 生き物フラグ（詳細ページの「会える生き物」用の追加分）
+    # ※「集めた魚種印」の対象は上の9種のまま
+    has_otter: bool = Field(default=False)        # カワウソ
+    has_seaotter: bool = Field(default=False)     # ラッコ
+    has_walrus: bool = Field(default=False)       # セイウチ
+    has_turtle: bool = Field(default=False)       # ウミガメ
+    has_whaleshark: bool = Field(default=False)   # ジンベエザメ
+    has_ray: bool = Field(default=False)          # エイ
+    has_sunfish: bool = Field(default=False)      # マンボウ
+    has_gardeneel: bool = Field(default=False)    # チンアナゴ
+    has_seahorse: bool = Field(default=False)     # タツノオトシゴ
+    has_clownfish: bool = Field(default=False)    # カクレクマノミ
+    has_coral: bool = Field(default=False)        # サンゴ
+    has_capybara: bool = Field(default=False)     # カピバラ
+    has_salamander: bool = Field(default=False)   # オオサンショウウオ
+    has_deepsea: bool = Field(default=False)      # 深海生物
+
     # SNSアカウント（アカウントID のみ、@なし）
     twitter_id: Optional[str] = Field(default=None)    # 例: "kaiyukan"
     instagram_id: Optional[str] = Field(default=None)  # 例: "kaiyukan_official"

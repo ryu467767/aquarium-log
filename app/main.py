@@ -18,7 +18,7 @@ from starlette.responses import Response
 from authlib.integrations.starlette_client import OAuth
 from fastapi import UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
 from sqlmodel import select
 from sqlalchemy import func
@@ -312,6 +312,10 @@ def debug_oauth():
 
 @app.get("/login")
 async def login(request: Request):
+    # ローカル検証時はGoogleの認証情報が無いので、テストログインへ回す。
+    # ALLOW_DEV_LOGIN は本番(render.yaml)では未設定＝この分岐は本番では通らない。
+    if ALLOW_DEV_LOGIN and not os.getenv("GOOGLE_CLIENT_ID"):
+        return RedirectResponse(url="/dev-login")
     redirect_uri = f"{BASE_URL}/auth/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
@@ -640,6 +644,7 @@ def _esc(s):
              .replace('"', "&quot;").replace("'", "&#39;"))
 
 _AQ_ANIMALS = [
+    # 「集めた魚種印」の対象9種
     ("has_jellyfish", "🪼", "クラゲ"),
     ("has_penguin",   "🐧", "ペンギン"),
     ("has_dolphin",   "🐬", "イルカ"),
@@ -649,7 +654,71 @@ _AQ_ANIMALS = [
     ("has_sealion",   "🦭", "アシカ"),
     ("has_seal",      "🦭", "アザラシ"),
     ("has_steller",   "🦭", "トド"),
+    # 詳細ページだけで見せる追加分
+    ("has_whaleshark",  "🦈", "ジンベエザメ"),
+    ("has_ray",         "🐟", "エイ"),
+    ("has_sunfish",     "🐡", "マンボウ"),
+    ("has_seaotter",    "🦦", "ラッコ"),
+    ("has_otter",       "🦦", "カワウソ"),
+    ("has_walrus",      "🦭", "セイウチ"),
+    ("has_turtle",      "🐢", "ウミガメ"),
+    ("has_gardeneel",   "🐍", "チンアナゴ"),
+    ("has_seahorse",    "🐴", "タツノオトシゴ"),
+    ("has_clownfish",   "🐠", "カクレクマノミ"),
+    ("has_coral",       "🪸", "サンゴ"),
+    ("has_capybara",    "🐹", "カピバラ"),
+    ("has_salamander",  "🦎", "オオサンショウウオ"),
+    ("has_deepsea",     "🦑", "深海生物"),
 ]
+
+# 飼育している施設が限られる生き物（紹介文で見どころとして触れる）
+_AQ_RARE_ANIMALS = {
+    "has_orca", "has_beluga", "has_whaleshark", "has_seaotter",
+    "has_walrus", "has_steller",
+}
+
+# 紹介文で使う地方区分（web/app.js の REGION_BY_PREF と同じ）
+_REGION_BY_PREF = {
+    "北海道": "北海道",
+    "青森県": "東北", "岩手県": "東北", "宮城県": "東北",
+    "秋田県": "東北", "山形県": "東北", "福島県": "東北",
+    "茨城県": "関東", "栃木県": "関東", "群馬県": "関東", "埼玉県": "関東",
+    "千葉県": "関東", "東京都": "関東", "神奈川県": "関東",
+    "新潟県": "中部", "富山県": "中部", "石川県": "中部", "福井県": "中部",
+    "山梨県": "中部", "長野県": "中部", "岐阜県": "中部", "静岡県": "中部", "愛知県": "中部",
+    "三重県": "近畿", "滋賀県": "近畿", "京都府": "近畿", "大阪府": "近畿",
+    "兵庫県": "近畿", "奈良県": "近畿", "和歌山県": "近畿",
+    "鳥取県": "中国", "島根県": "中国", "岡山県": "中国", "広島県": "中国", "山口県": "中国",
+    "徳島県": "四国", "香川県": "四国", "愛媛県": "四国", "高知県": "四国",
+    "福岡県": "九州・沖縄", "佐賀県": "九州・沖縄", "長崎県": "九州・沖縄", "熊本県": "九州・沖縄",
+    "大分県": "九州・沖縄", "宮崎県": "九州・沖縄", "鹿児島県": "九州・沖縄", "沖縄県": "九州・沖縄",
+}
+
+# ヘッダー／ドロワーは web/about/index.html などの静的ページと同じマークアップに揃えている。
+# （静的ページ側を変えたら、こちらも同じ内容に更新すること）
+AQ_HEADER = """
+  <header>
+    <h1><a href="/" style="color:inherit;text-decoration:none;">全国水族館スタンプラリー</a></h1>
+    <div class="userbox" id="userbox">
+      <div class="bell-wrap">
+        <button id="updateBellBtn" class="bell-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="更新情報のお知らせ">
+          <svg class="bell-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span id="bellBadge" class="bell-badge" hidden></span>
+        </button>
+        <div id="bellPopover" class="bell-popover" hidden>
+          <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
+          <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」を追加：水族館ごとに複数枚まとめてアップロードできます</li>
+            <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「訪問を記録する」の不具合を修正し、「行きたい」ボタンを追加</li>
+            <li><span class="bell-popover__date">2026/09/07</span>すべてのページのメニューから「集めた魚種印」を開けるように</li>
+          </ul>
+          <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
+        </div>
+      </div>
+      <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く"><svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    </div>
+  </header>
+"""
 
 AQ_DRAWER = """
   <div id="drawerOverlay" class="drawer-overlay"></div>
@@ -661,12 +730,16 @@ AQ_DRAWER = """
       <button class="linklike" id="logoutBtn" type="button" style="display:none;">ログアウト</button>
     </div>
     <div class="drawer__inner">
-      <a href="/" class="drawer-link">🏠 トップページ</a>
-      <a href="/updates/" class="drawer-link">📰 更新情報</a>
-      <a href="/about/" class="drawer-link">ℹ️ このアプリについて</a>
-      <a href="/missions/" class="drawer-link">🏆 ミッション</a>
-      <a href="/contact/" class="drawer-link">✉️ お問い合わせ</a>
-      <a href="/privacy/" class="drawer-link">🔐 プライバシーポリシー</a>
+      <a href="/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>トップページ</a>
+      <a href="/about/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r="0.9" fill="currentColor" stroke="none"/></svg>このアプリについて</a>
+      <a href="/missions/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v3.5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 9"/><path d="M12 12.5V16"/><path d="M9 20h6"/><path d="M9.5 16.5h5v3.5h-5z"/></svg>ミッション</a>
+      <a id="galleryBtn" href="/gallery/" class="drawer-link" style="display:none;"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5h3.2L9 6h6l1.8 2.5H20v10H4v-10z"/><circle cx="12" cy="13" r="3.2"/></svg>マイ写真ギャラリー</a>
+      <button id="collectionBtn" type="button" class="drawer-link" style="display:none;"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.8-5.5 10.5-5.5c3.7 0 6.6 1.8 8.5 3.7-1.6 1.7-1.6 3.9 0 5.6-1.9 1.9-4.8 3.7-8.5 3.7C6.3 19.5 2.5 12 2.5 12z"/><circle cx="15.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/></svg>集めた魚種印</button>
+      <a href="/updates/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</a>
+      <a href="/contact/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 6.5l8 6.5 8-6.5"/></svg>お問い合わせ</a>
+      <a href="/privacy/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="11" width="13" height="8.5" rx="2"/><path d="M8.5 11V7.8a3.5 3.5 0 0 1 7 0V11"/></svg>プライバシーポリシー</a>
+      <hr class="drawer__hr">
+      <a href="https://zoo-log.onrender.com/" class="drawer-link" target="_blank" rel="noopener noreferrer">🐘 全国動物園スタンプラリー</a>
     </div>
   </nav>
 """
@@ -680,7 +753,7 @@ AQ_FOOTER = """
       <span>© 2025 全国水族館スタンプラリー</span>
     </div>
   </footer>
-  <script src="/nav.js?v=20260305-1"></script>
+  <script src="/nav.js?v=20260907-1"></script>
 """
 
 
@@ -691,8 +764,10 @@ def aquarium_page(aquarium_id: int):
         if not a:
             raise HTTPException(404, "Aquarium not found")
         all_aq = list_aquariums(db)
-        related = [x for x in all_aq
-                   if x.prefecture == a.prefecture and x.id != a.id and not x.is_closed][:8]
+        same_pref = [x for x in all_aq
+                     if x.prefecture == a.prefecture and x.id != a.id and not x.is_closed]
+        same_pref_count = len(same_pref)
+        related = same_pref[:8]
         try:
             visited_users = db.exec(
                 select(func.count(func.distinct(Visit.user_id)))
@@ -709,12 +784,52 @@ def aquarium_page(aquarium_id: int):
     animals = [(ic, lb) for key, ic, lb in _AQ_ANIMALS if getattr(a, key, False)]
     animals_html = "".join(f'<span class="aq-animal">{ic} {lb}</span>' for ic, lb in animals)
 
-    # 紹介文
-    intro = f"{_esc(a.name)}は{_esc(loc)}にある水族館です。"
+    # 紹介文（DBにある事実だけで組み立てる。営業時間や料金など未取得の情報は書かない）
+    intro_parts = []
+
+    region = _REGION_BY_PREF.get(a.prefecture or "", "")
+    p1 = f"{_esc(a.name)}は、{_esc(loc) or '所在地不明の場所'}にある水族館です。"
+    if region and a.prefecture:
+        # 「北海道エリア（北海道）」のような重複を避ける
+        area = _esc(region) if region == a.prefecture else f"{_esc(region)}エリア（{_esc(a.prefecture)}）"
+        p1 += f"{area}の水族館として、本サイトのスタンプラリーに登録されています。"
+    if a.is_closed:
+        closed_when = f"（{_esc(a.closed_at)}）" if a.closed_at else ""
+        p1 += f"なお、この施設は現在閉館しています{closed_when}。訪問の記録は思い出として残せます。"
+    intro_parts.append(p1)
+
     if animals:
-        names = "・".join(lb for ic, lb in animals[:5])
-        intro += f"{names}などの生き物に会えます。"
-    intro += "訪問記録・写真・メモを残して、全国の水族館めぐりを楽しもう。"
+        names = "・".join(lb for ic, lb in animals[:6])
+        p2 = f"館内では{names}"
+        p2 += "など、" if len(animals) > 6 else "といった、"
+        p2 += f"全{len(animals)}種類の生き物に会えます。"
+        # 飼育している施設が限られる生き物は、見どころとして紹介する
+        rare = [lb for key, ic, lb in _AQ_ANIMALS
+                if getattr(a, key, False) and key in _AQ_RARE_ANIMALS]
+        if rare:
+            p2 += f"なかでも{('・'.join(rare))}は、全国でも見られる施設が限られる生き物です。"
+        intro_parts.append(p2)
+    else:
+        intro_parts.append(
+            "会える生き物のデータは現在準備中です。詳しい展示内容は公式サイトをご確認ください。"
+        )
+
+    p3 = []
+    if a.url:
+        p3.append("開館時間・料金・イベントなどの最新情報は公式サイトで確認できます")
+    if a.twitter_id or a.instagram_id:
+        p3.append("X・InstagramのSNSでは日々の生き物の様子が発信されています")
+    if a.lat is not None and a.lng is not None:
+        p3.append("上の地図から現在地からのルートも調べられます")
+    if p3:
+        intro_parts.append("。".join(p3) + "。")
+
+    p4 = "このアプリでは、訪問した日・訪問回数・写真・メモを水族館ごとに記録できます。"
+    if same_pref_count:
+        p4 += f"{_esc(a.prefecture)}には他にも{same_pref_count}か所の水族館が登録されているので、あわせてめぐってみてください。"
+    intro_parts.append(p4)
+
+    intro = "".join(f"<p>{s}</p>" for s in intro_parts)
 
     # リンク（公式・SNS）
     links = []
@@ -801,9 +916,18 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20260627-1">
+  <link rel="stylesheet" href="/styles.css?v=20260907-1">
   <style>
+    /* ヘッダー常時固定（他ページと揃える） */
+    header {{
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 500 !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12) !important;
+    }}
     .aq-wrap {{ max-width: 800px; margin: 18px auto 40px; padding: 0 16px; line-height: 1.85; }}
+    /* 見出しはリンクではないので、水色ではなく本文と同じ色にする */
+    .aq-wrap h1 {{ color: #003b4d; }}
     .aq-breadcrumb {{ font-size: 12px; color: #789; margin-bottom: 10px; }}
     .aq-breadcrumb a {{ color: #0077b6; text-decoration: none; }}
     .aq-loc {{ color: #456; font-size: 14px; margin: 2px 0 12px; }}
@@ -815,8 +939,23 @@ def aquarium_page(aquarium_id: int):
     .aq-animals {{ display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0 4px; }}
     .aq-animal {{ background: #f2f8fa; border: 1px solid #d7e3e8; border-radius: 999px;
                  padding: 4px 12px; font-size: 13.5px; }}
-    .aq-cta {{ display: block; text-align: center; background: #006c8e; color: #fff;
-              padding: 13px; border-radius: 12px; font-weight: 700; text-decoration: none; margin: 22px 0; }}
+    .aq-cta {{ display: block; width: 100%; text-align: center; background: #006c8e; color: #fff;
+              padding: 13px; border-radius: 12px; font-weight: 700; text-decoration: none; margin: 22px 0;
+              border: none; font-size: 15px; font-family: inherit; cursor: pointer; }}
+    .aq-cta:hover {{ background: #00587a; }}
+    .aq-cta:disabled {{ opacity: .6; cursor: default; }}
+    .aq-cta.is-visited {{ background: #2a7d5a; }}
+    .aq-cta.is-visited:hover {{ background: #23684b; }}
+    .aq-done-box {{ max-width: 340px; }}
+    .aq-done-text {{ font-size: 14px; color: #456; margin: 0 0 4px; }}
+    /* 「行きたい」ボタン（トップページの .btn-want と同じ配色） */
+    .aq-want {{ display: block; width: 100%; margin: -8px 0 22px; padding: 12px;
+               background: transparent; border: 1px solid #ccc; border-radius: 12px;
+               font-size: 15px; font-family: inherit; font-weight: 700; color: #888;
+               cursor: pointer; transition: background .15s, color .15s, border-color .15s; }}
+    .aq-want:hover:not(.active) {{ border-color: #bbb; background: rgba(0,0,0,.02); color: #666; }}
+    .aq-want.active {{ background: #fff8e6; border-color: #f6a623; color: #d4820a; }}
+    .aq-want:disabled {{ opacity: .6; cursor: default; }}
     .aq-visited {{ color: #2a7d5a; font-size: 14px; }}
     .aq-closed {{ background: #b00; color: #fff; font-size: 12px; border-radius: 6px; padding: 2px 8px; margin-left: 8px; }}
     .aq-related li {{ margin: 2px 0; }}
@@ -824,12 +963,7 @@ def aquarium_page(aquarium_id: int):
   </style>
 </head>
 <body>
-  <header>
-    <h1 style="font-size:18px;"><a href="/" style="color:inherit;text-decoration:none;">全国水族館スタンプラリー</a></h1>
-    <div class="userbox" id="userbox">
-      <button id="menuBtn" class="hamburger-btn" aria-label="メニューを開く">☰</button>
-    </div>
-  </header>
+{AQ_HEADER}
 {AQ_DRAWER}
   <div class="aq-wrap">
     <nav class="aq-breadcrumb"><a href="/">ホーム</a> ＞ {_esc(a.prefecture)}の水族館 ＞ {_esc(a.name)}</nav>
@@ -845,16 +979,157 @@ def aquarium_page(aquarium_id: int):
     <div class="aq-animals">{animals_html or "（生き物データは準備中です）"}</div>
 
     <h2>{_esc(a.name)}について</h2>
-    <p>{intro}</p>
+    {intro}
     {visited_line}
 
-    <a class="aq-cta" href="/">このアプリで訪問を記録する（無料）</a>
+    <button type="button" class="aq-cta" id="aqVisitBtn" disabled>このアプリで訪問を記録する</button>
+    <button type="button" class="aq-want" id="aqWantBtn" hidden>行きたい☆</button>
 
     <h2>{_esc(a.prefecture)}の他の水族館</h2>
     <ul class="aq-related">{related_html}</ul>
 
     <p style="margin-top:24px;"><a href="/">← 全国の水族館一覧に戻る</a></p>
   </div>
+
+  <!-- 訪問を記録しました ポップアップ -->
+  <div id="aqDoneModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box aq-done-box">
+      <p class="modal-title">✅ 訪問を記録しました</p>
+      <p class="aq-done-text" id="aqDoneText"></p>
+      <div class="modal-actions">
+        <button id="aqDoneTop" class="modal-btn modal-btn--primary">トップに戻る</button>
+        <button id="aqDoneClose" class="modal-btn modal-btn--cancel">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 訪問済を解除しますか？ ポップアップ -->
+  <div id="aqUndoModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box aq-done-box">
+      <p class="modal-title">訪問済を解除しますか？</p>
+      <p class="aq-done-text">訪問日や訪問回数がリセットされます。</p>
+      <div class="modal-actions">
+        <button id="aqUndoOk" class="modal-btn modal-btn--secondary">解除する</button>
+        <button id="aqUndoCancel" class="modal-btn modal-btn--cancel">やめる</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {{
+    var AQ_ID = {a.id};
+    var AQ_NAME = {json.dumps(a.name, ensure_ascii=False)};
+    var AQ_CLOSED = {json.dumps(bool(a.is_closed))};
+    var btn = document.getElementById('aqVisitBtn');
+    var wantBtn = document.getElementById('aqWantBtn');
+    var doneModal = document.getElementById('aqDoneModal');
+    var doneText = document.getElementById('aqDoneText');
+    var undoModal = document.getElementById('aqUndoModal');
+    var loggedIn = false, visited = false, wantToGo = false, csrf = '';
+
+    function paint() {{
+      if (!loggedIn) {{
+        btn.textContent = 'ログインして訪問を記録する';
+        btn.classList.remove('is-visited');
+      }} else {{
+        btn.textContent = visited ? '訪問済✅（解除）' : 'このアプリで訪問を記録する';
+        btn.classList.toggle('is-visited', visited);
+      }}
+      btn.disabled = false;
+
+      // 「行きたい」はトップページと同じ仕様：ログイン中かつ閉館していない館だけ表示
+      var showWant = loggedIn && !AQ_CLOSED;
+      wantBtn.hidden = !showWant;
+      if (showWant) {{
+        wantBtn.textContent = wantToGo ? '行きたい★' : '行きたい☆';
+        wantBtn.classList.toggle('active', wantToGo);
+        wantBtn.disabled = false;
+      }}
+    }}
+
+    function showDone() {{
+      doneText.textContent = AQ_NAME + ' を訪問済にしました。';
+      doneModal.style.display = '';
+    }}
+    function hide(m) {{ m.style.display = 'none'; }}
+
+    document.getElementById('aqDoneTop').onclick = function () {{ location.href = '/'; }};
+    document.getElementById('aqDoneClose').onclick = function () {{ hide(doneModal); }};
+    doneModal.onclick = function (e) {{ if (e.target === doneModal) hide(doneModal); }};
+    document.getElementById('aqUndoCancel').onclick = function () {{ hide(undoModal); }};
+    undoModal.onclick = function (e) {{ if (e.target === undoModal) hide(undoModal); }};
+
+    function setVisited(next) {{
+      btn.disabled = true;
+      return fetch('/api/aquariums/' + AQ_ID + '/visited', {{
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {{ 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }},
+        body: JSON.stringify({{ visited: next }})
+      }}).then(function (r) {{
+        if (!r.ok) throw new Error('failed');
+        visited = next;
+        paint();
+        if (next) showDone();
+      }}).catch(function () {{
+        paint();
+        alert('通信に失敗しました。時間をおいて試してください。');
+      }});
+    }}
+
+    document.getElementById('aqUndoOk').onclick = function () {{
+      hide(undoModal);
+      setVisited(false);
+    }};
+
+    btn.onclick = function () {{
+      if (!loggedIn) {{ location.href = '/login'; return; }}
+      if (visited) {{ undoModal.style.display = ''; return; }}
+      setVisited(true);
+    }};
+
+    // 「行きたい」トグル（トップページと同じく、押したら即反映して裏で保存）
+    wantBtn.onclick = function () {{
+      if (wantBtn.disabled) return;
+      wantBtn.disabled = true;
+      var next = !wantToGo;
+      wantToGo = next;
+      paint();
+      fetch('/api/aquariums/' + AQ_ID + '/want_to_go', {{
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {{ 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }},
+        body: JSON.stringify({{ want_to_go: next }})
+      }}).then(function (r) {{
+        if (!r.ok) throw new Error('failed');
+      }}).catch(function () {{
+        wantToGo = !next;
+        paint();
+        alert('通信に失敗しました。時間をおいて試してください。');
+      }}).then(function () {{ wantBtn.disabled = false; }});
+    }};
+
+    // 初期状態の取得（ログイン状態・訪問済みかどうか・CSRFトークン）
+    fetch('/api/me', {{ credentials: 'same-origin' }})
+      .then(function (r) {{ return r.ok ? r.json() : null; }})
+      .then(function (me) {{
+        loggedIn = !!(me && me.user_id);
+        paint();
+        if (!loggedIn) return null;
+        return Promise.all([
+          fetch('/api/csrf', {{ credentials: 'same-origin' }}).then(function (r) {{ return r.json(); }}),
+          fetch('/api/aquariums', {{ credentials: 'same-origin' }}).then(function (r) {{ return r.json(); }})
+        ]).then(function (res) {{
+          csrf = (res[0] && res[0].token) || '';
+          var mine = (res[1] || []).filter(function (x) {{ return x.id === AQ_ID; }})[0];
+          visited = !!(mine && mine.visited);
+          wantToGo = !!(mine && mine.want_to_go);
+          paint();
+        }});
+      }})
+      .catch(function () {{ paint(); }});
+  }})();
+  </script>
 {AQ_FOOTER}
 </body>
 </html>"""
@@ -950,6 +1225,80 @@ async def upload_photo(aquarium_id: int, request: Request, file: UploadFile = Fi
         db.refresh(p)
 
     return {"id": p.id, "url": "/uploads/" + p.path, "created_at": p.created_at.isoformat()}
+
+
+# ===== 一括アップロード（マイ写真ギャラリーから水族館ごとにまとめて追加）=====
+BULK_MAX_FILES = 20   # 1リクエストあたりの上限
+
+
+def _is_image_bytes(b: bytes) -> bool:
+    if b.startswith(b"\xff\xd8\xff"):                      # JPEG
+        return True
+    if b.startswith(b"\x89PNG\r\n\x1a\n"):                 # PNG
+        return True
+    if b.startswith(b"RIFF") and b[8:12] == b"WEBP":       # WEBP
+        return True
+    return False
+
+
+@app.post("/api/aquariums/{aquarium_id}/photos/bulk")
+async def upload_photos_bulk(aquarium_id: int, request: Request,
+                             files: List[UploadFile] = File(...)):
+    """1つの水族館に複数枚まとめてアップロードする。
+
+    1枚ずつ POST するとレート制限（写真は1分10回）にすぐ当たるので、
+    まとめて1リクエストで受け取る。失敗したファイルはスキップして結果に含める。
+    """
+    uid = get_user_id(request)
+
+    with session() as db:
+        if not db.get(Aquarium, aquarium_id):
+            raise HTTPException(404, "Aquarium not found")
+
+    if not files:
+        raise HTTPException(400, "No files")
+    if len(files) > BULK_MAX_FILES:
+        raise HTTPException(400, f"Too many files (max {BULK_MAX_FILES})")
+
+    safe_uid = uid.replace(":", "_")
+    rel_dir = os.path.join(safe_uid, str(aquarium_id))
+    abs_dir = os.path.join(UPLOAD_DIR, rel_dir)
+    os.makedirs(abs_dir, exist_ok=True)
+
+    MAX_BYTES = 5 * 1024 * 1024
+    saved, errors = [], []
+
+    for f in files:
+        name = f.filename or "(no name)"
+        try:
+            ext = os.path.splitext(name)[1].lower()
+            if ext not in (".jpg", ".jpeg", ".png", ".webp"):
+                ext = ".jpg"
+
+            data = await f.read()
+            if len(data) > MAX_BYTES:
+                errors.append({"name": name, "reason": "5MBを超えています"})
+                continue
+            if not _is_image_bytes(data):
+                errors.append({"name": name, "reason": "画像ファイルではありません"})
+                continue
+
+            fname = f"{uuid4().hex}{ext}"
+            with open(os.path.join(abs_dir, fname), "wb") as out:
+                out.write(data)
+
+            rel_path = os.path.join(rel_dir, fname).replace("\\", "/")
+            with session() as db:
+                p = Photo(user_id=uid, aquarium_id=aquarium_id, path=rel_path)
+                db.add(p)
+                db.commit()
+                db.refresh(p)
+            saved.append({"id": p.id, "url": "/uploads/" + p.path})
+        except Exception:
+            errors.append({"name": name, "reason": "保存に失敗しました"})
+
+    return {"saved": len(saved), "photos": saved, "errors": errors}
+
 
 @app.delete("/api/aquariums/{aquarium_id}/photos/{photo_id}")
 def delete_photo(aquarium_id: int, photo_id: int, request: Request):

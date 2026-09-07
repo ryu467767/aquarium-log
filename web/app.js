@@ -1974,9 +1974,23 @@ function showPrefDetail(pref) {
 function initMap() {
   if (map) return;
 
-  map = L.map("map", { zoomControl: true }).setView([36.2048, 138.2529], 5);
+  // スマホ（タッチ端末）は拡大・縮小が重くなりやすいので、
+  // 見た目を変えずに描画・通信の負荷だけ減らす設定にする。
+  const isTouch = window.matchMedia("(pointer: coarse)").matches;
+
+  map = L.map("map", {
+    zoomControl: true,
+    // マーカーが約180個あり、ズームのたびに1個ずつアニメーションさせると重い。
+    // 切ってもズーム後の位置は同じで、途中の動きが省かれるだけ。
+    markerZoomAnimation: !isTouch,
+  }).setView([36.2048, 138.2529], 5);
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
+    // ズームしている最中はタイルを取りに行かない（指を離した時にまとめて読む）
+    updateWhenZooming: false,
+    // 画面外に先読みするタイルの量。スマホは減らして描画対象を少なくする
+    keepBuffer: isTouch ? 1 : 2,
   }).addTo(map);
 
   markersLayer = L.layerGroup().addTo(map);

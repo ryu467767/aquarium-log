@@ -38,6 +38,21 @@ def _migrate():
         "ALTER TABLE user_profiles ADD COLUMN login_count INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN twitter_id TEXT",
         "ALTER TABLE aquariums ADD COLUMN instagram_id TEXT",
+        # 詳細ページの「会える生き物」用の追加フラグ
+        "ALTER TABLE aquariums ADD COLUMN has_otter INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_seaotter INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_walrus INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_turtle INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_whaleshark INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_ray INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_sunfish INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_gardeneel INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_seahorse INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_clownfish INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_coral INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_capybara INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_salamander INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE aquariums ADD COLUMN has_deepsea INTEGER NOT NULL DEFAULT 0",
     ]
     for sql in schema_migrations:
         try:
@@ -146,6 +161,24 @@ def _migrate():
         except _sqlite3.OperationalError:
             pass
     con.commit()
+
+    # --- 追加の生き物フラグ seed（公式サイトのクロール結果）---
+    # データは app/animal_seeds_extra.py（scripts/crawl_animals_extra.py で生成）
+    try:
+        from .animal_seeds_extra import EXTRA_ANIMAL_SEEDS, EXTRA_ANIMAL_COLS
+    except Exception:
+        EXTRA_ANIMAL_SEEDS, EXTRA_ANIMAL_COLS = {}, []
+
+    if EXTRA_ANIMAL_SEEDS and EXTRA_ANIMAL_COLS:
+        set_clause = ", ".join(f"{c}=?" for c in EXTRA_ANIMAL_COLS)
+        sql = f"UPDATE aquariums SET {set_clause} WHERE name=?"
+        for name, flags in EXTRA_ANIMAL_SEEDS.items():
+            try:
+                con.execute(sql, [flags.get(c, 0) for c in EXTRA_ANIMAL_COLS] + [name])
+            except _sqlite3.OperationalError:
+                pass
+        con.commit()
+
     con.close()
 
 def init_db() -> None:

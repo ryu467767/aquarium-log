@@ -2708,3 +2708,15 @@ header{
   height: 18px;
   display: block;
 }
+
+/* ===== スマホでの地図の拡大・縮小を軽くする =====
+   #map は border-radius + overflow:hidden で中身を丸く切り抜いている。
+   スマホのブラウザでは、この切り抜きが拡大・縮小のたびに再計算されて重くなる。
+   レイヤーとして固定しておくと切り抜き結果を使い回せるようになる。見た目は変わらない。 */
+@media (pointer: coarse) {
+  #map {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+  }
+}
