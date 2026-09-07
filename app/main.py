@@ -23,6 +23,7 @@ from pydantic import BaseModel
 from sqlmodel import select
 from sqlalchemy import func
 from .db import init_db, session
+from .aquarium_features import get_feature
 from .models import Aquarium, Visit, Photo, UserProfile, Inquiry, ShareCard
 from .crud import (
     list_aquariums, set_visited, set_note, set_visited_at, set_visit_count,
@@ -671,7 +672,9 @@ _AQ_ANIMALS = [
     ("has_clownfish",   "🐠", "カクレクマノミ"),
     ("has_coral",       "🪸", "サンゴ"),
     ("has_capybara",    "🐹", "カピバラ"),
-    ("has_salamander",  "🦎", "オオサンショウウオ"),
+    # 判定は「サンショウウオ」全般に一致するので、表示も種を限定しない。
+    # （例: 札幌市豊平川さけ科学館にいるのはエゾサンショウウオ）
+    ("has_salamander",  "🦎", "サンショウウオ"),
     ("has_deepsea",     "🦑", "深海生物"),
 ]
 
@@ -801,6 +804,11 @@ def aquarium_page(aquarium_id: int):
         closed_when = f"（{_esc(a.closed_at)}）" if a.closed_at else ""
         p1 += f"なお、この施設は現在閉館しています{closed_when}。訪問の記録は思い出として残せます。"
     intro_parts.append(p1)
+
+    # 館ごとの特徴（app/aquarium_features.py に手で書いてある分だけ）
+    feature = get_feature(a.name)
+    if feature:
+        intro_parts.append(_esc(feature))
 
     if animals:
         names = "・".join(lb for ic, lb in animals[:6])

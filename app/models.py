@@ -42,7 +42,7 @@ class Aquarium(SQLModel, table=True):
     has_clownfish: bool = Field(default=False)    # カクレクマノミ
     has_coral: bool = Field(default=False)        # サンゴ
     has_capybara: bool = Field(default=False)     # カピバラ
-    has_salamander: bool = Field(default=False)   # オオサンショウウオ
+    has_salamander: bool = Field(default=False)   # サンショウウオ
     has_deepsea: bool = Field(default=False)      # 深海生物
 
     # SNSアカウント（アカウントID のみ、@なし）
