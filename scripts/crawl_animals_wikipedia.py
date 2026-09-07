@@ -23,8 +23,10 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 RESULT = Path(__file__).parent / "animal_extra_result.json"
 
 API = "https://ja.wikipedia.org/w/api.php"
-HEADERS = {"User-Agent": "aquarium-log/1.0 (animal data check)"}
-TIMEOUT = 15
+# Wikimedia は連絡先の分かる User-Agent を要求する。
+# 曖昧なUAだと 429 を返されるので、サイトURLを必ず入れること。
+HEADERS = {"User-Agent": "aquarium-log/1.0 (https://aquarium-log.onrender.com/)"}
+TIMEOUT = 20
 
 # crawl_animals_extra.py と同じパターン
 ANIMAL_PATTERNS = {
@@ -46,34 +48,71 @@ ANIMAL_PATTERNS = {
 COLS = list(ANIMAL_PATTERNS.keys())
 
 
+class WikiError(Exception):
+    """通信・API側の失敗。『記事が無い』とは区別する。"""
+
+
+def _api(params):
+    """APIを叩く。429なら待って数回やり直す。失敗は例外にして黙って握りつぶさない。"""
+    for attempt, wait in enumerate([5, 15, 30, 0]):
+        r = requests.get(API, headers=HEADERS, timeout=TIMEOUT, params=params)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code == 429 and wait:
+            print(f"        429（送りすぎ）… {wait}秒待って再試行", flush=True)
+            time.sleep(wait)
+            continue
+        raise WikiError(f"HTTP {r.status_code}")
+    raise WikiError("429 が続いたため中断")
+
+
 def wiki_extract(title: str) -> str:
-    """記事本文のプレーンテキストを返す。見つからなければ空文字。"""
-    try:
-        # まず検索してタイトルを確定する
-        r = requests.get(API, headers=HEADERS, timeout=TIMEOUT, params={
-            "action": "query", "list": "search", "srsearch": title,
-            "srlimit": 1, "format": "json",
-        })
-        hits = r.json().get("query", {}).get("search", [])
-        if not hits:
-            return ""
-        page_title = hits[0]["title"]
-
-        # 水族館・動物園の記事以外を拾わないよう、館名との関連を軽く確認
-        core = re.sub(r"[（(].*?[)）]|水族館|博物館|公園|科学館|センター|ミュージアム|\s", "", title)
-        if core and core[:3] not in page_title and page_title[:3] not in title:
-            return ""
-
-        r2 = requests.get(API, headers=HEADERS, timeout=TIMEOUT, params={
-            "action": "query", "prop": "extracts", "titles": page_title,
-            "explaintext": 1, "format": "json",
-        })
-        pages = r2.json().get("query", {}).get("pages", {})
-        for p in pages.values():
-            return p.get("extract", "") or ""
-    except Exception:
+    """記事本文のプレーンテキストを返す。記事が無ければ空文字。通信失敗は例外。"""
+    hits = _api({
+        "action": "query", "list": "search", "srsearch": title,
+        "srlimit": 1, "format": "json",
+    }).get("query", {}).get("search", [])
+    if not hits:
         return ""
-    return ""
+    page_title = hits[0]["title"]
+
+    # 水族館・動物園の記事以外を拾わないよう、館名との関連を軽く確認。
+    # 記事名が英字表記のことがある（例: ニフレル -> NIFREL）ので、
+    # 記事の冒頭に館名が出てくる場合も同じ施設とみなす。
+    core = re.sub(r"[（(].*?[)）]|水族館|博物館|公園|科学館|センター|ミュージアム|\s", "", title)
+    related = (not core) or core[:3] in page_title or page_title[:3] in title
+
+    pages = _api({
+        "action": "query", "prop": "extracts", "titles": page_title,
+        "explaintext": 1, "format": "json",
+    }).get("query", {}).get("pages", {})
+    text = ""
+    for p in pages.values():
+        text = p.get("extract", "") or ""
+        break
+    if not text:
+        return ""
+
+    # 記事名が館名と違う場合は、本文の冒頭に館名が出てくるかで判断する
+    if not related and core and core[:4] not in text[:400]:
+        return ""
+    return text
+
+
+# 「かつて飼育していた」など、今はいない生き物の話を除くための目印
+PAST_MARKER = re.compile(
+    r"かつて|以前は|旧|閉館|死亡|亡くな|引退|譲渡|移送|搬出|until|展示を終了|飼育を終了|"
+    r"していた|であった|だった|されていた"
+)
+
+
+def current_text(text: str) -> str:
+    """過去の話をしている文を落として、今の展示に近い部分だけ返す。"""
+    kept = []
+    for sentence in re.split(r"(?<=[。\n])", text):
+        if sentence.strip() and not PAST_MARKER.search(sentence):
+            kept.append(sentence)
+    return "".join(kept)
 
 
 def main():
@@ -82,14 +121,24 @@ def main():
     print(f"公式サイトでヒット0だった {len(empties)} 館を Wikipedia で確認します\n", flush=True)
 
     filled = 0
+    failed = []
     for i, name in enumerate(empties, 1):
-        text = wiki_extract(name)
-        if not text:
-            print(f"[{i:3}/{len(empties)}] {name} -> 記事なし", flush=True)
-            time.sleep(0.3)
+        try:
+            text = wiki_extract(name)
+        except WikiError as e:
+            failed.append((name, str(e)))
+            print(f"[{i:3}/{len(empties)}] {name} -> 取得失敗（{e}）", flush=True)
+            time.sleep(2)
             continue
 
-        flags = {k: (1 if p.search(text) else 0) for k, p in ANIMAL_PATTERNS.items()}
+        if not text:
+            print(f"[{i:3}/{len(empties)}] {name} -> 記事なし", flush=True)
+            time.sleep(1)
+            continue
+
+        # 過去の飼育記録を拾わないよう、現在の話に絞ってから判定する
+        flags = {k: (1 if p.search(current_text(text)) else 0)
+                 for k, p in ANIMAL_PATTERNS.items()}
         if any(flags.values()):
             data[name] = flags
             filled += 1
@@ -97,10 +146,14 @@ def main():
             print(f"[{i:3}/{len(empties)}] {name} -> {hit}", flush=True)
         else:
             print(f"[{i:3}/{len(empties)}] {name} -> なし", flush=True)
-        time.sleep(0.3)
+        time.sleep(1)
 
     RESULT.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\n{filled} 館を補完しました -> {RESULT}", flush=True)
+    if failed:
+        print(f"\n取得に失敗した {len(failed)} 館（再実行が必要）:", flush=True)
+        for n, e in failed:
+            print(f"  - {n}（{e}）", flush=True)
 
 
 if __name__ == "__main__":

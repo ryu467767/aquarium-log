@@ -23,9 +23,53 @@ COLS = [
     "has_coral", "has_capybara", "has_salamander", "has_deepsea",
 ]
 
+# --- 飼育館が少ない生き物は、キーワード検出だと誤りが多いので手で確定させる ---
+#
+# 公式サイトの過去記事やWikipediaの「かつて飼育していた」という記述を拾ってしまい、
+# 実際にはもう会えない館が候補に挙がってしまうため。
+# 下の生き物は、ここに書いた館だけを「いる」として扱い、他館の検出結果は捨てる。
+#
+# 2026-09-07 に調査した内容:
+#   ラッコ       … 国内は鳥羽水族館の2頭のみ（2025/01にマリンワールド海の中道の個体が死亡）
+#   ジンベエザメ … 海遊館・いおワールドかごしま水族館・沖縄美ら海水族館の3館のみ
+#                  （のとじま水族館は2024年の能登半島地震で死亡し展示休止）
+VERIFIED_ONLY = {
+    "has_seaotter": {
+        "鳥羽水族館",
+    },
+    "has_whaleshark": {
+        "海遊館",
+        "いおワールドかごしま水族館",
+        "沖縄美ら海水族館",
+    },
+}
+
+# 検出漏れが確認できたぶんの追加（上と同じ調査による）
+VERIFIED_ADD = {
+    "has_walrus": {"鳥羽水族館", "鴨川シーワールド"},
+}
+
 
 def main():
     data = json.loads(SRC.read_text(encoding="utf-8"))
+
+    # --- 手で確定させた生き物の反映 ---
+    for col, allowed in VERIFIED_ONLY.items():
+        removed = []
+        for name, flags in data.items():
+            if flags.get(col) and name not in allowed:
+                flags[col] = 0
+                removed.append(name)
+        for name in allowed:
+            data.setdefault(name, {c: 0 for c in COLS})[col] = 1
+        print(f"{col}: {len(allowed)}館に確定（誤検出 {len(removed)}件を除去）")
+        for n in removed:
+            print(f"    除去: {n}")
+
+    for col, extra in VERIFIED_ADD.items():
+        for name in extra:
+            data.setdefault(name, {c: 0 for c in COLS})[col] = 1
+        print(f"{col}: 検出漏れ {len(extra)}館を追加")
 
     # 1つもヒットしなかった館は書き出さない（全部0でUPDATEしても意味がないため）
     kept = {name: flags for name, flags in data.items() if any(flags.get(c) for c in COLS)}
