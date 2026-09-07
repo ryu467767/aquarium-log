@@ -15,16 +15,32 @@
       z-index: 500 !important;
       box-shadow: 0 2px 10px rgba(0,0,0,.12) !important;
     }
+    /* 日付ごとにまとめて表示する */
     .updates-list { list-style: none; padding: 0; margin: 24px 0; }
-    .updates-list li {
+    .updates-list > li {
       display: flex; gap: 14px; align-items: flex-start;
-      padding: 14px 4px; border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 16px 4px; border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     .updates-list .updates-date {
       flex: 0 0 auto; font-size: 13px; font-weight: bold;
-      color: #0077b6; white-space: nowrap; padding-top: 1px;
+      color: #0077b6; white-space: nowrap; padding-top: 3px;
     }
-    .updates-list .updates-text { flex: 1 1 auto; }
+    /* その日の変更点。1件だけの日は行頭の点を出さない */
+    .updates-items { flex: 1 1 auto; min-width: 0; list-style: none; margin: 0; padding: 0; }
+    .updates-items > li { position: relative; padding-left: 16px; }
+    .updates-items > li + li { margin-top: 8px; }
+    .updates-items > li::before {
+      content: "";
+      position: absolute; left: 3px; top: 0.62em;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #9ec4d2;
+    }
+    .updates-items > li:only-child { padding-left: 0; }
+    .updates-items > li:only-child::before { display: none; }
+
+    @media (max-width: 480px) {
+      .updates-list > li { flex-direction: column; gap: 6px; }
+    }
   </style>
 </head>
 
@@ -81,67 +97,54 @@
     <ul class="updates-list">
       <li>
         <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">マイ写真ギャラリーに「写真をまとめて追加」を追加：複数の水族館ぶんの写真を、水族館ごとにまとめて一度にアップロードできるように</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">マイ写真ギャラリーから写真を削除できるようにしました</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">写真を押すと全画面で見られるようになりました：複数枚あるときは横にスワイプ（スクロール）で次の写真へ移動できます</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">トップページの水族館に登録済みの写真が表示されない不具合を修正</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">水族館の詳細ページで「訪問を記録する」を押すとトップページに戻ってしまう不具合を修正：その場で訪問済にでき、記録後にお知らせを表示するように</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">水族館の詳細ページに「行きたい」ボタンを追加：トップページと同じように、その場で行きたいリストに登録できます</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">いおワールドかごしま水族館の公式サイトリンクが別の施設になっていたのを修正</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/09/07</span>
-        <span class="updates-text">その他軽微な不具合の修正、改善を行いました</span>
+        <ul class="updates-items">
+          <li>マイ写真ギャラリーに「写真をまとめて追加」を追加：複数の水族館ぶんの写真を、水族館ごとにまとめて一度にアップロードできるように</li>
+          <li>マイ写真ギャラリーから写真を削除できるようにしました</li>
+          <li>写真を押すと全画面で見られるようになりました：複数枚あるときは横にスワイプ（スクロール）で次の写真へ移動できます</li>
+          <li>トップページの水族館に登録済みの写真が表示されない不具合を修正</li>
+          <li>水族館の詳細ページで「訪問を記録する」を押すとトップページに戻ってしまう不具合を修正：その場で訪問済にでき、記録後にお知らせを表示するように</li>
+          <li>水族館の詳細ページに「行きたい」ボタンを追加：トップページと同じように、その場で行きたいリストに登録できます</li>
+          <li>いおワールドかごしま水族館の公式サイトリンクが別の施設になっていたのを修正</li>
+          <li>その他軽微な不具合の修正、改善を行いました</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/07/29</span>
-        <span class="updates-text">ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ。ハンバーガーメニュー内の並び順も調整</span>
+        <ul class="updates-items">
+          <li>ヘッダーに🔔お知らせベルを追加：新着があると赤バッジ＋アニメーションでお知らせ。ハンバーガーメニュー内の並び順も調整</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/07/20</span>
-        <span class="updates-text">ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</span>
+        <ul class="updates-items">
+          <li>ヘッダーを画面上部に固定：ページをスクロールしてもメニュー（☰）にいつでもアクセスできるように改善</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/06/26</span>
-        <span class="updates-text">地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認できるように（拡大・ドラッグ移動対応）</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/06/26</span>
-        <span class="updates-text">「集めた魚種印」を追加：訪問した水族館にいる生き物が自動で図鑑に集まります（メニューから確認）</span>
+        <ul class="updates-items">
+          <li>地図に「都道府県」タブを追加：都道府県別の達成状況を色分け日本地図で確認できるように（拡大・ドラッグ移動対応）</li>
+          <li>「集めた魚種印」を追加：訪問した水族館にいる生き物が自動で図鑑に集まります（メニューから確認）</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/06/22</span>
-        <span class="updates-text">Xシェアを刷新：成績画像のデザイン一新＋PCでもカード画像付きで投稿できるように</span>
+        <ul class="updates-items">
+          <li>Xシェアを刷新：成績画像のデザイン一新＋PCでもカード画像付きで投稿できるように</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/04/21</span>
-        <span class="updates-text">あわしまマリンパーク（静岡）を追加</span>
-      </li>
-      <li>
-        <span class="updates-date">2026/04/21</span>
-        <span class="updates-text">幼魚水族館の地図位置を修正</span>
+        <ul class="updates-items">
+          <li>あわしまマリンパーク（静岡）を追加</li>
+          <li>幼魚水族館の地図位置を修正</li>
+        </ul>
       </li>
       <li>
         <span class="updates-date">2026/04/20</span>
-        <span class="updates-text">各水族館のX・Instagramリンクを追加</span>
+        <ul class="updates-items">
+          <li>各水族館のX・Instagramリンクを追加</li>
+        </ul>
       </li>
     </ul>
 
