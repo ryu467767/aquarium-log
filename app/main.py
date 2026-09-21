@@ -393,6 +393,19 @@ def stats(request: Request):
         return {"total": total_n, "visited": len(visited_n)}
 
 
+def _safe_visit_dates(v) -> list:
+    """visit_dates は '["2024-03-15", ...]' の JSON文字列で入っている想定。
+    万一壊れた値が入っていても、その1件のせいで一覧API全体が500にならないようにする。"""
+    raw = getattr(v, "visit_dates", None) if v else None
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        return []
+    return parsed if isinstance(parsed, list) else []
+
+
 @app.get("/api/aquariums")
 def aquariums(request: Request):
     uid = get_user_id(request)
@@ -420,7 +433,7 @@ def aquariums(request: Request):
                 "visited": bool(v.visited) if v else False,
                 "visited_at": v.visited_at.isoformat() if (v and v.visited_at) else None,
                 "visit_count": v.visit_count if v else 0,
-                "visit_dates": json.loads(v.visit_dates) if (v and v.visit_dates) else [],
+                "visit_dates": _safe_visit_dates(v),
                 "want_to_go": bool(v.want_to_go) if v else False,
                 "note": v.note if v else "",
                 "has_photos": a.id in photo_aq_ids,
