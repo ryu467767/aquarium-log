@@ -51,6 +51,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "snapshot unchanged"
           else
-            git commit -m "chore: update competitor snapshot [competitor-watch]"
+            # [skip render] を付けると Render がデプロイをスキップする。
+            # snapshot の更新はアプリの動作に影響しないため、再起動（502）を避ける。
+            git commit -m "chore: update competitor snapshot [competitor-watch] [skip render]"
             git push
           fi
