@@ -65,6 +65,7 @@
     { key: 'has_sealion',   name: 'アシカ',     icon: '🦭' },
     { key: 'has_seal',      name: 'アザラシ',   icon: '🦭' },
     { key: 'has_steller',   name: 'トド',       icon: '🦭' },
+    { key: 'has_walrus',    name: 'セイウチ',   icon: '🦭' },
   ];
 
   function navEsc(s) {

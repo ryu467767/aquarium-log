@@ -29,7 +29,7 @@ class Aquarium(SQLModel, table=True):
     has_beluga: bool = Field(default=False)    # シロイルカ（ベルーガ）
 
     # 生き物フラグ（詳細ページの「会える生き物」用の追加分）
-    # ※「集めた魚種印」の対象は上の9種のまま
+    # ※「集めた魚種印」の対象は上の9種＋セイウチ（has_walrus）
     has_otter: bool = Field(default=False)        # カワウソ
     has_seaotter: bool = Field(default=False)     # ラッコ
     has_walrus: bool = Field(default=False)       # セイウチ
