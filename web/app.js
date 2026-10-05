@@ -709,10 +709,11 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     const file = up.files && up.files[0];
     if (!file) return;
 
-    const fd = new FormData();
-    fd.append("file", file);
-
     try {
+      const fd = new FormData();
+      const sendFile = await shrinkPhotoIfNeeded(file);
+      fd.append("file", sendFile, sendFile.name);
+
       const res = await fetch(`/api/aquariums/${it.id}/photos`, {
         method: "POST",
         body: fd,
@@ -734,6 +735,43 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
     card.appendChild(photosWrap);
 
   return card;
+}
+
+// ===== 写真の縮小 =====
+// サーバーは1枚5MBまでしか受け付けないので、超える写真は送る前にブラウザの中で
+// 縮小して5MB以下のJPEGにする。（<img> で読むと、スマホ写真の縦横の向きもそのまま反映される）
+const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+
+async function shrinkPhotoIfNeeded(file) {
+  if (file.size <= PHOTO_MAX_BYTES) return file;
+
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    // 長い辺を少しずつ小さくしながら、5MBに収まるまで試す
+    for (const maxSide of [4000, 3000, 2400, 1600]) {
+      const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+      canvas.width = Math.round(img.naturalWidth * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
+      if (blob && blob.size <= PHOTO_MAX_BYTES) {
+        const name = file.name.replace(/\.[^.]*$/, "") + ".jpg";
+        return new File([blob], name, { type: "image/jpeg" });
+      }
+    }
+  } catch (e) {
+    // 下でまとめてエラーにする
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+  throw new Error("写真が大きすぎて縮小できませんでした");
 }
 
 // ===== 集めた魚種印（図鑑）モーダル =====
@@ -2318,11 +2356,13 @@ function renderSheetActions(it) {
   fileInput.onchange = async () => {
     const file = fileInput.files && fileInput.files[0];
     if (!file) return;
-    const fd = new FormData();
-    fd.append('file', file);
     addBtn.disabled = true;
     addBtn.textContent = '送信中…';
     try {
+      const fd = new FormData();
+      const sendFile = await shrinkPhotoIfNeeded(file);
+      fd.append('file', sendFile, sendFile.name);
+
       const res = await fetch(`/api/aquariums/${it.id}/photos`, {
         method: 'POST',
         body: fd,

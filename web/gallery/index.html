@@ -121,9 +121,9 @@
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「会える生き物」にウミガメ・チンアナゴなど14種類を追加しました。</li>
             <li><span class="bell-popover__date">2026/09/07</span>写真を押すと全画面で見られるようになりました。横スワイプで次の写真へ移動できます。</li>
-            <li><span class="bell-popover__date">2026/09/07</span>マイ写真ギャラリーに「写真をまとめて追加」と写真の削除を追加しました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -200,6 +200,10 @@
   <script>
   (async () => {
     const BULK_CHUNK = 20;   // サーバー側の1リクエスト上限に合わせる
+    // 1回に送る合計サイズの上限。本番は前段の Cloudflare が 100MB を超える
+    // リクエストを 413 で弾くため、枚数が多いと丸ごと失敗していた。余裕をもって小さく区切る
+    const BULK_CHUNK_BYTES = 20 * 1024 * 1024;
+    const MAX_FILE_BYTES = 5 * 1024 * 1024;   // サーバー側の1枚あたりの上限と同じ
 
     const content    = document.getElementById("content");
     const panel      = document.getElementById("bulkPanel");
@@ -573,17 +577,81 @@
       }
     }
 
+    // 枚数(BULK_CHUNK)と合計サイズ(BULK_CHUNK_BYTES)の両方を超えないように分ける
+    function splitChunks(files) {
+      const chunks = [];
+      let cur = [], bytes = 0;
+      files.forEach(f => {
+        if (cur.length && (cur.length >= BULK_CHUNK || bytes + f.size > BULK_CHUNK_BYTES)) {
+          chunks.push(cur);
+          cur = []; bytes = 0;
+        }
+        cur.push(f);
+        bytes += f.size;
+      });
+      if (cur.length) chunks.push(cur);
+      return chunks;
+    }
+
+    // 5MBを超える写真を、送る前にブラウザの中で縮小して5MB以下のJPEGにする。
+    // （<img> で読むと、スマホ写真の縦横の向きもそのまま反映される）
+    async function shrinkImage(file) {
+      const url = URL.createObjectURL(file);
+      try {
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        // 長い辺を少しずつ小さくしながら、5MBに収まるまで試す
+        for (const maxSide of [4000, 3000, 2400, 1600]) {
+          const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+          canvas.width = Math.round(img.naturalWidth * scale);
+          canvas.height = Math.round(img.naturalHeight * scale);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
+          if (blob && blob.size <= MAX_FILE_BYTES) {
+            const name = file.name.replace(/\.[^.]*$/, "") + ".jpg";
+            return new File([blob], name, { type: "image/jpeg" });
+          }
+        }
+        return null;
+      } catch (e) {
+        return null;
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
     // 1つの水族館ぶんを送る（サーバーの1回あたりの上限に合わせて分割）
     async function uploadOne(aquariumId, files, onProgress, onWait) {
       let saved = 0;
       const errors = [];
-      for (let i = 0; i < files.length; i += BULK_CHUNK) {
-        const chunk = files.slice(i, i + BULK_CHUNK);
-        onProgress(Math.min(i + chunk.length, files.length), files.length);
 
-        const json = await postChunk(aquariumId, chunk, onWait);
-        saved += json.saved || 0;
-        (json.errors || []).forEach(e => errors.push(e));
+      // 5MBを超える写真は、縮小してから送る（縮小できなかったものだけエラーにする）
+      const sendable = [];
+      for (const f of files) {
+        if (f.size <= MAX_FILE_BYTES) { sendable.push(f); continue; }
+        const small = await shrinkImage(f);
+        if (small) sendable.push(small);
+        else errors.push({ name: f.name, reason: "写真が大きすぎて縮小できませんでした" });
+      }
+
+      let sent = 0;
+      for (const chunk of splitChunks(sendable)) {
+        sent += chunk.length;
+        onProgress(sent, sendable.length);
+
+        // 1回ぶんが失敗しても、残りの写真は続けて送る
+        try {
+          const json = await postChunk(aquariumId, chunk, onWait);
+          saved += json.saved || 0;
+          (json.errors || []).forEach(e => errors.push(e));
+        } catch (e) {
+          chunk.forEach(f => errors.push({ name: f.name, reason: e.message || "送信に失敗しました" }));
+        }
       }
       return { saved, errors };
     }
