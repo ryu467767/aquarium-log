@@ -270,6 +270,7 @@ function renderCard(it) {
     { key: "has_seal",      icon: "🦭", label: "アザラシ" },
     { key: "has_shark",     icon: "🦈", label: "サメ" },
     { key: "has_beluga",    icon: "🐳", label: "シロイルカ" },
+    { key: "has_walrus",    icon: "🦭", label: "セイウチ" },
   ];
   const animalIcons = ANIMAL_ICONS.filter(a => it[a.key]);
   if (animalIcons.length > 0) {

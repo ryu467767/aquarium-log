@@ -730,7 +730,7 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
-            <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印に「セイウチ」を追加しました。</li>
+            <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印と生き物の絞り込みに「セイウチ」を追加しました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「会える生き物」にウミガメ・チンアナゴなど14種類を追加しました。</li>
           </ul>
