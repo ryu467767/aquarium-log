@@ -98,6 +98,7 @@ const CREATURE_DEX = [
   { key: "has_sealion",   name: "アシカ",     icon: "🦭" },
   { key: "has_seal",      name: "アザラシ",   icon: "🦭" },
   { key: "has_steller",   name: "トド",       icon: "🦭" },
+  { key: "has_walrus",    name: "セイウチ",   icon: "🦭" },
 ];
 
 
@@ -269,6 +270,7 @@ function renderCard(it) {
     { key: "has_seal",      icon: "🦭", label: "アザラシ" },
     { key: "has_shark",     icon: "🦈", label: "サメ" },
     { key: "has_beluga",    icon: "🐳", label: "シロイルカ" },
+    { key: "has_walrus",    icon: "🦭", label: "セイウチ" },
   ];
   const animalIcons = ANIMAL_ICONS.filter(a => it[a.key]);
   if (animalIcons.length > 0) {

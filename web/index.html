@@ -87,9 +87,9 @@
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印と生き物の絞り込みに「セイウチ」を追加しました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「会える生き物」にウミガメ・チンアナゴなど14種類を追加しました。</li>
-            <li><span class="bell-popover__date">2026/09/07</span>写真を押すと全画面で見られるようになりました。横スワイプで次の写真へ移動できます。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -355,6 +355,7 @@
         <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_seal"> 🦭 アザラシ</label>
         <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_shark"> 🦈 サメ</label>
         <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_beluga"> 🐳 シロイルカ</label>
+        <label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="has_walrus"> 🦭 セイウチ</label>
       </div>
       <div class="modal-actions">
         <button id="animalApplyBtn" class="modal-btn modal-btn--primary">この条件で探す</button>
@@ -378,6 +379,6 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="lightbox.js?v=20260907-2"></script>
-  <script src="app.js?v=20261005-1"></script>
+  <script src="app.js?v=20261005-3"></script>
 </body>
 </html>

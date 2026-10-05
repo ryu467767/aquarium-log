@@ -449,6 +449,7 @@ def aquariums(request: Request):
                 "has_seal": bool(a.has_seal),
                 "has_shark": bool(a.has_shark),
                 "has_beluga": bool(a.has_beluga),
+                "has_walrus": bool(a.has_walrus),
                 "is_closed": bool(a.is_closed),
                 "closed_at": a.closed_at or "",
                 "twitter_id": a.twitter_id or "",
@@ -479,6 +480,7 @@ def public_aquariums():
             "has_seal": bool(a.has_seal),
             "has_shark": bool(a.has_shark),
             "has_beluga": bool(a.has_beluga),
+            "has_walrus": bool(a.has_walrus),
             "is_closed": bool(a.is_closed),
             "closed_at": a.closed_at or "",
             "twitter_id": a.twitter_id or "",
@@ -662,7 +664,7 @@ def _esc(s):
              .replace('"', "&quot;").replace("'", "&#39;"))
 
 _AQ_ANIMALS = [
-    # 「集めた魚種印」の対象9種
+    # 「集めた魚種印」の対象10種
     ("has_jellyfish", "🪼", "クラゲ"),
     ("has_penguin",   "🐧", "ペンギン"),
     ("has_dolphin",   "🐬", "イルカ"),
@@ -672,13 +674,13 @@ _AQ_ANIMALS = [
     ("has_sealion",   "🦭", "アシカ"),
     ("has_seal",      "🦭", "アザラシ"),
     ("has_steller",   "🦭", "トド"),
+    ("has_walrus",    "🦭", "セイウチ"),
     # 詳細ページだけで見せる追加分
     ("has_whaleshark",  "🦈", "ジンベエザメ"),
     ("has_ray",         "🐟", "エイ"),
     ("has_sunfish",     "🐡", "マンボウ"),
     ("has_seaotter",    "🦦", "ラッコ"),
     ("has_otter",       "🦦", "カワウソ"),
-    ("has_walrus",      "🦭", "セイウチ"),
     ("has_turtle",      "🐢", "ウミガメ"),
     ("has_gardeneel",   "🐍", "チンアナゴ"),
     ("has_seahorse",    "🐴", "タツノオトシゴ"),
@@ -728,9 +730,9 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印と生き物の絞り込みに「セイウチ」を追加しました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
             <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「会える生き物」にウミガメ・チンアナゴなど14種類を追加しました。</li>
-            <li><span class="bell-popover__date">2026/09/07</span>写真を押すと全画面で見られるようになりました。横スワイプで次の写真へ移動できます。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -773,7 +775,7 @@ AQ_FOOTER = """
       <span>© 2025 全国水族館スタンプラリー</span>
     </div>
   </footer>
-  <script src="/nav.js?v=20260907-1"></script>
+  <script src="/nav.js?v=20261005-1"></script>
 """
 
 
