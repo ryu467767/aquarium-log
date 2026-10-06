@@ -788,7 +788,7 @@ AQ_FOOTER = """
       <span>© 2025 全国水族館スタンプラリー</span>
     </div>
   </footer>
-  <script src="/creature-icons.js?v=20261007-1"></script>
+  <script src="/creature-icons.js?v=20261007-3"></script>
   <script src="/nav.js?v=20261006-1"></script>
 """
 
