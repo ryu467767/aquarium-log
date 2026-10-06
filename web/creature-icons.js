@@ -103,7 +103,7 @@ window.CREATURES = /*CREATURES-JSON*/[
  {
   "key": "has_coral",
   "name": "サンゴ",
-  "svg": "<path d=\"M12 21v-7\"/><path d=\"M12 14c0-2.4-1.6-3.2-3.2-4.2C7.6 9 7 8 7 6.4V4.5\"/><path d=\"M12 14c0-2.1 1.4-3 2.8-3.8 1.4-.8 2.2-1.9 2.2-3.6V5\"/><path d=\"M8.6 9.6 4.5 8.5V6\"/><path d=\"M15.2 10l4.3-.6V7\"/><path d=\"M12 16.5 9.2 15V12.5\"/><path d=\"M7 21h10\"/>"
+  "svg": "<path d=\"M8.6 21v-5.4M8.6 15.6 5.6 12.4V9.6M5.6 12.4 3.9 10.8M8.6 15.6l3-3.6V8.8M11.6 12l2.2-1.6\" stroke-width=\"2.2\"/><circle cx=\"5.6\" cy=\"9.2\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"3.6\" cy=\"10.4\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"11.6\" cy=\"8.4\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"14.2\" cy=\"10.1\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M13.8 21c0-3 2.2-5.2 4.6-5.2s4.6 2.2 4.6 5.2\"/><path d=\"M16.2 21c0-1.6 1-2.8 2.2-2.8s2.2 1.2 2.2 2.8\" stroke-width=\"1.3\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M17.4 6.4c.9-.9 2.3-.9 3.2 0-.9.9-2.3.9-3.2 0zM17.4 6.4l-1.1-.8v1.6z\"/><circle cx=\"21\" cy=\"3.6\" r=\"1.2\" stroke-width=\"1\"/><circle cx=\"18.6\" cy=\"2.2\" r=\"0.8\" stroke-width=\"1\"/><path d=\"M1.5 21h21\"/>"
  },
  {
   "key": "has_capybara",
