@@ -55,18 +55,8 @@
 
   // ===== 集めた魚種印モーダル（トップページ以外の共通実装）=====
   // トップページは app.js 側が同名のUIを持つのでこちらは動かない（nav.js を読まないため）。
-  var CREATURE_DEX = [
-    { key: 'has_jellyfish', name: 'クラゲ',     icon: '🪼' },
-    { key: 'has_penguin',   name: 'ペンギン',   icon: '🐧' },
-    { key: 'has_dolphin',   name: 'イルカ',     icon: '🐬' },
-    { key: 'has_orca',      name: 'シャチ',     icon: '🐋' },
-    { key: 'has_beluga',    name: 'シロイルカ', icon: '🐳' },
-    { key: 'has_shark',     name: 'サメ',       icon: '🦈' },
-    { key: 'has_sealion',   name: 'アシカ',     icon: '🦭' },
-    { key: 'has_seal',      name: 'アザラシ',   icon: '🦭' },
-    { key: 'has_steller',   name: 'トド',       icon: '🦭' },
-    { key: 'has_walrus',    name: 'セイウチ',   icon: '🦭' },
-  ];
+  // 生き物の一覧とアイコンは web/creature-icons.js（全ページ共通）にある
+  var CREATURE_DEX = window.CREATURES || [];
 
   function navEsc(s) {
     return String(s).replace(/[&<>"']/g, function (m) {
@@ -124,14 +114,14 @@
       var cell = document.createElement('div');
       cell.className = 'collection-cell' + (collected ? ' got' : ' locked');
       cell.innerHTML =
-        '<div class="collection-icon">' + (collected ? c.icon : '❔') + '</div>' +
+        '<div class="collection-icon">' + (collected ? window.creatureSvg(c.key) : '❔') + '</div>' +
         '<div class="collection-name">' + navEsc(c.name) + '</div>' +
         '<div class="collection-count">' + (collected ? '×' + aquariums.length + '館' : '未ゲット') + '</div>';
       if (collected) {
         cell.onclick = function () {
           detail.hidden = false;
           detail.innerHTML =
-            '<div class="collection-detail-title">' + c.icon + ' ' + navEsc(c.name) +
+            '<div class="collection-detail-title">' + window.creatureSvg(c.key) + ' ' + navEsc(c.name) +
             ' に会えた水族館（' + aquariums.length + '）</div>' +
             '<div class="collection-detail-list">' + aquariums.map(navEsc).join(' / ') + '</div>';
         };

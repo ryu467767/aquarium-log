@@ -2805,3 +2805,23 @@ body.lb-open { overflow: hidden; }
 
 /* 全画面表示できる写真はクリックできることを示す */
 .thumb, .sheet-thumb, .gallery-img { cursor: zoom-in; }
+
+/* ===== 生き物アイコン（線画。web/creature-icons.js）===== */
+/* ハンバーガーメニューのアイコンと同じ線の太さ・角の丸め */
+.creature-icon {
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  vertical-align: -0.22em;
+}
+.card-animal-tag { gap: 3px; }
+.filter-check-label .creature-icon { width: 20px; height: 20px; color: #006c8e; }
+/* 生き物が23種類あるので、多いときは選択肢の中だけスクロールさせる */
+.filter-animal-grid { max-height: 52vh; overflow-y: auto; }
+.collection-icon .creature-icon { width: 32px; height: 32px; color: #006c8e; vertical-align: top; }
+.collection-detail-title .creature-icon { color: #006c8e; }
