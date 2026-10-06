@@ -18,7 +18,7 @@ window.CREATURES = /*CREATURES-JSON*/[
  {
   "key": "has_dolphin",
   "name": "イルカ",
-  "svg": "<path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M22.6 10.9c0-.5-.7-.8-1.7-.9-.5-1.4-2-2.7-4.4-3-4.4-.5-8.6 1.4-11.4 4.6-.9 1-1.6 2.2-2.2 3.4l-1.8.6c-.4.1-.4.7 0 .8l2.6.4.6 1.6c.2.4.7.3.8-.1l.2-1.6c.6-1.2 1.4-2.2 2.4-3 2.4-1.8 5.4-2.2 8.4-2.2 2.2 0 3.8-.3 4.9-.9.6-.1 1.6-.3 1.6-.7z M17.65 9.6a0.55 0.55 0 1 0 1.1 0a0.55 0.55 0 1 0 -1.1 0z\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M14.4 7.2c-1-1.4-2-2.5-3.4-3.4.2 1.4 0 2.9-.6 4.2z\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M14.6 12.4c-.2 1.6-.9 2.9-2 3.6.3-1.2.4-2.4.3-3.3z\"/>"
+  "svg": "<path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M22.6 10.9C22.6 10.4 21.9 10.1 20.9 10C20.4 8.6 18.9 7.3 16.5 7C12.1 6.5 7.9 8.4 5.1 11.6C4.2 12.6 3.5 13.8 2.9 15L1.1 15.6C.7 15.7.7 16.3 1.1 16.4L3.7 16.8L4.3 18.4C4.5 18.8 5 18.7 5.1 18.3L5.3 16.7C6.1 15.2 7.2 14 8.6 13.2C11.2 12.2 14.2 12.8 16.6 12.4C18.6 12.1 20.1 11.5 21 11C21.7 10.9 22.6 11.2 22.6 10.9z M17.65 9.6a0.55 0.55 0 1 0 1.1 0a0.55 0.55 0 1 0 -1.1 0z\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M14.4 7.2c-1-1.4-2-2.5-3.4-3.4.2 1.4 0 2.9-.6 4.2z\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M14.8 13c-.2 1.6-.9 2.9-2 3.6.3-1.2.4-2.4.3-3.3z\"/>"
  },
  {
   "key": "has_orca",
@@ -73,7 +73,7 @@ window.CREATURES = /*CREATURES-JSON*/[
  {
   "key": "has_seaotter",
   "name": "ラッコ",
-  "svg": "<circle cx=\"6\" cy=\"9.4\" r=\"4\"/><circle cx=\"4.6\" cy=\"8.6\" r=\"0.55\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"7.4\" cy=\"8.6\" r=\"0.55\" fill=\"currentColor\" stroke=\"none\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M4.7 9.9a1.3 0.8 0 1 0 2.6 0a1.3 0.8 0 1 0 -2.6 0z\"/><path d=\"M4.8 11.3c.4.6 1.2.6 1.2-.1 0 .7.8.7 1.2.1\" stroke-width=\"1.1\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M9.4 10.6c1.4-1 3-1.5 4.8-1.5 2.4 0 4.4.7 5.8 1.8.7.6 1.1 1.4 1.2 2.3l.1.6H9.8c.4-1 .3-2.2-.4-3.2z\"/><path d=\"M10.25 8.2a0.95 0.85 0 1 0 1.9 0a0.95 0.85 0 1 0 -1.9 0z\" stroke-width=\"1.4\"/><path d=\"M12.25 7.9a0.95 0.85 0 1 0 1.9 0a0.95 0.85 0 1 0 -1.9 0z\" stroke-width=\"1.4\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M19.8 11.2l.4-3.2c.1-.4.6-.5.8-.1l1.3 2.6c.2.4 0 .8-.4.9z\"/><path d=\"M1.5 15.2c1.4 0 1.4-1 2.8-1s1.4 1 2.8 1 1.4-1 2.8-1 1.4 1 2.8 1 1.4-1 2.8-1 1.4 1 2.8 1 1.4-1 2.8-1\"/>"
+  "svg": "<path d=\"M12 3.4c3.5 0 6.2 2.2 6.2 5.2s-2.7 5.2-6.2 5.2-6.2-2.2-6.2-5.2 2.7-5.2 6.2-5.2z\"/><circle cx=\"9.3\" cy=\"7.3\" r=\"0.6\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"14.7\" cy=\"7.3\" r=\"0.6\" fill=\"currentColor\" stroke=\"none\"/><path fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"0.6\" stroke-linejoin=\"round\" d=\"M10.3 8.7 12 7.7l1.7 1L12 10z\"/><path d=\"M12 10v1M12 11l-1.2 1M12 11l1.2 1\" stroke-width=\"1.2\"/><path d=\"M7.8 13.1C6 14.4 5.2 16.4 5.2 18.8\"/><path d=\"M16.2 13.1c1.8 1.3 2.6 3.3 2.6 5.7\"/><path fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"none\" d=\"M9.1 15.6a1.5 1.15 0 1 0 3 0a1.5 1.15 0 1 0 -3 0z M11.9 15.6a1.5 1.15 0 1 0 3 0a1.5 1.15 0 1 0 -3 0z\"/><path d=\"M1.5 20c1.4 0 1.4-1 2.8-1s1.4 1 2.8 1 1.4-1 2.8-1 1.4 1 2.8 1 1.4-1 2.8-1 1.4 1 2.8 1 1.4-1 2.8-1\"/>"
  },
  {
   "key": "has_otter",
