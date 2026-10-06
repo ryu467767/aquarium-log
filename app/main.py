@@ -440,16 +440,8 @@ def aquariums(request: Request):
                 "updated_at": v.updated_at.isoformat() if v else None,
                 "lat": a.lat,
                 "lng": a.lng,
-                "has_penguin": bool(a.has_penguin),
-                "has_dolphin": bool(a.has_dolphin),
-                "has_sealion": bool(a.has_sealion),
-                "has_orca": bool(a.has_orca),
-                "has_jellyfish": bool(a.has_jellyfish),
-                "has_steller": bool(a.has_steller),
-                "has_seal": bool(a.has_seal),
-                "has_shark": bool(a.has_shark),
-                "has_beluga": bool(a.has_beluga),
-                "has_walrus": bool(a.has_walrus),
+                # 生き物フラグ（23種類。_AQ_ANIMALS と同じ）
+                **_animal_flags(a),
                 "is_closed": bool(a.is_closed),
                 "closed_at": a.closed_at or "",
                 "twitter_id": a.twitter_id or "",
@@ -471,16 +463,8 @@ def public_aquariums():
             "mola_star": a.mola_star,
             "lat": a.lat,
             "lng": a.lng,
-            "has_penguin": bool(a.has_penguin),
-            "has_dolphin": bool(a.has_dolphin),
-            "has_sealion": bool(a.has_sealion),
-            "has_orca": bool(a.has_orca),
-            "has_jellyfish": bool(a.has_jellyfish),
-            "has_steller": bool(a.has_steller),
-            "has_seal": bool(a.has_seal),
-            "has_shark": bool(a.has_shark),
-            "has_beluga": bool(a.has_beluga),
-            "has_walrus": bool(a.has_walrus),
+            # 生き物フラグ（23種類。_AQ_ANIMALS と同じ）
+            **_animal_flags(a),
             "is_closed": bool(a.is_closed),
             "closed_at": a.closed_at or "",
             "twitter_id": a.twitter_id or "",
@@ -693,6 +677,35 @@ _AQ_ANIMALS = [
     ("has_deepsea",     "🦑", "深海生物"),
 ]
 
+# 生き物アイコン（線画）。フロントと同じ web/creature-icons.js の JSON 部分を読む。
+# 読めなかったときは上の絵文字で表示する（詳細ページ自体は必ず出す）
+def _load_creature_svgs() -> dict:
+    try:
+        src = (WEB_DIR / "creature-icons.js").read_text(encoding="utf-8")
+        body = src.split("/*CREATURES-JSON*/")[1].split("/*END*/")[0]
+        return {c["key"]: c["svg"] for c in json.loads(body)}
+    except Exception:
+        traceback.print_exc()
+        return {}
+
+_CREATURE_SVGS = _load_creature_svgs()
+
+
+def _creature_icon_html(key: str, emoji: str) -> str:
+    svg = _CREATURE_SVGS.get(key)
+    if not svg:
+        return emoji + " "
+    return f'<svg class="creature-icon" viewBox="0 0 24 24" aria-hidden="true">{svg}</svg>'
+
+
+# 一覧APIで返す生き物フラグ（「生き物から探す」「集めた魚種印」「カードのタグ」で使う）
+_ANIMAL_KEYS = [key for key, ic, lb in _AQ_ANIMALS]
+
+
+def _animal_flags(a) -> dict:
+    return {key: bool(getattr(a, key, False)) for key in _ANIMAL_KEYS}
+
+
 # 飼育している施設が限られる生き物（紹介文で見どころとして触れる）
 _AQ_RARE_ANIMALS = {
     "has_orca", "has_beluga", "has_whaleshark", "has_seaotter",
@@ -730,9 +743,9 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/10/07</span>生き物のアイコンを新しいデザインにしました。生き物から探す・集めた魚種印の生き物を23種類に増やしました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印と生き物の絞り込みに「セイウチ」を追加しました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
-            <li><span class="bell-popover__date">2026/09/07</span>詳細ページの「会える生き物」にウミガメ・チンアナゴなど14種類を追加しました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -775,7 +788,8 @@ AQ_FOOTER = """
       <span>© 2025 全国水族館スタンプラリー</span>
     </div>
   </footer>
-  <script src="/nav.js?v=20261005-1"></script>
+  <script src="/creature-icons.js?v=20261007-6"></script>
+  <script src="/nav.js?v=20261006-1"></script>
 """
 
 
@@ -804,7 +818,10 @@ def aquarium_page(aquarium_id: int):
     loc = (a.prefecture or "") + (a.city or "")
 
     animals = [(ic, lb) for key, ic, lb in _AQ_ANIMALS if getattr(a, key, False)]
-    animals_html = "".join(f'<span class="aq-animal">{ic} {lb}</span>' for ic, lb in animals)
+    animals_html = "".join(
+        f'<span class="aq-animal">{_creature_icon_html(key, ic)}{lb}</span>'
+        for key, ic, lb in _AQ_ANIMALS if getattr(a, key, False)
+    )
 
     # 紹介文（DBにある事実だけで組み立てる。営業時間や料金など未取得の情報は書かない）
     intro_parts = []
@@ -943,7 +960,7 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20260907-2">
+  <link rel="stylesheet" href="/styles.css?v=20261006-1">
   <style>
     /* ヘッダー常時固定（他ページと揃える） */
     header {{
@@ -965,7 +982,9 @@ def aquarium_page(aquarium_id: int):
     .aq-maplink {{ font-size: 12px; margin: 4px 0 0; }}
     .aq-animals {{ display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0 4px; }}
     .aq-animal {{ background: #f2f8fa; border: 1px solid #d7e3e8; border-radius: 999px;
-                 padding: 4px 12px; font-size: 13.5px; }}
+                 padding: 4px 12px; font-size: 13.5px;
+                 display: inline-flex; align-items: center; gap: 5px; }}
+    .aq-animal .creature-icon {{ color: #006c8e; }}
     .aq-cta {{ display: block; width: 100%; text-align: center; background: #006c8e; color: #fff;
               padding: 13px; border-radius: 12px; font-weight: 700; text-decoration: none; margin: 22px 0;
               border: none; font-size: 15px; font-family: inherit; cursor: pointer; }}

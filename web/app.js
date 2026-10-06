@@ -88,18 +88,8 @@ async function apiPut(path, body) {
 
 // ===== 魚種印帳（図鑑）=====
 // 各水族館に登録された生き物フラグ。訪問済みの水族館が持つ生き物を自動でゲット扱いにする。
-const CREATURE_DEX = [
-  { key: "has_jellyfish", name: "クラゲ",     icon: "🪼" },
-  { key: "has_penguin",   name: "ペンギン",   icon: "🐧" },
-  { key: "has_dolphin",   name: "イルカ",     icon: "🐬" },
-  { key: "has_orca",      name: "シャチ",     icon: "🐋" },
-  { key: "has_beluga",    name: "シロイルカ", icon: "🐳" },
-  { key: "has_shark",     name: "サメ",       icon: "🦈" },
-  { key: "has_sealion",   name: "アシカ",     icon: "🦭" },
-  { key: "has_seal",      name: "アザラシ",   icon: "🦭" },
-  { key: "has_steller",   name: "トド",       icon: "🦭" },
-  { key: "has_walrus",    name: "セイウチ",   icon: "🦭" },
-];
+// 生き物の一覧とアイコンは web/creature-icons.js（全ページ共通）にある
+const CREATURE_DEX = window.CREATURES || [];
 
 
 function match(item, q) {
@@ -259,27 +249,15 @@ function renderCard(it) {
   detailLink.innerHTML = '<svg class="card-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16.5" x2="13" y2="16.5"/></svg>詳細を見る';
   card.appendChild(detailLink);
 
-  // 生き物アイコン行
-  const ANIMAL_ICONS = [
-    { key: "has_penguin",   icon: "🐧", label: "ペンギン" },
-    { key: "has_dolphin",   icon: "🐬", label: "イルカ" },
-    { key: "has_sealion",   icon: "🦭", label: "アシカ" },
-    { key: "has_orca",      icon: "🐋", label: "シャチ" },
-    { key: "has_jellyfish", icon: "🪼", label: "クラゲ" },
-    { key: "has_steller",   icon: "🦭", label: "トド" },
-    { key: "has_seal",      icon: "🦭", label: "アザラシ" },
-    { key: "has_shark",     icon: "🦈", label: "サメ" },
-    { key: "has_beluga",    icon: "🐳", label: "シロイルカ" },
-    { key: "has_walrus",    icon: "🦭", label: "セイウチ" },
-  ];
-  const animalIcons = ANIMAL_ICONS.filter(a => it[a.key]);
+  // 生き物アイコン行（web/creature-icons.js の23種類）
+  const animalIcons = CREATURE_DEX.filter(a => it[a.key]);
   if (animalIcons.length > 0) {
     const animalRow = document.createElement("div");
     animalRow.className = "card-animals";
     animalIcons.forEach(a => {
       const span = document.createElement("span");
       span.className = "card-animal-tag";
-      span.textContent = a.icon + "\u00a0" + a.label;
+      span.innerHTML = window.creatureSvg(a.key) + escapeHtml(a.name);
       animalRow.appendChild(span);
     });
     card.appendChild(animalRow);
@@ -808,14 +786,14 @@ function openCollectionModal() {
     const cell = document.createElement("div");
     cell.className = "collection-cell" + (d.collected ? " got" : " locked");
     cell.innerHTML =
-      `<div class="collection-icon">${d.collected ? d.icon : "❔"}</div>` +
+      `<div class="collection-icon">${d.collected ? window.creatureSvg(d.key) : "❔"}</div>` +
       `<div class="collection-name">${escapeHtml(d.name)}</div>` +
       `<div class="collection-count">${d.collected ? "×" + d.count + "館" : "未ゲット"}</div>`;
     if (d.collected) {
       cell.onclick = () => {
         detail.hidden = false;
         detail.innerHTML =
-          `<div class="collection-detail-title">${d.icon} ${escapeHtml(d.name)} に会えた水族館（${d.count}）</div>` +
+          `<div class="collection-detail-title">${window.creatureSvg(d.key)} ${escapeHtml(d.name)} に会えた水族館（${d.count}）</div>` +
           `<div class="collection-detail-list">${d.aquariums.map(escapeHtml).join(" / ")}</div>`;
       };
     }
@@ -1681,6 +1659,15 @@ function countWithPendingAnimals(pendingSet) {
 function openAnimalModal() {
   const modal = document.getElementById('animalModal');
   if (!modal) return;
+
+  // 選択肢は web/creature-icons.js の23種類から作る（初回だけ）
+  const grid = modal.querySelector('.filter-animal-grid');
+  if (grid && !grid.children.length) {
+    grid.innerHTML = CREATURE_DEX.map(c =>
+      `<label class="filter-check-label"><input type="checkbox" name="animalModalFilter" value="${c.key}">` +
+      `${window.creatureSvg(c.key)}${escapeHtml(c.name)}</label>`
+    ).join('');
+  }
 
   // 現在のselectedAnimalsをモーダルに反映
   modal.querySelectorAll('input[name="animalModalFilter"]').forEach(c => {
