@@ -743,9 +743,9 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/10/10</span>その他軽微な不具合の修正、改善を行いました。</li>
             <li><span class="bell-popover__date">2026/10/07</span>生き物のアイコンを新しいデザインにしました。生き物から探す・集めた魚種印の生き物を23種類に増やしました。</li>
             <li><span class="bell-popover__date">2026/10/05</span>集めた魚種印と生き物の絞り込みに「セイウチ」を追加しました。</li>
-            <li><span class="bell-popover__date">2026/10/05</span>写真の枚数が多いときや、5MBを超える写真を追加できない不具合を修正しました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -789,7 +789,7 @@ AQ_FOOTER = """
     </div>
   </footer>
   <script src="/creature-icons.js?v=20261007-6"></script>
-  <script src="/nav.js?v=20261006-1"></script>
+  <script src="/nav.js?v=20261010-1"></script>
 """
 
 
@@ -960,7 +960,7 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20261006-1">
+  <link rel="stylesheet" href="/styles.css?v=20261010-1">
   <style>
     /* ヘッダー常時固定（他ページと揃える） */
     header {{

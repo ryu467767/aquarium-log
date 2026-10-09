@@ -76,7 +76,7 @@
     modal.setAttribute('aria-modal', 'true');
     modal.innerHTML =
       '<div class="modal-box collection-modal-box">' +
-      '<p class="modal-title">🐟 集めた魚種印</p>' +
+      '<p class="modal-title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.8-5.5 10.5-5.5c3.7 0 6.6 1.8 8.5 3.7-1.6 1.7-1.6 3.9 0 5.6-1.9 1.9-4.8 3.7-8.5 3.7C6.3 19.5 2.5 12 2.5 12z"/><circle cx="15.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/></svg>集めた魚種印</p>' +
       '<div id="collectionSummary" class="collection-summary"></div>' +
       '<div id="collectionContent" class="collection-content"></div>' +
       '<div class="modal-actions">' +

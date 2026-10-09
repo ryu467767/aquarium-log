@@ -1027,7 +1027,15 @@ function renderBadges(items) {
     if (b.cat === "animal") cls += " animal-badge";
     div.className = cls;
     div.title = b.label;
-    div.textContent = b.icon + " " + b.label;
+    // 生き物バッジは web/creature-icons.js の線画アイコンにする（id: a_penguin_3 → has_penguin）
+    const creatureKey = b.cat === "animal" ? "has_" + b.id.replace(/^a_/, "").replace(/_(\d+|all)$/, "") : "";
+    const creatureIcon = creatureKey && window.creatureSvg ? window.creatureSvg(creatureKey) : "";
+    if (creatureIcon) {
+      div.innerHTML = creatureIcon;
+      div.appendChild(document.createTextNode(b.label));
+    } else {
+      div.textContent = b.icon + " " + b.label;
+    }
     el.appendChild(div);
   }
 
@@ -1729,9 +1737,10 @@ function updateFilterBadge() {
   const animalBtn = document.getElementById('animalSearchBtn');
   if (animalBtn) {
     animalBtn.classList.toggle('has-filter', selectedAnimals.size > 0);
-    animalBtn.textContent = selectedAnimals.size > 0
-      ? ('🐟 生き物 (' + selectedAnimals.size + '件選択)')
-      : '🐟 生き物から探す';
+    // メニューの「集めた魚種印」と同じ魚の線画
+    animalBtn.innerHTML = '<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.8-5.5 10.5-5.5c3.7 0 6.6 1.8 8.5 3.7-1.6 1.7-1.6 3.9 0 5.6-1.9 1.9-4.8 3.7-8.5 3.7C6.3 19.5 2.5 12 2.5 12z"/><circle cx="15.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/></svg>' + (selectedAnimals.size > 0
+      ? ('生き物 (' + selectedAnimals.size + '件選択)')
+      : '生き物から探す');
   }
   // 絞り込みボタンラベル
   const filterLabelEl = document.getElementById('filterBtnLabel');
