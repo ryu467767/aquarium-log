@@ -2825,3 +2825,7 @@ body.lb-open { overflow: hidden; }
 .filter-animal-grid { max-height: 52vh; overflow-y: auto; }
 .collection-icon .creature-icon { width: 32px; height: 32px; color: #006c8e; vertical-align: top; }
 .collection-detail-title .creature-icon { color: #006c8e; }
+
+/* バッジ・ボタン・見出しの中の線画アイコン */
+.badge .creature-icon { margin-right: 3px; }
+#animalSearchBtn .nav-icon, .modal-title .nav-icon { width: 18px; height: 18px; vertical-align: -0.2em; margin-right: 4px; }
