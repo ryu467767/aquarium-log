@@ -36,6 +36,7 @@ def _migrate():
         "ALTER TABLE visits ADD COLUMN visit_years TEXT NOT NULL DEFAULT '[]'",
         "ALTER TABLE visits ADD COLUMN visit_dates TEXT NOT NULL DEFAULT '[]'",
         "ALTER TABLE user_profiles ADD COLUMN login_count INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE user_profiles ADD COLUMN last_seen_at DATETIME",
         "ALTER TABLE aquariums ADD COLUMN twitter_id TEXT",
         "ALTER TABLE aquariums ADD COLUMN instagram_id TEXT",
         # 詳細ページの「会える生き物」用の追加フラグ
