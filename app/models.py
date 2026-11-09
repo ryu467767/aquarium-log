@@ -53,6 +53,10 @@ class Aquarium(SQLModel, table=True):
     is_closed: bool = Field(default=False)
     closed_at: Optional[str] = Field(default=None)  # 例: "2024-03"
 
+    # 休館中（建て替え・改修などで一時的に閉まっている）。空なら通常営業。
+    # 閉館と違い、館の数やミッションの対象には含めたまま「休館中」と表示するだけ。
+    suspended_note: Optional[str] = Field(default=None)  # 例: "2025年4月から休館中（2027年春に再開予定）"
+
     __table_args__ = (
         UniqueConstraint("name", "location_raw", "url", name="uq_aquarium_identity"),
     )

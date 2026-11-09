@@ -530,6 +530,7 @@ def aquariums(request: Request):
                 **_animal_flags(a),
                 "is_closed": bool(a.is_closed),
                 "closed_at": a.closed_at or "",
+                "suspended_note": a.suspended_note or "",
                 "twitter_id": a.twitter_id or "",
                 "instagram_id": a.instagram_id or "",
             })
@@ -553,6 +554,7 @@ def public_aquariums():
             **_animal_flags(a),
             "is_closed": bool(a.is_closed),
             "closed_at": a.closed_at or "",
+            "suspended_note": a.suspended_note or "",
             "twitter_id": a.twitter_id or "",
             "instagram_id": a.instagram_id or "",
             # ここ重要：公開版は visited/note は返さない（または常にfalse/空にする）
@@ -829,9 +831,9 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/11/09</span>新しく開館した3館と、閉館した7館を追加しました。また、休館中の水族館には「休館中」と表示するようにしました。</li>
             <li><span class="bell-popover__date">2026/11/09</span>広島県江田島市の「さとうみ科学館」を追加しました。廃校になった小学校の校舎を活かした施設です。</li>
             <li><span class="bell-popover__date">2026/10/11</span>写真の安全性を高めました。撮影場所などの情報を自動で消し、写真は本人だけが見られるようにしました。</li>
-            <li><span class="bell-popover__date">2026/10/10</span>その他軽微な不具合の修正、改善を行いました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -921,6 +923,9 @@ def aquarium_page(aquarium_id: int):
     if a.is_closed:
         closed_when = f"（{_esc(a.closed_at)}）" if a.closed_at else ""
         p1 += f"なお、この施設は現在閉館しています{closed_when}。訪問の記録は思い出として残せます。"
+    elif a.suspended_note:
+        # suspended_note は「〜のため休館中（〜に再開予定）」の形で入っている
+        p1 += f"なお、この施設は現在、{_esc(a.suspended_note)}です。お出かけ前に公式サイトで最新情報をご確認ください。"
     intro_parts.append(p1)
 
     # 館ごとの特徴（app/aquarium_features.py に手で書いてある分だけ）
@@ -996,6 +1001,8 @@ def aquarium_page(aquarium_id: int):
     closed_badge = ""
     if a.is_closed:
         closed_badge = f'<span class="aq-closed">閉館{(" " + _esc(a.closed_at)) if a.closed_at else ""}</span>'
+    elif a.suspended_note:
+        closed_badge = '<span class="aq-closed aq-suspended">休館中</span>'
 
     visited_line = ""
     if visited_users > 0:
@@ -1048,7 +1055,7 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20261010-1">
+  <link rel="stylesheet" href="/styles.css?v=20261109-1">
   <style>
     /* ヘッダー常時固定（他ページと揃える） */
     header {{
@@ -1092,6 +1099,7 @@ def aquarium_page(aquarium_id: int):
     .aq-want:disabled {{ opacity: .6; cursor: default; }}
     .aq-visited {{ color: #2a7d5a; font-size: 14px; }}
     .aq-closed {{ background: #b00; color: #fff; font-size: 12px; border-radius: 6px; padding: 2px 8px; margin-left: 8px; }}
+    .aq-suspended {{ background: #d97706; }}
     .aq-related li {{ margin: 2px 0; }}
     .aq-related a {{ color: #0077b6; }}
   </style>

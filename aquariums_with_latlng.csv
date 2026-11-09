@@ -46,8 +46,8 @@ UWS AQUARIUM GA☆KYO,東京都,港区,https://uws-gakyo.com/,0,35.6580089,139.7
 サンシャイン水族館,東京都,豊島区,https://sunshinecity.jp/aquarium/,0,35.7291388,139.7202726
 上野動物園 両生爬虫類館,東京都,台東区,https://www.tokyo-zoo.net/zoo/ueno/,0,35.7152915,139.7738278
 井の頭公園自然文化園 水生物館,東京都,三鷹市,https://www.tokyo-zoo.net/zoo/ino/about.html,0,35.6833926,139.5592421
-小笠原海洋センター,東京都,小笠原町,http://bonin-ocean.net/,0,27.0939245,142.2037854
-小笠原水産センター 小さな水族館,東京都,小笠原町,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,0,27.0956,142.1910
+小笠原海洋センター,東京都,小笠原村,http://bonin-ocean.net/,0,27.0939245,142.2037854
+小笠原水産センター 小さな水族館,東京都,小笠原村,https://www.soumu.metro.tokyo.lg.jp/07ogasawara/fish/aquarium.html,0,27.0956,142.1910
 横浜・八景島シーパラダイス,神奈川県,横浜市,http://www.seaparadise.co.jp/,0,35.3365026,139.6457835
 横浜開運水族館 フォーチュンアクアリウム,神奈川県,横浜市,https://fortune-aquarium.com/,0,35.4503381,139.6343802
 新江ノ島水族館,神奈川県,藤沢市,https://www.enosui.com/,0,35.310075,139.4794388
@@ -70,6 +70,7 @@ UWS AQUARIUM GA☆KYO,東京都,港区,https://uws-gakyo.com/,0,35.6580089,139.7
 越前松島水族館,福井県,坂井市,https://www.echizen-aquarium.com/,0,36.2526485,136.1466764
 越前がにミュージアム,福井県,越前町,https://www.town-echizen.jp/spot/spot05Detail.php?id=339,0,35.921722,135.997683
 福井県海浜自然センター,福井県,若狭町,https://fcnc.pref.fukui.lg.jp/,0,35.5644665,135.8414667
+おばま水族館,福井県,小浜市,https://obama-aquarium.com/,0,35.4918232,135.7340787
 岐阜県世界淡水魚園水族館 アクア・トトぎふ,岐阜県,各務原市,https://aquatotto.com/,0,35.3995831,136.8485648
 民芸ミュージアム 匠の館 森の水族館,岐阜県,高山市,http://hida.net/aquarium.htm,0,36.1396246,137.2510322
 山梨県立富士湧水の里水族館,山梨県,忍野村,http://www.morinonakano-suizokukan.com/,0,35.4600722,138.8478637
@@ -93,7 +94,7 @@ SMART AQUARiUM SHIZUOKA（スマートアクアリウム静岡）,静岡県,静�
 竹島水族館,愛知県,蒲郡市,https://www.city.gamagori.lg.jp/site/takesui/,0,34.8171414,137.2318491
 碧南海浜水族館,愛知県,碧南市,http://www.city.hekinan.lg.jp/aquarium/index.html,0,34.8628,136.9969
 のんほいパーク 豊橋総合動植物公園,愛知県,豊橋市,https://www.nonhoi.jp/,0,34.769123,137.391461
-赤塚山公園 淡水魚水族館 ぎょぎょランド,愛知県,豊橋市,http://www.akatsukayama.jp/,0,34.7670,137.3825
+赤塚山公園 淡水魚水族館 ぎょぎょランド,愛知県,豊川市,http://www.akatsukayama.jp/,0,34.7670,137.3825
 弥富金魚水族館,愛知県,弥富市,https://www.city.yatomi.lg.jp/event_info/1001259/1005653.html,0,35.1138,136.7322
 鳥羽水族館,三重県,鳥羽市,https://www.aquarium.co.jp/,0,34.4820148,136.8453304
 伊勢夫婦岩ふれあい水族館 シーパラダイス,三重県,伊勢市,https://ise-seaparadise.com/,0,34.4875944,136.7092334
@@ -134,6 +135,7 @@ SMART AQUARiUM SHIZUOKA（スマートアクアリウム静岡）,静岡県,静�
 みやじマリン 宮島水族館,広島県,廿日市市,https://www.miyajima-aqua.jp/,0,34.3499239,132.3306058
 福山大学 マリンバイオセンター（水族館）,広島県,尾道市,https://www.fukuyama-u.ac.jp/marine-bio-center/,0,34.4088519,133.2051549
 さとうみ科学館,広島県,江田島市,https://www.urban.ne.jp/home/fukaesho/SSM/entrance.html,0,34.1696253,132.4518189
+シン・マリホ水族館,広島県,広島市西区,https://shin.mariho-aquarium.com/,0,34.3735754,132.3945900
 市立しものせき水族館「海響館」,山口県,下関市,http://www.kaikyokan.com/,0,33.9577116,130.9415455
 岩国市ミクロ生物館,山口県,岩国市,http://micro.shiokaze-kouen.net/index.html,0,34.1664995,132.2191163
 なぎさ水族館,山口県,周防大島町,https://nagisapark.jimdofree.com/%E3%81%AA%E3%81%8E%E3%81%95%E6%B0%B4%E6%97%8F%E9%A4%A8/,0,33.9246,132.3149
@@ -174,6 +176,7 @@ SMART AQUARiUM SHIZUOKA（スマートアクアリウム静岡）,静岡県,静�
 沖縄美ら海水族館,沖縄県,本部町,https://churaumi.okinawa/,0,26.6943689,127.878038
 DMMかりゆし水族館,沖縄県,豊見城市,https://kariyushi-aquarium.com/,0,26.1635,127.6716
 さんご畑,沖縄県,読谷村,https://seaseed.com/coral-farm/,0,26.3974,127.7607
+KAIKENのチイサナ水族館,沖縄県,宮古島市,https://kaiken.bender.jp/,0,24.8042854,125.2810017
 波左間海中公園,千葉県,館山市,http://hsmop.web.fc2.com/,0,34.9751188,139.7830763
 延岡マリンサービス,宮崎県,延岡市,https://marine.gr.jp/manbo/,0,32.5823063,131.6649034
 あげしま海のでじたる館,新潟県,佐渡市,https://sado-ageshima.com/aquarium/,0,38.0182578,138.3683995

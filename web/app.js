@@ -209,6 +209,12 @@ function renderCard(it) {
     badge.className = "closed-badge";
     badge.textContent = "閉館" + (it.closed_at ? " " + it.closed_at : "");
     title.appendChild(badge);
+  } else if (it.suspended_note) {
+    // 休館中バッジ（建て替え・改修などで一時的に閉まっている館）
+    const badge = document.createElement("span");
+    badge.className = "closed-badge suspended-badge";
+    badge.textContent = "休館中";
+    title.appendChild(badge);
   }
 
   // 名前の右にXアイコン
@@ -241,6 +247,14 @@ function renderCard(it) {
   meta.className = "meta";
   meta.textContent = `${it.prefecture}${it.city ? " / " + it.city : ""} ${it.location_raw ? " / " + it.location_raw : ""}`;
   card.appendChild(meta);
+
+  // 休館中のお知らせ（例: 2025年4月から休館中（2027年春に再開予定））
+  if (!it.is_closed && it.suspended_note) {
+    const note = document.createElement("div");
+    note.className = "suspended-note";
+    note.textContent = it.suspended_note;
+    card.appendChild(note);
+  }
 
   // 個別水族館ページへの内部リンク（SEO/AIEO）
   const detailLink = document.createElement("a");
@@ -2177,6 +2191,14 @@ function renderSheetActions(it) {
   const el = document.getElementById('sheetActions');
   if (!el) return;
   el.innerHTML = '';
+
+  // 休館中の館は、記録ボタンの上にお知らせを出す（記録自体はできる）
+  if (!it.is_closed && it.suspended_note) {
+    const note = document.createElement('p');
+    note.className = 'sheet-suspended-msg';
+    note.textContent = '⏸ 休館中：' + it.suspended_note;
+    el.appendChild(note);
+  }
 
   if (!state.loggedIn) {
     const msg = document.createElement('p');

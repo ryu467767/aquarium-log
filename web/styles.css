@@ -2829,3 +2829,11 @@ body.lb-open { overflow: hidden; }
 /* バッジ・ボタン・見出しの中の線画アイコン */
 .badge .creature-icon { margin-right: 3px; }
 #animalSearchBtn .nav-icon, .modal-title .nav-icon { width: 18px; height: 18px; vertical-align: -0.2em; margin-right: 4px; }
+
+/* 休館中（建て替え・改修などで一時的に閉まっている館）。閉館の灰色と区別してオレンジにする */
+.closed-badge.suspended-badge { background: #d97706; }
+.suspended-note { font-size: 12px; color: #b45309; margin: 2px 0 4px; }
+.sheet-suspended-msg {
+  font-size: 13px; color: #b45309; text-align: center;
+  padding: 4px 0; margin: 0 0 6px; font-weight: bold;
+}
