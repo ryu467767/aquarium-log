@@ -62,6 +62,39 @@ def _migrate():
         except _sqlite3.OperationalError:
             pass  # 既にカラムが存在する場合は無視
 
+    # --- 新しく収録する水族館（同じ名前が無いときだけ追加。何度起動しても重複しない）---
+    # 生き物フラグは全部0で入れる（必要なら下の seed で上書きされる）。
+    # 列を省略すると、作り方によっては NOT NULL で失敗するので全部明示する。
+    _flag_cols = [
+        "has_penguin", "has_dolphin", "has_sealion", "has_orca", "has_jellyfish",
+        "has_steller", "has_seal", "has_shark", "has_beluga",
+        "has_otter", "has_seaotter", "has_walrus", "has_turtle", "has_whaleshark",
+        "has_ray", "has_sunfish", "has_gardeneel", "has_seahorse", "has_clownfish",
+        "has_coral", "has_capybara", "has_salamander", "has_deepsea",
+    ]
+    new_aquariums = [
+        # 2026/11 利用者の要望で追加。廃校（旧深江小学校）を活用した江田島市の施設。
+        # 正式名称は大柿自然環境体験学習交流館。位置は正門前（深江バス停の正面）。
+        {
+            "name": "さとうみ科学館", "prefecture": "広島県", "city": "江田島市",
+            "location_raw": "", "url": "https://www.urban.ne.jp/home/fukaesho/SSM/entrance.html",
+            "mola_star": 0, "lat": 34.1696253, "lng": 132.4518189,
+            "twitter_id": None, "instagram_id": "satoumikagakukan", "is_closed": 0,
+        },
+    ]
+    for aq in new_aquariums:
+        row = {**{c: 0 for c in _flag_cols}, **aq}
+        try:
+            if con.execute("SELECT 1 FROM aquariums WHERE name=?", (row["name"],)).fetchone():
+                continue
+            cols = ", ".join(row.keys())
+            marks = ", ".join("?" for _ in row)
+            con.execute(f"INSERT INTO aquariums ({cols}) VALUES ({marks})", list(row.values()))
+            con.commit()
+            print(f"[migrate] 水族館を追加しました: {row['name']}")
+        except _sqlite3.Error as e:
+            print(f"[migrate] 水族館の追加に失敗しました: {row['name']} ({e})")
+
     # --- 生き物フラグ seed（公式サイトクロール結果）---
     animal_seeds = [
         "UPDATE aquariums SET has_penguin=1, has_dolphin=0, has_sealion=0, has_orca=0, has_jellyfish=0, has_steller=0, has_seal=1, has_shark=0, has_beluga=0 WHERE name='サンピアザ水族館'",
