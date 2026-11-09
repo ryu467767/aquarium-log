@@ -170,17 +170,23 @@ def strip_existing_uploads(upload_dir: str, skip_dirs=("_share",)) -> int:
             if not fn.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
                 continue
             p = os.path.join(root, fn)
+            tmp = p + ".tmp"
             try:
                 with open(p, "rb") as f:
                     data = f.read()
                 cleaned = strip_metadata(data)
                 if cleaned != data:
-                    tmp = p + ".tmp"
                     with open(tmp, "wb") as f:
                         f.write(cleaned)
                     os.replace(tmp, p)
                     changed += 1
             except Exception:
+                # ディスク満杯などで途中まで書いた .tmp が残ると容量を食うので消す
+                try:
+                    if os.path.exists(tmp):
+                        os.remove(tmp)
+                except OSError:
+                    pass
                 continue
     try:
         with open(marker, "w") as f:

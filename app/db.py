@@ -314,9 +314,28 @@ def _migrate():
 
     con.close()
 
+def _log_disk_usage() -> None:
+    """起動ログにディスクの使用量を出す（2026/11 ディスク満杯で起動できなくなったため）。"""
+    try:
+        import shutil
+        base = os.path.dirname(get_db_path())
+        u = shutil.disk_usage(base)
+        pct = u.used * 100 // u.total if u.total else 0
+        mark = " !!! 残りわずかです" if pct >= 90 else ""
+        print(f"[disk] {base}: 使用 {u.used // 2**20}MB / 全体 {u.total // 2**20}MB（{pct}%）{mark}")
+    except Exception as e:
+        print(f"[disk] 使用量を取得できませんでした ({e})")
+
+
 def init_db() -> None:
+    _log_disk_usage()
     SQLModel.metadata.create_all(engine)
-    _migrate()
+    try:
+        _migrate()
+    except _sqlite3.OperationalError as e:
+        # ディスク満杯などで書き込めなくても、サイトの表示だけは続けられるように起動は止めない。
+        # （ここで落ちると Render で 502 のまま復旧しない）
+        print(f"[migrate] !!! マイグレーションに失敗しました。サーバーは起動を続けます: {e}")
 
 def session() -> Session:
     return Session(engine)
