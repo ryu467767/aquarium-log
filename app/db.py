@@ -54,6 +54,8 @@ def _migrate():
         "ALTER TABLE aquariums ADD COLUMN has_capybara INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN has_salamander INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE aquariums ADD COLUMN has_deepsea INTEGER NOT NULL DEFAULT 0",
+        # 休館中のお知らせ（空なら通常営業）
+        "ALTER TABLE aquariums ADD COLUMN suspended_note TEXT",
     ]
     for sql in schema_migrations:
         try:
@@ -81,6 +83,72 @@ def _migrate():
             "mola_star": 0, "lat": 34.1696253, "lng": 132.4518189,
             "twitter_id": None, "instagram_id": "satoumikagakukan", "is_closed": 0,
         },
+        # ---- 2026/11 新しく開館した館（緯度経度はすべて Yahoo!マップの施設ページ）----
+        # 旧マリホ水族館の後継。2025/12/2 アルパーク内に開館。クラゲは公式フロアマップで確認
+        {
+            "name": "シン・マリホ水族館", "prefecture": "広島県", "city": "広島市西区",
+            "location_raw": "", "url": "https://shin.mariho-aquarium.com/",
+            "mola_star": 0, "lat": 34.3735754, "lng": 132.3945900,
+            "twitter_id": "Shin_MAQ", "instagram_id": "shin_mariho_aquarium", "is_closed": 0,
+            "has_jellyfish": 1,
+        },
+        # 2026/5/1 開館。県立大学の学生が運営する町家の水族館
+        {
+            "name": "おばま水族館", "prefecture": "福井県", "city": "小浜市",
+            "location_raw": "", "url": "https://obama-aquarium.com/",
+            "mola_star": 0, "lat": 35.4918232, "lng": 135.7340787,
+            "twitter_id": None, "instagram_id": None, "is_closed": 0,
+        },
+        # 2025/9/12 開館。平良西里の西里通り商店街。公式ページは運営会社（兵庫ベンダ工業）のサイト
+        {
+            "name": "KAIKENのチイサナ水族館", "prefecture": "沖縄県", "city": "宮古島市",
+            "location_raw": "", "url": "https://kaiken.bender.jp/",
+            "mola_star": 0, "lat": 24.8042854, "lng": 125.2810017,
+            "twitter_id": None, "instagram_id": "kaiken_hyogobender", "is_closed": 0,
+        },
+        # ---- 2026/11 閉館した館（思い出の記録用。今ある閉館館と同じく公式URL・生き物フラグは無し）----
+        # 2024/12/1 閉館（借地権終了）。マリーナホップ内
+        {
+            "name": "マリホ水族館", "prefecture": "広島県", "city": "広島市西区",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 34.3596465, "lng": 132.4164197,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2024-12",
+        },
+        # 2023/3 末で閉館（茨城新聞）。位置はWikipedia（山方535）
+        {
+            "name": "山方淡水魚館", "prefecture": "茨城県", "city": "常陸大宮市",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 36.625666, "lng": 140.404046,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2023-03",
+        },
+        # 2010/12/15 閉館（読売新聞）。位置は同じ敷地のホテル建物
+        {
+            "name": "天草いるかワールド", "prefecture": "熊本県", "city": "天草市",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 32.472886, "lng": 130.2069889,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2010-12",
+        },
+        # 2010/3 末で閉館。つつじが岡公園内（建物は今はカフェ）
+        {
+            "name": "群馬県立水産学習館", "prefecture": "群馬県", "city": "館林市",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 36.241843, "lng": 139.551448,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2010-03",
+        },
+        # 2005/11/3 閉館。シーサイドパーク広尾内（位置は公園。建物の正確な場所は未確認）
+        {
+            "name": "ひろお水族館", "prefecture": "北海道", "city": "広尾郡広尾町",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 42.315929, "lng": 143.3272947,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2005-11",
+        },
+        # 2005/10/31 閉館。旧海部町奥浦（位置は隣の番地のピアカイフ。おおよそ）
+        {
+            "name": "大うなぎ水族館イーランド", "prefecture": "徳島県", "city": "海部郡海陽町",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 33.595107, "lng": 134.353276,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2005-10",
+        },
+        # 2016/8/31 閉館（産経新聞）。阪急三番街北館1階の「通路水族館」
+        {
+            "name": "かわいい水族館", "prefecture": "大阪府", "city": "大阪市北区",
+            "location_raw": "", "url": "", "mola_star": 0, "lat": 34.70596755, "lng": 135.49818433,
+            "twitter_id": None, "instagram_id": None, "is_closed": 1, "closed_at": "2016-08",
+        },
     ]
     for aq in new_aquariums:
         row = {**{c: 0 for c in _flag_cols}, **aq}
@@ -94,6 +162,37 @@ def _migrate():
             print(f"[migrate] 水族館を追加しました: {row['name']}")
         except _sqlite3.Error as e:
             print(f"[migrate] 水族館の追加に失敗しました: {row['name']} ({e})")
+
+    # --- 既存の館のデータ修正（休館・閉館・所在地）。何度起動しても同じ結果になる UPDATE だけ ---
+    # 休館をやめて通常営業に戻ったら suspended_note を NULL に戻す行をここに足す。
+    data_fixes = [
+        # 2025/4/7から建て替えで休館（KSB・公式サイト）。屋島山上の同じ場所に建て直し
+        ("UPDATE aquariums SET suspended_note=? WHERE name=?",
+         ("2025年4月から建て替えのため休館中（2027年春に再開予定）", "新屋島水族館")),
+        # 2026/4/21 公式発表：8月から2027年3月末まで改修工事で長期休館
+        ("UPDATE aquariums SET suspended_note=? WHERE name=?",
+         ("2026年8月から改修工事のため休館中（2027年4月に再開予定）", "小笠原海洋センター")),
+        # 東京都の公式ページ：改修工事のため現在閉館、令和9年4月に開館予定
+        ("UPDATE aquariums SET suspended_note=? WHERE name=?",
+         ("改修工事のため休館中（2027年4月に再開予定）", "小笠原水産センター 小さな水族館")),
+        # 2022/10/1から休館 → 干拓の里の通常営業終了（2026/3/29）に合わせて閉館。運営会社も解散しサイト消滅
+        ("UPDATE aquariums SET is_closed=1, closed_at=?, url='', suspended_note=NULL WHERE name=?",
+         ("2026-03", "諫早ゆうゆうランド 干拓の里 むつごろう水族館")),
+        # 所在地は豊川市市田町（豊川市の公式ページ）。豊橋市は誤り
+        ("UPDATE aquariums SET city=? WHERE name=?",
+         ("豊川市", "赤塚山公園 淡水魚水族館 ぎょぎょランド")),
+        # 小笠原は「村」（小笠原町は存在しない）
+        ("UPDATE aquariums SET city=? WHERE prefecture='東京都' AND city=? AND name=?",
+         ("小笠原村", "小笠原町", "小笠原海洋センター")),
+        ("UPDATE aquariums SET city=? WHERE prefecture='東京都' AND city=? AND name=?",
+         ("小笠原村", "小笠原町", "小笠原水産センター 小さな水族館")),
+    ]
+    for sql, params in data_fixes:
+        try:
+            con.execute(sql, params)
+            con.commit()
+        except _sqlite3.Error as e:
+            print(f"[migrate] データ修正に失敗しました: {params[-1]} ({e})")
 
     # --- 生き物フラグ seed（公式サイトクロール結果）---
     animal_seeds = [
