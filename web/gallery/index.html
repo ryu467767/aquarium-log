@@ -121,9 +121,9 @@
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/11/10</span>アップロードする写真を、見やすい大きさに自動で縮小して保存するようにしました。</li>
             <li><span class="bell-popover__date">2026/11/09</span>新しく開館した3館と、閉館した7館を追加しました。また、休館中の水族館には「休館中」と表示するようにしました。</li>
             <li><span class="bell-popover__date">2026/11/09</span>広島県江田島市の「さとうみ科学館」を追加しました。廃校になった小学校の校舎を活かした施設です。</li>
-            <li><span class="bell-popover__date">2026/10/11</span>写真の安全性を高めました。撮影場所などの情報を自動で消し、写真は本人だけが見られるようにしました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -593,8 +593,13 @@
       return chunks;
     }
 
-    // 5MBを超える写真を、送る前にブラウザの中で縮小して5MB以下のJPEGにする。
+    // サーバーのディスクを節約するため（2026/11 写真で1GBが満杯になった）、送る前にブラウザの中で
+    // 長い辺 MAX_SIDE 以下のJPEGに縮小する（トップページの app.js と同じ決まり）。
+    // すでに小さい写真（長い辺が2048以下で1.5MB以下）はそのまま送る。
+    // 縮小できないときは null（呼び出し側で、5MB以下ならそのまま送る）。
     // （<img> で読むと、スマホ写真の縦横の向きもそのまま反映される）
+    const MAX_SIDE = 2048;
+    const KEEP_BYTES = 1.5 * 1024 * 1024;
     async function shrinkImage(file) {
       const url = URL.createObjectURL(file);
       try {
@@ -602,17 +607,25 @@
         img.src = url;
         await img.decode();
 
+        const longSide = Math.max(img.naturalWidth, img.naturalHeight);
+        if (longSide <= MAX_SIDE && file.size <= KEEP_BYTES) return file;
+
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        // 長い辺を少しずつ小さくしながら、5MBに収まるまで試す
-        for (const maxSide of [4000, 3000, 2400, 1600]) {
-          const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        // 長い辺を少しずつ小さくしながら試す（ふつうは最初の2048で決まる）
+        for (const maxSide of [MAX_SIDE, 1600, 1200]) {
+          const scale = Math.min(1, maxSide / longSide);
           canvas.width = Math.round(img.naturalWidth * scale);
           canvas.height = Math.round(img.naturalHeight * scale);
+          // 透過PNGが黒くならないよう白で塗ってから描く
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
           const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
           if (blob && blob.size <= MAX_FILE_BYTES) {
+            // 縮小したほうが大きくなるまれなケースは、元の写真を送る
+            if (blob.size >= file.size && file.size <= MAX_FILE_BYTES) return file;
             const name = file.name.replace(/\.[^.]*$/, "") + ".jpg";
             return new File([blob], name, { type: "image/jpeg" });
           }
@@ -630,12 +643,13 @@
       let saved = 0;
       const errors = [];
 
-      // 5MBを超える写真は、縮小してから送る（縮小できなかったものだけエラーにする）
+      // 写真は縮小してから送る。縮小できなかったときは、5MB以下ならそのまま送る
+      //（5MBを超えて縮小もできなかったものだけエラーにする）
       const sendable = [];
       for (const f of files) {
-        if (f.size <= MAX_FILE_BYTES) { sendable.push(f); continue; }
         const small = await shrinkImage(f);
         if (small) sendable.push(small);
+        else if (f.size <= MAX_FILE_BYTES) sendable.push(f);
         else errors.push({ name: f.name, reason: "写真が大きすぎて縮小できませんでした" });
       }
 

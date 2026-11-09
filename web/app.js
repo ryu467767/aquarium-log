@@ -732,39 +732,51 @@ if (!state.loggedIn) note.placeholder = "ログインするとメモできます
 }
 
 // ===== 写真の縮小 =====
-// サーバーは1枚5MBまでしか受け付けないので、超える写真は送る前にブラウザの中で
-// 縮小して5MB以下のJPEGにする。（<img> で読むと、スマホ写真の縦横の向きもそのまま反映される）
+// サーバーのディスクを節約するため（2026/11 写真で1GBが満杯になった）、送る前にブラウザの中で
+// 長い辺 PHOTO_MAX_SIDE 以下のJPEGに縮小する。スマホの全画面表示には十分なサイズ。
+// すでに小さい写真（長い辺が2048以下で1.5MB以下）はそのまま送る。
+// サーバーは1枚5MBまでしか受け付けない。（<img> で読むと、スマホ写真の縦横の向きもそのまま反映される）
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+const PHOTO_MAX_SIDE = 2048;
+const PHOTO_KEEP_BYTES = 1.5 * 1024 * 1024;
 
 async function shrinkPhotoIfNeeded(file) {
-  if (file.size <= PHOTO_MAX_BYTES) return file;
-
   const url = URL.createObjectURL(file);
   try {
     const img = new Image();
     img.src = url;
     await img.decode();
 
+    const longSide = Math.max(img.naturalWidth, img.naturalHeight);
+    if (longSide <= PHOTO_MAX_SIDE && file.size <= PHOTO_KEEP_BYTES) return file;
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    // 長い辺を少しずつ小さくしながら、5MBに収まるまで試す
-    for (const maxSide of [4000, 3000, 2400, 1600]) {
-      const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    // 長い辺を少しずつ小さくしながら試す（ふつうは最初の2048で決まる）
+    for (const maxSide of [PHOTO_MAX_SIDE, 1600, 1200]) {
+      const scale = Math.min(1, maxSide / longSide);
       canvas.width = Math.round(img.naturalWidth * scale);
       canvas.height = Math.round(img.naturalHeight * scale);
+      // 透過PNGが黒くならないよう白で塗ってから描く
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
       if (blob && blob.size <= PHOTO_MAX_BYTES) {
+        // 縮小したほうが大きくなるまれなケースは、元の写真を送る
+        if (blob.size >= file.size && file.size <= PHOTO_MAX_BYTES) return file;
         const name = file.name.replace(/\.[^.]*$/, "") + ".jpg";
         return new File([blob], name, { type: "image/jpeg" });
       }
     }
   } catch (e) {
-    // 下でまとめてエラーにする
+    // 読めない形式など。下で判断する
   } finally {
     URL.revokeObjectURL(url);
   }
+  // 縮小できなかったときは、5MB以下ならそのまま送る（これまでと同じ）
+  if (file.size <= PHOTO_MAX_BYTES) return file;
   throw new Error("写真が大きすぎて縮小できませんでした");
 }
 
