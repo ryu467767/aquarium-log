@@ -829,9 +829,9 @@ AQ_HEADER = """
         <div id="bellPopover" class="bell-popover" hidden>
           <div class="bell-popover__title"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h13a2 2 0 0 1 2 2V17a1.5 1.5 0 0 1-1.5 1.5H6A2 2 0 0 1 4 16.5v-11z"/><path d="M17 18.5A1.5 1.5 0 0 0 18.5 17V9h2v8a1.5 1.5 0 0 1-1.5 1.5"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="15" x2="11" y2="15"/></svg>更新情報</div>
           <ul class="bell-popover__list">
+            <li><span class="bell-popover__date">2026/11/09</span>広島県江田島市の「さとうみ科学館」を追加しました。廃校になった小学校の校舎を活かした施設です。</li>
             <li><span class="bell-popover__date">2026/10/11</span>写真の安全性を高めました。撮影場所などの情報を自動で消し、写真は本人だけが見られるようにしました。</li>
             <li><span class="bell-popover__date">2026/10/10</span>その他軽微な不具合の修正、改善を行いました。</li>
-            <li><span class="bell-popover__date">2026/10/07</span>生き物のアイコンを新しいデザインにしました。生き物から探す・集めた魚種印の生き物を23種類に増やしました。</li>
           </ul>
           <a href="/updates/" class="bell-popover__more">すべての更新情報を見る →</a>
         </div>
@@ -948,7 +948,9 @@ def aquarium_page(aquarium_id: int):
     if a.url:
         p3.append("開館時間・料金・イベントなどの最新情報は公式サイトで確認できます")
     if a.twitter_id or a.instagram_id:
-        p3.append("X・InstagramのSNSでは日々の生き物の様子が発信されています")
+        # 実際に登録されているSNSだけを名前に出す（片方しか無い館もある）
+        sns = "・".join(n for n, v in (("X", a.twitter_id), ("Instagram", a.instagram_id)) if v)
+        p3.append(f"{sns}では日々の生き物の様子が発信されています")
     if a.lat is not None and a.lng is not None:
         p3.append("上の地図から現在地からのルートも調べられます")
     if p3:
