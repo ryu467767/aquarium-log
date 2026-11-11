@@ -2837,3 +2837,7 @@ body.lb-open { overflow: hidden; }
   font-size: 13px; color: #b45309; text-align: center;
   padding: 4px 0; margin: 0 0 6px; font-weight: bold;
 }
+
+/* ===== フッターの姉妹サイトリンク（線画アイコン付き） ===== */
+.site-footer a{ display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.site-footer a .nav-icon{ width:16px; height:16px; }
