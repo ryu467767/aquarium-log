@@ -862,8 +862,8 @@ AQ_DRAWER = """
       <a href="/contact/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 6.5l8 6.5 8-6.5"/></svg>お問い合わせ</a>
       <a href="/privacy/" class="drawer-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="11" width="13" height="8.5" rx="2"/><path d="M8.5 11V7.8a3.5 3.5 0 0 1 7 0V11"/></svg>プライバシーポリシー</a>
       <hr class="drawer__hr">
-      <a href="https://zoo-log.onrender.com/" class="drawer-link" target="_blank" rel="noopener noreferrer">🐘 全国動物園スタンプラリー</a>
-      <a href="https://dormy-log.soryushi.jp/" class="drawer-link" target="_blank" rel="noopener noreferrer">♨️ 全国ドーミーインスタンプラリー</a>
+      <a href="https://zoo-log.onrender.com/" class="drawer-link" target="_blank" rel="noopener noreferrer"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18.5V12a6 6 0 0 1 6-6h3.5A5.5 5.5 0 0 1 19 11.5v4.3a2.2 2.2 0 0 0 2.2 2.2"/><path d="M8 18.5v-3.2"/><path d="M13 18.5v-3.2"/><path d="M4 18.5h4M13 18.5h3.4"/><path d="M12 7.2a3.4 3.4 0 0 0 0 5.6"/><circle cx="15.8" cy="10" r=".95" fill="currentColor" stroke="none"/></svg>全国動物園スタンプラリー</a>
+      <a href="https://dormy-log.soryushi.jp/" class="drawer-link" target="_blank" rel="noopener noreferrer"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 3.5c-1.2 1.4 1.2 2.6 0 4.4M12 2.8c-1.2 1.4 1.2 2.6 0 4.4M15.8 3.5c-1.2 1.4 1.2 2.6 0 4.4"/><path d="M5.5 11.5C3.6 12.4 3 13.4 3 14.6c0 2.9 4 5.1 9 5.1s9-2.2 9-5.1c0-1.2-.6-2.2-2.5-3.1"/><path d="M8 13.2c1 .9 2.4 1.3 4 1.3s3-.4 4-1.3"/></svg>全国ドーミーインスタンプラリー</a>
     </div>
   </nav>
 """
@@ -873,8 +873,8 @@ AQ_FOOTER = """
     <div class="footer-inner">
       <a href="/contact/">お問い合わせ</a>
       <a href="/privacy/">プライバシーポリシー</a>
-      <a href="https://zoo-log.onrender.com/" target="_blank" rel="noopener noreferrer">🐘 全国動物園スタンプラリー</a>
-      <a href="https://dormy-log.soryushi.jp/" target="_blank" rel="noopener noreferrer">♨️ 全国ドーミーインスタンプラリー</a>
+      <a href="https://zoo-log.onrender.com/" target="_blank" rel="noopener noreferrer"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18.5V12a6 6 0 0 1 6-6h3.5A5.5 5.5 0 0 1 19 11.5v4.3a2.2 2.2 0 0 0 2.2 2.2"/><path d="M8 18.5v-3.2"/><path d="M13 18.5v-3.2"/><path d="M4 18.5h4M13 18.5h3.4"/><path d="M12 7.2a3.4 3.4 0 0 0 0 5.6"/><circle cx="15.8" cy="10" r=".95" fill="currentColor" stroke="none"/></svg>全国動物園スタンプラリー</a>
+      <a href="https://dormy-log.soryushi.jp/" target="_blank" rel="noopener noreferrer"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 3.5c-1.2 1.4 1.2 2.6 0 4.4M12 2.8c-1.2 1.4 1.2 2.6 0 4.4M15.8 3.5c-1.2 1.4 1.2 2.6 0 4.4"/><path d="M5.5 11.5C3.6 12.4 3 13.4 3 14.6c0 2.9 4 5.1 9 5.1s9-2.2 9-5.1c0-1.2-.6-2.2-2.5-3.1"/><path d="M8 13.2c1 .9 2.4 1.3 4 1.3s3-.4 4-1.3"/></svg>全国ドーミーインスタンプラリー</a>
       <span>© 2025 全国水族館スタンプラリー</span>
     </div>
   </footer>
@@ -1057,7 +1057,7 @@ def aquarium_page(aquarium_id: int):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{base}/ogp.png?v=20260626">
   {ld}
-  <link rel="stylesheet" href="/styles.css?v=20261109-1">
+  <link rel="stylesheet" href="/styles.css?v=20261111-1">
   <style>
     /* ヘッダー常時固定（他ページと揃える） */
     header {{
