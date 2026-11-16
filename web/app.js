@@ -1226,6 +1226,21 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+// data:URL（canvas.toDataURL の結果）を File にする。await を使わずにその場で作れる
+function dataUrlToFile(dataUrl, name) {
+  try {
+    const [head, b64] = dataUrl.split(",");
+    const mime = (head.match(/data:([^;]+)/) || [])[1] || "image/png";
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new File([bytes], name, { type: mime });
+  } catch (e) {
+    console.warn("dataUrlToFile failed", e);
+    return null;
+  }
+}
+
 function handleShare() {
   const statsText = document.getElementById("statsText");
   const text = statsText ? statsText.textContent : "0 / 0";
@@ -1241,10 +1256,16 @@ function handleShare() {
   if (previewImg) previewImg.src = dataUrl;
   if (shareModal) shareModal.style.display = "flex";
 
+  // 共有用の画像ファイルは、モーダルを開いた時点で作っておく。
+  // スマホのブラウザは「タップした直後」でないと共有シートや新しいタブを開かせない（iOS Safari など）。
+  // ボタンを押してから画像の変換やアップロードを await すると、その間にタップの扱いが切れて
+  // navigator.share も window.open も弾かれ、何も起きなくなる。
+  const shareFile = dataUrlToFile(dataUrl, "aquarium_stamp.png");
+
   // 「Xにポストする」ボタン
   const shareApiBtn = document.getElementById("shareApiBtn");
   if (shareApiBtn) {
-    shareApiBtn.onclick = async () => {
+    shareApiBtn.onclick = () => {
       const pct = Math.round(visited / Math.max(total, 1) * 100);
       const SITE_URL = "https://aquarium-log.onrender.com/";
       // URLを含まない本文（PCはintentのurl=共有URLでカード表示するため重複させない）
@@ -1253,74 +1274,70 @@ function handleShare() {
         `あなたも水族館巡りを記録しよう！\n` +
         `#全国水族館スタンプラリー #水族館巡り #水族館`;
 
-      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); // iPadOS は Mac を名乗る
 
-      // PCは先に空タブを開いてユーザー操作コンテキストを保持（await後のwindow.openはポップアップブロックされるため）
-      let xWin = null;
-      if (!isMobile) xWin = window.open("", "_blank");
-
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], "aquarium_stamp.png", { type: "image/png" });
-
-      // 共有スナップショットをサーバー保存し、OGP付き共有URLを取得
-      let shareUrl = "";
-      try {
-        const fd = new FormData();
-        fd.append("file", file);
-        const up = await fetch(
-          `/api/share?visited=${encodeURIComponent(visited)}&total=${encodeURIComponent(total)}`,
-          {
-            method: "POST",
-            body: fd,
-            credentials: "same-origin",
-            headers: { "X-CSRF-Token": state.csrfToken },
-          }
-        );
-        if (up.ok) {
-          const j = await up.json();
-          shareUrl = location.origin + (j.url || "");
-        }
-      } catch (e) {
-        console.warn("share upload failed", e);
+      // スマホ: 画像付きの共有シートを「タップした流れのまま」すぐ開く（await を挟まない）
+      // ※PCでも Web Share 対応ブラウザはあるが、OS の共有シートが開いて X のカードにならないので使わない
+      if (isMobile && shareFile && navigator.share && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+        navigator.share({
+          files: [shareFile],
+          title: "全国水族館スタンプラリー",
+          text: textBase + "\n" + SITE_URL,
+        }).catch((e) => {
+          if (e && e.name === "AbortError") return; // ユーザーが閉じただけ
+          // 共有に失敗した端末では、X の投稿画面に移る（タップの扱いは切れているので今のタブで開く）
+          location.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(textBase + "\n" + SITE_URL);
+        });
+        return;
       }
 
-      // スマホのみ: 画像付きWeb Share（実画像がそのまま添付される）
-      // ※PCでもWeb Share対応ブラウザがあるが、OS共有シートが開いてXカードにならないため
-      //   モバイル端末に限定し、PCは下のX Web Intent（OGPカード）に進める
-      if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: "全国水族館スタンプラリー",
-            text: textBase + "\n" + SITE_URL,
-          });
-          return;
-        } catch (e) {
-          if (e.name === "AbortError") return;
-        }
-      }
-
-      // デスクトップ or フォールバック: X Web Intent を開く
-      // 共有URLがあればカード画像が自動表示される。無ければ画像保存にフォールバック
-      let xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(textBase);
-      if (shareUrl) {
-        xUrl += "&url=" + encodeURIComponent(shareUrl);
-      } else {
-        const a = document.createElement("a");
-        a.href = dataUrl;
-        a.download = "aquarium_stamp.png";
-        a.click();
-        xUrl = "https://x.com/intent/tweet?text=" +
-          encodeURIComponent(textBase + "\n" + SITE_URL);
-      }
-      // 先に開いた空タブがあればそこを遷移、無ければ新規に開く
-      if (xWin) {
-        xWin.location.href = xUrl;
-      } else {
-        window.open(xUrl, "_blank", "noopener");
-      }
+      // PC・共有シートが使えないスマホ: 先に空のタブを開いておく（await の後の window.open はブロックされるため）
+      const xWin = window.open("", "_blank");
+      postToX(xWin, textBase, SITE_URL);
     };
+  }
+
+  // 共有スナップショットをサーバーに保存して OGP 付きの共有URLを作り、X の投稿画面を開く
+  async function postToX(xWin, textBase, SITE_URL) {
+    let shareUrl = "";
+    try {
+      const fd = new FormData();
+      fd.append("file", shareFile || new File([await (await fetch(dataUrl)).blob()], "aquarium_stamp.png", { type: "image/png" }));
+      const up = await fetch(
+        `/api/share?visited=${encodeURIComponent(visited)}&total=${encodeURIComponent(total)}`,
+        {
+          method: "POST",
+          body: fd,
+          credentials: "same-origin",
+          headers: { "X-CSRF-Token": state.csrfToken },
+        }
+      );
+      if (up.ok) {
+        const j = await up.json();
+        shareUrl = location.origin + (j.url || "");
+      }
+    } catch (e) {
+      console.warn("share upload failed", e);
+    }
+
+    // 共有URLがあればカード画像が自動表示される。無ければ画像を保存してから本文にサイトURLを入れる
+    let xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(textBase);
+    if (shareUrl) {
+      xUrl += "&url=" + encodeURIComponent(shareUrl);
+    } else {
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "aquarium_stamp.png";
+      a.click();
+      xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(textBase + "\n" + SITE_URL);
+    }
+    // 先に開いたタブがあればそこを移動。ブロックされて開けなかったときは今のタブで開く
+    if (xWin && !xWin.closed) {
+      xWin.location.href = xUrl;
+    } else {
+      location.href = xUrl;
+    }
   }
 
   // 「画像を保存」ボタン
